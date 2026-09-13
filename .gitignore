@@ -1,119 +1,219 @@
-# Miscellaneous
-*.class
-*.lock
-*.log
-*.pyc
-*.swp
-.buildlog/
-.history
+# ==============================================================================
+# Comprehensive .gitignore for Open-Source Flutter Mobile App
+# Targets: iOS (App Store) & Android (Google Play Store)
+# Protections: In-App Purchases, Ads, Secrets, Keystores, Env, CI/CD, Fastlane
+# ==============================================================================
 
+# ------------------------------------------------------------------------------
+# 1. Environment & Secret Configuration Files (CRITICAL FOR OPEN SOURCE)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+*.env
+*.local
+secrets.json
+config.json
+dart_defines.json
+dart_defines.local.json
 
+# Whitelist safe example templates:
+!.env.example
+!.env.template
 
-# Flutter repo-specific
-/bin/cache/
-/bin/internal/bootstrap.bat
-/bin/internal/bootstrap.sh
-/bin/mingit/
-/dev/benchmarks/mega_gallery/
-/dev/bots/.recipe_deps
-/dev/bots/android_tools/
-/dev/devicelab/ABresults*.json
-/dev/docs/doc/
-/dev/docs/flutter.docs.zip
-/dev/docs/lib/
-/dev/docs/pubspec.yaml
-/dev/integration_tests/**/xcuserdata
-/dev/integration_tests/**/Pods
-/packages/flutter/coverage/
-version
-analysis_benchmark.json
-
-# packages file containing multi-root paths
-.packages.generated
-
-# Flutter/Dart/Pub related
-**/doc/api/
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-**/generated_plugin_registrant.dart
-.packages
-.pub-preload-cache/
-.pub/
-build/
-flutter_*.png
-linked_*.ds
-unlinked.ds
-unlinked_spec.ds
-
-# Android related
-**/android/**/gradle-wrapper.jar
-.gradle/
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
+# ------------------------------------------------------------------------------
+# 2. Android Signing, Credentials & Keystores (CRITICAL - NEVER COMMIT)
+# ------------------------------------------------------------------------------
 **/android/key.properties
-*.jks
+**/android/signing.properties
+**/android/local.properties
+**/android/private.properties
+key.properties
+signing.properties
+local.properties
 
-# iOS/XCode related
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
+# Android keystore files
+*.keystore
+*.jks
+*.p12
+*.bks
+
+# Whitelist example key properties template:
+!**/android/key.properties.example
+!key.properties.example
+
+# Google Play & Cloud Service Account / API Credentials
+*service_account*.json
+*service-account*.json
+play-store-credentials*.json
+play-store-keys*.json
+google-play-key*.json
+api-*.json
+client_secret*.json
+
+# Firebase Android configuration file
+**/android/app/google-services.json
+google-services.json
+!**/android/app/google-services.json.example
+
+# Android build & Gradle caches
+.gradle/
+**/android/.gradle/
+**/android/captures/
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+**/android/build/
+**/android/.cxx/
+GeneratedPluginRegistrant.java
+
+# ------------------------------------------------------------------------------
+# 3. iOS Certificates, Provisioning Profiles & Secrets (CRITICAL - NEVER COMMIT)
+# ------------------------------------------------------------------------------
+# Apple Certificates, Private Keys & Provisioning
+*.mobileprovision
+*.provisionprofile
+*.cer
+*.cert
+*.p12
+*.p8
+AuthKey_*.p8
+**/ios/AuthKey_*.p8
+
+# Export & Provisioning configurations
+ExportOptions.plist
+**/ios/ExportOptions.plist
+
+# Firebase iOS configuration file
+**/ios/Runner/GoogleService-Info.plist
+GoogleService-Info.plist
+!**/ios/Runner/GoogleService-Info.plist.example
+
+# Xcode User Data & Derived Data
+**/ios/**/xcuserdata/
 **/ios/**/DerivedData/
-**/ios/**/Icon?
-**/ios/**/Pods/
-**/ios/**/.symlinks/
-**/ios/**/profile
-**/ios/**/xcuserdata
-**/ios/.generated/
-**/ios/Flutter/.last_build_id
-**/ios/Flutter/App.framework
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+!default.pbxuser
+!default.mode1v3
+!default.mode2v3
+!default.perspectivev3
+
+# CocoaPods & Frameworks
+**/ios/Pods/
+**/ios/.symlinks/
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Flutter.podspec
+**/ios/Flutter/App.framework
 **/ios/Flutter/Generated.xcconfig
-**/ios/Flutter/ephemeral
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/ephemeral/
 **/ios/Flutter/app.flx
 **/ios/Flutter/app.zip
 **/ios/Flutter/flutter_assets/
-**/ios/Flutter/flutter_export_environment.sh
-**/ios/ServiceDefinitions.json
+**/ios/Flutter/.last_build_id
 **/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/ServiceDefinitions.json
 
+# iOS Archives & Packages
+*.ipa
+*.xcarchive
+Runner.ipa
+
+# ------------------------------------------------------------------------------
+# 4. Third-Party Services (In-App Purchases, Ads, Analytics, Crashlytics)
+# ------------------------------------------------------------------------------
+# Sentry credentials and properties
+sentry.properties
+**/ios/sentry.properties
+**/android/sentry.properties
+
+# Datadog & other observability credentials
+datadog.properties
+
+# RevenueCat / StoreKit / Play Billing private keys / receipts
+revenuecat_secret*.json
+storekit_keys*.json
+receipts/
+
+# ------------------------------------------------------------------------------
+# 5. Fastlane & CI/CD Secrets
+# ------------------------------------------------------------------------------
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/Appfile.secret
+fastlane/.env*
+fastlane/Matchfile.secret
+fastlane/auth_key*.json
+!fastlane/Fastfile
+!fastlane/Appfile
+!fastlane/Matchfile
+!fastlane/README.md
+
+# ------------------------------------------------------------------------------
+# 6. Flutter / Dart Core & Build Artifacts
+# ------------------------------------------------------------------------------
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+**/build/
+coverage/
+**/doc/api/
+.widget_preview/
+
+# Symbolication & Obfuscation outputs
+app.*.symbols
+app.*.map.json
+
+# ------------------------------------------------------------------------------
+# 7. IDE, Editor & OS Files
+# ------------------------------------------------------------------------------
 # macOS
-**/Flutter/ephemeral/
-**/Pods/
-**/macos/Flutter/GeneratedPluginRegistrant.swift
-**/macos/Flutter/ephemeral
-**/xcuserdata/
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
 
 # Windows
-**/windows/flutter/generated_plugin_registrant.cc
-**/windows/flutter/generated_plugin_registrant.h
-**/windows/flutter/generated_plugins.cmake
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
 
 # Linux
-**/linux/flutter/generated_plugin_registrant.cc
-**/linux/flutter/generated_plugin_registrant.h
-**/linux/flutter/generated_plugins.cmake
+*~
+.directory
 
-# Coverage
-coverage/
+# JetBrains (Android Studio / IntelliJ)
+.idea/
+*.iml
+*.ipr
+*.iws
 
-# Symbols
-app.*.symbols
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.vscode/*.log
 
-# Exceptions to above rules.
-!**/ios/**/default.mode1v3
-!**/ios/**/default.mode2v3
-!**/ios/**/default.pbxuser
-!**/ios/**/default.perspectivev3
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-!/dev/ci/**/Gemfile.lock
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+*.bak
+*.tmp
+.atom/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
