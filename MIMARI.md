@@ -197,7 +197,7 @@ Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile ye
 - [x] **2.4.** Çoklu dil (Localization) yükleyicisini ve dil yöneticisini (71 dil destekli) hazırlamak.
 
 ### Faz 3: Modern Native Android (Kotlin) Katmanı
-- [ ] **3.1.** `AndroidManifest.xml` dosyasını Android 14/15 overlay, bildirim ve zamanlayıcı izinleriyle güncellemek (`SYSTEM_ALERT_WINDOW`, `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE`, `RECEIVE_BOOT_COMPLETED`).
+- [x] **3.1.** `AndroidManifest.xml` dosyasını Android 14/15 overlay, bildirim ve zamanlayıcı izinleriyle güncellemek (`SYSTEM_ALERT_WINDOW`, `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE`, `RECEIVE_BOOT_COMPLETED`).
 - [ ] **3.2.** `OverlayService.kt` servisini Kotlin ile sıfırdan yazmak (Donanım ivmeli, pürüzsüz renk ve alfa katmanı).
 - [ ] **3.3.** `FilterNotificationManager.kt` bildirim kontrolcüsünü modern Android bildirim standartlarına uygun şekilde geliştirmek.
 - [ ] **3.4.** `ScheduleReceiver.kt` zamanlayıcı ve cihaz açılış dinleyicisini yazmak.
