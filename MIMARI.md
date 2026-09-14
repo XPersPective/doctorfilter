@@ -187,7 +187,7 @@ Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile ye
 ### Faz 1: Altyapı, Temizlik ve Çekirdek Konfigürasyon
 - [x] **1.1.** `pubspec.yaml` dosyasını modern paketlerle güncellemek (`flutter_riverpod`, `shared_preferences`, `sqflite`, `path`, `path_provider`, `google_mobile_ads`, `purchases_flutter`, `intl`, `flutter_svg`).
 - [x] **1.2.** Eski `assets/` klasöründen görsel kaynakları, logoları ve 71 dil dosyasını yeni projeye taşımak; `pubspec.yaml` içine asset tanımlarını eklemek.
-- [ ] **1.3.** Çekirdek Kelvin ve Spektrum matematik motorunu (`core/math/kelvin_engine.dart`) Tanner Helland ve McCamy CCT formülleriyle sıfırdan yazmak ve unit testlerini hazırlamak.
+- [x] **1.3.** Çekirdek Kelvin ve Spektrum matematik motorunu (`core/math/kelvin_engine.dart`) Tanner Helland ve McCamy CCT formülleriyle sıfırdan yazmak ve unit testlerini hazırlamak.
 - [ ] **1.4.** Material 3 dinamik tema sistemini (`core/theme/`) açık ve koyu mod desteğiyle inşa etmek.
 
 ### Faz 2: Domain ve Data Katmanı
