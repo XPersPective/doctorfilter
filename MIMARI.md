@@ -198,10 +198,10 @@ Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile ye
 
 ### Faz 3: Modern Native Android (Kotlin) Katmanı
 - [x] **3.1.** `AndroidManifest.xml` dosyasını Android 14/15 overlay, bildirim ve zamanlayıcı izinleriyle güncellemek (`SYSTEM_ALERT_WINDOW`, `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE`, `RECEIVE_BOOT_COMPLETED`).
-- [ ] **3.2.** `OverlayService.kt` servisini Kotlin ile sıfırdan yazmak (Donanım ivmeli, pürüzsüz renk ve alfa katmanı).
-- [ ] **3.3.** `FilterNotificationManager.kt` bildirim kontrolcüsünü modern Android bildirim standartlarına uygun şekilde geliştirmek.
-- [ ] **3.4.** `ScheduleReceiver.kt` zamanlayıcı ve cihaz açılış dinleyicisini yazmak.
-- [ ] **3.5.** `MainActivity.kt` üzerinde MethodChannel köprüsünü kurmak; Flutter ile Kotlin durumlarını çift yönlü senkronize etmek.
+- [x] **3.2.** `OverlayService.kt` servisini Kotlin ile sıfırdan yazmak (Donanım ivmeli, pürüzsüz renk ve alfa katmanı).
+- [x] **3.3.** `FilterNotificationManager.kt` bildirim kontrolcüsünü modern Android bildirim standartlarına uygun şekilde geliştirmek.
+- [x] **3.4.** `ScheduleReceiver.kt` zamanlayıcı ve cihaz açılış dinleyicisini yazmak.
+- [x] **3.5.** `MainActivity.kt` üzerinde MethodChannel köprüsünü kurmak; Flutter ile Kotlin durumlarını çift yönlü senkronize etmek.
 
 ### Faz 4: Presentation Katmanı ve Durum Yönetimi (Riverpod 3)
 - [ ] **4.1.** `FilterNotifier` ve durum sağlayıcılarını yazmak (Filtre açık/kapalı, renk, alfa, parlaklık, aktif ön ayar).
