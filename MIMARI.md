@@ -191,7 +191,7 @@ Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile ye
 - [x] **1.4.** Material 3 dinamik tema sistemini (`core/theme/`) açık ve koyu mod desteğiyle inşa etmek.
 
 ### Faz 2: Domain ve Data Katmanı
-- [ ] **2.1.** Domain Entity modellerini oluşturmak (`FilterPreset`, `FilterConfig`, `ScheduleRule`, `CircadianMode`).
+- [x] **2.1.** Domain Entity modellerini oluşturmak (`FilterPreset`, `FilterConfig`, `ScheduleRule`, `CircadianMode`).
 - [ ] **2.2.** Repository arayüzlerini ve Use Case sınıflarını tanımlamak (`IFilterRepository`, `IPresetRepository`, `IScheduleRepository`).
 - [ ] **2.3.** Yerel veritabanı (SQLite) veri kaynağını oluşturmak ve 7 klasik ön ayarı (Güneş, Florasan, Lamba, Ay, Mum, Kitap, Ağaç) varsayılan olarak yüklemek.
 - [ ] **2.4.** Çoklu dil (Localization) yükleyicisini ve dil yöneticisini (71 dil destekli) hazırlamak.
