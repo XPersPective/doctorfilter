@@ -194,7 +194,7 @@ Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile ye
 - [x] **2.1.** Domain Entity modellerini oluşturmak (`FilterPreset`, `FilterConfig`, `ScheduleRule`, `CircadianMode`).
 - [x] **2.2.** Repository arayüzlerini ve Use Case sınıflarını tanımlamak (`IFilterRepository`, `IPresetRepository`, `IScheduleRepository`).
 - [x] **2.3.** Yerel veritabanı (SQLite) veri kaynağını oluşturmak ve 7 klasik ön ayarı (Güneş, Florasan, Lamba, Ay, Mum, Kitap, Ağaç) varsayılan olarak yüklemek.
-- [ ] **2.4.** Çoklu dil (Localization) yükleyicisini ve dil yöneticisini (71 dil destekli) hazırlamak.
+- [x] **2.4.** Çoklu dil (Localization) yükleyicisini ve dil yöneticisini (71 dil destekli) hazırlamak.
 
 ### Faz 3: Modern Native Android (Kotlin) Katmanı
 - [ ] **3.1.** `AndroidManifest.xml` dosyasını Android 14/15 overlay, bildirim ve zamanlayıcı izinleriyle güncellemek (`SYSTEM_ALERT_WINDOW`, `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE`, `RECEIVE_BOOT_COMPLETED`).
