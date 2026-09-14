@@ -57,6 +57,28 @@ flutter:
   # Assets section for environment configuration
   assets:
     - .env
+    - assets/images/
+    - assets/images/app_nameThemeWhite/
+    - assets/images/app_nameThemeBlue/
+    - assets/images/intro/
+    - assets/Localizations/
+
+  fonts:
+    - family: Orbitron
+      fonts:
+        - asset: assets/fonts/Orbitron-VariableFont_wght.ttf
+    - family: Audiowide
+      fonts:
+        - asset: assets/fonts/Audiowide-Regular.ttf
+    - family: Tomorrow
+      fonts:
+        - asset: assets/fonts/Tomorrow-Medium.ttf
+    - family: TurretRoad
+      fonts:
+        - asset: assets/fonts/TurretRoad-Medium.ttf
+    - family: Kodchasan
+      fonts:
+        - asset: assets/fonts/Kodchasan-Medium.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
