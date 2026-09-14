@@ -1,4 +1,4 @@
-package com.example.doctorfilter
+package com.crazypenguin.doctorfilter
 
 import android.content.Intent
 import android.net.Uri

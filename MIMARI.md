@@ -224,3 +224,12 @@ Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile ye
 - [x] **6.2.** Android cihaz/emülatör üzerinde Overlay, Bildirim kontrolleri ve Arka plan servislerini doğrulamak.
 - [x] **6.3.** `flutter analyze` ile 0 uyarı / 0 hata olduğunu teyit etmek.
 - [x] **6.4.** Git geçmişini ve dosyaları inceleyerek gizli verilerin repoya sızmadığını doğrulamak, son sürüm etiketini belirlemek.
+
+### Faz 7: Sıfırdan Modern Proje Başlatma ve Üretim Düzeyinde Android Release Yapılandırması
+- [x] **7.1.** Mevcut projeyi yerel arşive (`migrate_working_dir/local_archive`) yedeklemek (GitHub'a gönderilmez).
+- [x] **7.2.** Kök dizinde en güncel Flutter SDK (3.47.2 / Dart 3.13.2) ile sıfırdan temiz proje oluşturmak (`--org com.crazypenguin --project-name doctorfilter`).
+- [x] **7.3.** Orijinal Google Play release anahtarını (`key.jks`, `key.properties`) ve `android/app/build.gradle.kts` release imzalama yapılandırmasını kurmak.
+- [x] **7.4.** Orijinal mağaza uygulama adını ("DoctorFilter"), uygulama ikonlarını (`ic_launcher` mipmap) ve AdMob uygulama kimliğini entegre etmek.
+- [x] **7.5.** `OverlayService`, `FilterNotificationManager`, `ScheduleReceiver` ve `MainActivity` Kotlin sınıflarını `com.crazypenguin.doctorfilter` paketi altında yapılandırmak.
+- [x] **7.6.** Windows çapraz disk Kotlin artımlı derleme istisnasını (`kotlin.incremental=false`) çözerek tam Android `assembleDebug` ve `assembleRelease` derlemelerini 0 hatayla başarıyla tamamlamak.
+- [x] **7.7.** `flutter analyze` (0 hata) ve `flutter test` (11/11 test) doğrulayarak projeyi tamamlamak.

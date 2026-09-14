@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Permissions required for Screen Filter Overlay, Notifications and Scheduling -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -10,9 +11,15 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
-        android:label="DoctorFilter"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- Google AdMob Application ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-0258900763816899~1987383172"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -56,8 +63,8 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="com.example.doctorfilter.ACTION_SCHEDULE_START" />
-                <action android:name="com.example.doctorfilter.ACTION_SCHEDULE_STOP" />
+                <action android:name="com.crazypenguin.doctorfilter.ACTION_SCHEDULE_START" />
+                <action android:name="com.crazypenguin.doctorfilter.ACTION_SCHEDULE_STOP" />
             </intent-filter>
         </receiver>
 

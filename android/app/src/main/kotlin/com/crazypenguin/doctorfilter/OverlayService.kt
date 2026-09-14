@@ -1,4 +1,4 @@
-package com.example.doctorfilter
+package com.crazypenguin.doctorfilter
 
 import android.app.Service
 import android.content.Context
@@ -19,9 +19,9 @@ class OverlayService : Service() {
     private var layoutParams: WindowManager.LayoutParams? = null
 
     companion object {
-        const val ACTION_START = "com.example.doctorfilter.action.START"
-        const val ACTION_STOP = "com.example.doctorfilter.action.STOP"
-        const val ACTION_UPDATE = "com.example.doctorfilter.action.UPDATE"
+        const val ACTION_START = "com.crazypenguin.doctorfilter.action.START"
+        const val ACTION_STOP = "com.crazypenguin.doctorfilter.action.STOP"
+        const val ACTION_UPDATE = "com.crazypenguin.doctorfilter.action.UPDATE"
 
         const val EXTRA_RED = "extra_red"
         const val EXTRA_GREEN = "extra_green"
@@ -111,7 +111,6 @@ class OverlayService : Service() {
         val wm = windowManager ?: return
 
         // Compute composite alpha combining tint alpha and extra dimming
-        // Lower brightness below threshold adds extra dimming alpha
         val effectiveAlpha = currentAlpha.coerceIn(0, 255)
         val filterColor = Color.argb(effectiveAlpha, currentRed, currentGreen, currentBlue)
 
@@ -127,7 +126,7 @@ class OverlayService : Service() {
                 WindowManager.LayoutParams.TYPE_PHONE
             }
 
-            var windowFlags = WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+            val windowFlags = WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS

@@ -1,4 +1,4 @@
-package com.example.doctorfilter
+package com.crazypenguin.doctorfilter
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -13,9 +13,9 @@ object FilterNotificationManager {
     const val CHANNEL_ID = "doctorfilter_channel_active"
     const val NOTIFICATION_ID = 1001
 
-    const val ACTION_TOGGLE = "com.example.doctorfilter.action.TOGGLE"
-    const val ACTION_DIM_MORE = "com.example.doctorfilter.action.DIM_MORE"
-    const val ACTION_DIM_LESS = "com.example.doctorfilter.action.DIM_LESS"
+    const val ACTION_TOGGLE = "com.crazypenguin.doctorfilter.action.TOGGLE"
+    const val ACTION_DIM_MORE = "com.crazypenguin.doctorfilter.action.DIM_MORE"
+    const val ACTION_DIM_LESS = "com.crazypenguin.doctorfilter.action.DIM_LESS"
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
