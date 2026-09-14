@@ -204,10 +204,10 @@ Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile ye
 - [x] **3.5.** `MainActivity.kt` üzerinde MethodChannel köprüsünü kurmak; Flutter ile Kotlin durumlarını çift yönlü senkronize etmek.
 
 ### Faz 4: Presentation Katmanı ve Durum Yönetimi (Riverpod 3)
-- [ ] **4.1.** `FilterNotifier` ve durum sağlayıcılarını yazmak (Filtre açık/kapalı, renk, alfa, parlaklık, aktif ön ayar).
-- [ ] **4.2.** `PresetNotifier` ile ön ayar seçimi, özelleştirilmesi ve yeni özel profil kaydetme mantığını kurmak.
-- [ ] **4.3.** `ScheduleNotifier` ile otomatik başlatma/durdurma saatlerini yönetmek.
-- [ ] **4.4.** `ThemeNotifier` ve `LocaleNotifier` ile anlık dil ve tema değişimini sağlamak.
+- [x] **4.1.** `FilterNotifier` ve durum sağlayıcılarını yazmak (Filtre açık/kapalı, renk, alfa, parlaklık, aktif ön ayar).
+- [x] **4.2.** `PresetNotifier` ile ön ayar seçimi, özelleştirilmesi ve yeni özel profil kaydetme mantığını kurmak.
+- [x] **4.3.** `ScheduleNotifier` ile otomatik başlatma/durdurma saatlerini yönetmek.
+- [x] **4.4.** `ThemeNotifier` ve `LocaleNotifier` ile anlık dil ve tema değişimini sağlamak.
 
 ### Faz 5: Modern UI/UX Ekranlarının İnşası
 - [ ] **5.1.** **Ana Kontrol Kokpiti (HomeScreen):** Büyük modern Power butonu, aktif durum kartı, hızlı preset seçici.
