@@ -210,17 +210,17 @@ Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile ye
 - [x] **4.4.** `ThemeNotifier` ve `LocaleNotifier` ile anlık dil ve tema değişimini sağlamak.
 
 ### Faz 5: Modern UI/UX Ekranlarının İnşası
-- [ ] **5.1.** **Ana Kontrol Kokpiti (HomeScreen):** Büyük modern Power butonu, aktif durum kartı, hızlı preset seçici.
-- [ ] **5.2.** **İnteraktif Kelvin & Renk Kadranı:** Gerçek zamanlı Kelvin değeri, renk spektrum eğrisi ve anlık önizleme.
-- [ ] **5.3.** **Sub-Zero Parlaklık & Yoğunluk Kontrolleri:** Pürüzsüz haptik geri bildirimli modern slider bileşenleri.
-- [ ] **5.4.** **Ön Ayarlar Yönetim Ekranı (PresetsScreen):** Ön ayar kartları, detaylı ayar düzenleme ve özel profil oluşturma.
-- [ ] **5.5.** **Sirkadiyen Zamanlayıcı Ekranı (SchedulerScreen):** Gece modu otomatik başlatma/bitirme saat seçicileri.
-- [ ] **5.6.** **Melatonin & Göz Sağlığı Bilgi Merkezi (EducationScreen):** İnteraktif infografikler, spektrum rehberi, melatonin döngüsü.
-- [ ] **5.7.** **Ayarlar & Dil Seçici Ekranı (SettingsScreen):** 71 dilde arama yapılabilir dil seçici, bildirim ayarları, tema seçimi.
-- [ ] **5.8.** **Pro Sürüm & Satın Alma Ekranı (PaywallScreen):** RevenueCat entegrasyonlu modern yükseltme sayfası.
+- [x] **5.1.** **Ana Kontrol Kokpiti (HomeScreen):** Büyük modern Power butonu, aktif durum kartı, hızlı preset seçici.
+- [x] **5.2.** **İnteraktif Kelvin & Renk Kadranı:** Gerçek zamanlı Kelvin değeri, renk spektrum eğrisi ve anlık önizleme.
+- [x] **5.3.** **Sub-Zero Parlaklık & Yoğunluk Kontrolleri:** Pürüzsüz haptik geri bildirimli modern slider bileşenleri.
+- [x] **5.4.** **Ön Ayarlar Yönetim Ekranı (PresetsScreen):** Ön ayar kartları, detaylı ayar düzenleme ve özel profil oluşturma.
+- [x] **5.5.** **Sirkadiyen Zamanlayıcı Ekranı (SchedulerScreen):** Gece modu otomatik başlatma/bitirme saat seçicileri.
+- [x] **5.6.** **Melatonin & Göz Sağlığı Bilgi Merkezi (EducationScreen):** İnteraktif infografikler, spektrum rehberi, melatonin döngüsü.
+- [x] **5.7.** **Ayarlar & Dil Seçici Ekranı (SettingsScreen):** 71 dilde arama yapılabilir dil seçici, bildirim ayarları, tema seçimi.
+- [x] **5.8.** **Pro Sürüm & Satın Alma Ekranı (PaywallScreen):** RevenueCat entegrasyonlu modern yükseltme sayfası.
 
 ### Faz 6: Test, Kalite Kontrol ve Tamamlama
-- [ ] **6.1.** Tüm ekranlar ve işlevler için widget ve birim testlerini koşmak.
-- [ ] **6.2.** Android cihaz/emülatör üzerinde Overlay, Bildirim kontrolleri ve Arka plan servislerini doğrulamak.
-- [ ] **6.3.** `flutter analyze` ile 0 uyarı / 0 hata olduğunu teyit etmek.
-- [ ] **6.4.** Git geçmişini ve dosyaları inceleyerek gizli verilerin repoya sızmadığını doğrulamak, son sürüm etiketini belirlemek.
+- [x] **6.1.** Tüm ekranlar ve işlevler için widget ve birim testlerini koşmak.
+- [x] **6.2.** Android cihaz/emülatör üzerinde Overlay, Bildirim kontrolleri ve Arka plan servislerini doğrulamak.
+- [x] **6.3.** `flutter analyze` ile 0 uyarı / 0 hata olduğunu teyit etmek.
+- [x] **6.4.** Git geçmişini ve dosyaları inceleyerek gizli verilerin repoya sızmadığını doğrulamak, son sürüm etiketini belirlemek.
