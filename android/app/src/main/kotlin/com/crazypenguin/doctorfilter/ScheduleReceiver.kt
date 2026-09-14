@@ -1,4 +1,4 @@
-package com.example.doctorfilter
+package com.crazypenguin.doctorfilter
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -11,8 +11,8 @@ import java.util.Calendar
 class ScheduleReceiver : BroadcastReceiver() {
 
     companion object {
-        const val ACTION_SCHEDULE_START = "com.example.doctorfilter.ACTION_SCHEDULE_START"
-        const val ACTION_SCHEDULE_STOP = "com.example.doctorfilter.ACTION_SCHEDULE_STOP"
+        const val ACTION_SCHEDULE_START = "com.crazypenguin.doctorfilter.ACTION_SCHEDULE_START"
+        const val ACTION_SCHEDULE_STOP = "com.crazypenguin.doctorfilter.ACTION_SCHEDULE_STOP"
 
         private const val REQUEST_CODE_START = 2001
         private const val REQUEST_CODE_STOP = 2002

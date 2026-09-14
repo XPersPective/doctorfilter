@@ -8,7 +8,7 @@
 PRODUCT_NAME = doctorfilter
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.doctorfilter
+PRODUCT_BUNDLE_IDENTIFIER = com.crazypenguin.doctorfilter
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.crazypenguin. All rights reserved.
