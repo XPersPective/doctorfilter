@@ -795,10 +795,19 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
         Chang 2015, Cochrane/Singh 2023, CIE S 026).
   - [x] **D8.4** İkon ve görselleri yenile; kullanıcı dostu, sade, abartısız dil.
   - [x] **D8.5** Feragat kartı: tıbbi cihaz değildir, tedavi etmez.
-- [ ] **D9.** İkon seti: alt gezinme dâhil, iOS'ta da doğru duran tek set.
-- [ ] 🔴 **D10.** Splash: light ve dark için ayrı, sade; mevcut ikon korunur, mavi+turuncu
-      kimlik, altında tek satır bilimsel açıklama.
-- [ ] **D11.** Pro rozeti: satın alındığında başlıkta "DoctorFilter^Pro".
+- [x] **D9.** Tek ikon sözlüğü (`kPresetIcons`) ve Material **rounded** seti her yerde;
+      her birinin iOS'ta karşılık gelen bir SF Symbol'ü var, böylece iOS'a geçerken ikinci
+      bir ikon dili gerekmeyecek.
+- [~] 🔴 **D10.** Splash: `splash_logo.xml` **vektör** marka işareti (irisin yarısı mavi,
+      yarısı turuncu), `values`/`values-night` renkleriyle açık ve koyu varyant, Android 12+
+      için `values-v31` platform splash öznitelikleri (o sürümlerde `windowBackground`
+      yok sayılır — koyu uygulamadan önce beyaz parlama buradan geliyordu). Splash rengi
+      `AppTheme` zeminleriyle eşleştirildi. — **cihazda iki temada bakılmalı**
+  - [ ] **D10.1** Splash altına tek satır açıklama: Android'in sistem splash'i metin
+        desteklemiyor; gerekirse ilk kareyi çizen kısa bir Flutter splash'i olarak yapılmalı.
+- [x] **D11.** Pro rozeti: satın alındığında başlıktaki "DoctorFilter" yanında üst simge
+      gibi duran küçük **PRO** etiketi — sahibinin fark ettiği, başkasının okumak zorunda
+      olmadığı bir işaret.
 - [x] **D12.** Yeni Hakkında ekranı: "Clean Architecture Build" jargonu **kaldırıldı**;
       yerine ne yaptığı, sayıların nasıl hesaplandığı, gizlilik, açık kaynak, kaynak künyeleri,
       GPL-3.0 lisans bağlantısı ve **çerçeveli feragat**. Sürüm `package_info_plus`'tan. (K11)
@@ -806,11 +815,21 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       nedeniyle göstermezse (bunu bilmenin yolu yok) mağaza sayfasına düşüyor — hiçbir şey
       olmamış gibi görünmesindense. (K10)
 - [x] **D14.** "Paylaş" çalışıyor: `share_plus` ile sistemin kendi paylaşım sayfası. (K10)
-- [ ] **D15.** İlk açılışta atlanabilir 3 adımlı onboarding: izinler + kısa bilimsel tanıtım.
-- [ ] 🔴 **D16.** Erişilebilirlik: TalkBack/VoiceOver etiketleri, min 48dp dokunma alanı,
-      büyük yazı tipiyle taşma yok.
-- [ ] 🔴 **D17.** Tablet ve yatay düzen.
-- [ ] **D18.** Performans: kaydırıcılar takılmadan aksın, gereksiz rebuild olmasın.
+- [x] **D15.** Üç adımlı, ilk adımdan itibaren atlanabilir onboarding. Orta adım özellikle
+      var: "diğer uygulamaların üzerine çizim" izni soğuktan istendiğinde ürkütücü; **neden**
+      gerektiğini önce okuyan kullanıcı hem izni daha çok veriyor hem de uygulamanın ekranını
+      okuduğu sonucuna varmıyor. İzin, gerekçesi hâlâ ekrandayken isteniyor.
+- [~] 🔴 **D16.** `Semantics` etiketleri (güç anahtarı `toggled`, preset kartları
+      `selected` + "ad, X kelvin"), kaydırıcılarda `semanticFormatterCallback`, temada tüm
+      düğmeler için `minimumSize: 48×48`. — **TalkBack ile cihazda gezilmeli**
+- [~] 🔴 **D17.** Preset ızgarası sütun sayısını genişlikten türetiyor (3–8), böylece
+      tablette pul sırasına dönüşmüyor. **360dp'de taşma testi** eklendi ve gerçek bir
+      taşmayı yakaladı (melanopik rozet yanındaki cümle): düzeltildi.
+      — **tablet ve yatayda cihazda bakılmalı**
+- [x] **D18.** `filterConfigProvider` `select()` ile yalnızca config değişiminde
+      tetikleniyor; izin/meşgul durumu değiştiğinde kaydırıcılar yeniden çizilmiyor.
+      Kaydırıcı hareketi 5'lik adımlara oturtuldu (algılanamayacak kadar ince değil,
+      her pikselde haptik tetiklemeyecek kadar da seyrek).
 
 ## FAZ E — Yerelleştirme
 - [x] **E1.** 191 anahtarlık tam set tanımlandı (gezinme, üç eksen, preset'ler,
@@ -906,6 +925,13 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **FAZ D kod tarafı bitti** (D1/D4/D6/D10/D16/D17 göz/cihaz onayı bekliyor). Onboarding,
+  splash, Pro rozeti, ikon seti, erişilebilirlik ve performans geçişi yapıldı.
+  6 widget testi eklendi (onboarding yönlendirmesi, iki tema, 360dp taşma, RTL).
+  **Test altyapısı notu:** `rootBundle` her varlık için *future*'ı önbelleğe alıyor ve
+  biten bir testin fake-async zone'unda oluşan future bir daha tamamlanmıyor; bu yüzden
+  `pumpApp` her testte `rootBundle.clear()` çağırıyor. Aksi hâlde ilkinden sonraki her
+  testte `Localizations` boş ağaç çiziyor. `flutter test` 90/90.
 * **D1–D8, D12–D14, E5 tamam** (D1/D4/D6 cihaz/göz doğrulaması bekliyor). Tema
   `ThemeExtension` ile yeniden yazıldı; ana ekran, preset, zamanlayıcı, ayarlar, dil,
   hakkında ve bilgi merkezi ekranları baştan yazıldı. Eski `kelvin_dial`,
@@ -1007,7 +1033,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `D9` (ikon seti) → `D10` (splash) → `D15`–`D18`.
+**Sıradaki madde:** `E3` (kalan 69 dil) → `F1`–`F9` (lisans, README, CI, teslim).
 
 > **Sıra değişikliği (Bölüm 1.3):** D4 (tema) D1'den önce yapıldı. Sabit renkler
 > temizlenmeden yeni ekran yazmak, her ekranı iki kez yazmak olurdu.

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Splash colours.
+
+    Kept in sync with AppTheme's scaffold backgrounds so the hand-off from the
+    system splash to the first Flutter frame is invisible. A splash that flashes
+    white before a dark app is exactly the jolt this app exists to avoid.
+-->
+<resources>
+    <color name="splash_background">#F8F9FA</color>
+    <color name="brand_blue">#2F6FEB</color>
+    <color name="brand_orange">#FF9E43</color>
+</resources>

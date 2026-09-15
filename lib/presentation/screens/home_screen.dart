@@ -81,8 +81,10 @@ class HomeScreen extends ConsumerWidget {
                         : (loc?.translate('filter_inactive') ?? 'Filter off'),
                     onTap: () => _toggle(context, ref),
                   ),
-                  const Spacer(),
-                  _MelanopicBadge(config: config),
+                  const SizedBox(width: 12),
+                  // Flexible, not Spacer: the caption is a full sentence and in
+                  // a longer language it will not fit beside the button.
+                  Expanded(child: _MelanopicBadge(config: config)),
                 ],
               ),
             ),
@@ -300,6 +302,9 @@ class _MelanopicBadge extends StatelessWidget {
         Text(
           loc?.translate('melanopic_reduction', args: {'percent': '$percent'}) ??
               '$percent% less circadian light',
+          textAlign: TextAlign.end,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: context.texts.bodySmall?.copyWith(
             color: context.colours.onSurfaceVariant,
           ),
