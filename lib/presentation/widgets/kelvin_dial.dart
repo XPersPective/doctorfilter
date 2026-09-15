@@ -19,17 +19,19 @@ class KelvinDial extends StatelessWidget {
   Widget build(BuildContext context) {
     final rgb = KelvinEngine.kelvinToRgb(kelvin);
     final filterColor = Color.fromARGB(255, rgb.r, rgb.g, rgb.b);
-    final safetyLevel = KelvinEngine.getSafetyLevel(kelvin);
-    final blockedPercent = KelvinEngine.calculateBlueLightBlockedPercentage(
-      kelvin,
-      opacityPercent,
-    ).round();
+    final safetyLevel = KelvinEngine.safetyLevel(kelvin);
+    final blockedPercent = (KelvinEngine.blueLightReduction(
+              tintKelvin: kelvin,
+              compositeAlpha: opacityPercent / 100.0,
+            ) *
+            100)
+        .round();
 
     final (safetyText, safetyColor) = switch (safetyLevel) {
-      MelatoninSafetyLevel.safeBedtime => ('Bedtime Safe', AppTheme.safetySafe),
-      MelatoninSafetyLevel.relaxingEvening => ('Evening Relaxing', AppTheme.safetyRelaxed),
-      MelatoninSafetyLevel.balancedDaylight => ('Balanced Daylight', AppTheme.safetyModerate),
-      MelatoninSafetyLevel.highBlueLightRisk => ('High Blue Light Risk', AppTheme.safetyRisk),
+      MelatoninSafetyLevel.sleepFriendly => ('Bedtime Safe', AppTheme.safetySafe),
+      MelatoninSafetyLevel.evening => ('Evening Relaxing', AppTheme.safetyRelaxed),
+      MelatoninSafetyLevel.balanced => ('Balanced Daylight', AppTheme.safetyModerate),
+      MelatoninSafetyLevel.blueLightRisk => ('High Blue Light Risk', AppTheme.safetyRisk),
     };
 
     final loc = AppLocalizations.of(context);
@@ -113,7 +115,7 @@ class KelvinDial extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               gradient: const LinearGradient(
                 colors: [
-                  Color(0xFFFF3E00), // Deep Candle ~1000K
+                  Color(0xFFFF3E00), // Candle flame ~1700K
                   Color(0xFFFF8B14), // Bedtime ~2000K
                   Color(0xFFFFC062), // Incandescent ~3200K
                   Color(0xFFFFE3B0), // Fluorescent ~4500K
@@ -132,10 +134,12 @@ class KelvinDial extends StatelessWidget {
               overlayColor: filterColor.withValues(alpha: 0.2),
             ),
             child: Slider(
-              value: kelvin.toDouble(),
-              min: 1000,
-              max: 6500,
-              divisions: 55,
+              value: kelvin
+                  .clamp(KelvinEngine.minKelvin, KelvinEngine.maxKelvin)
+                  .toDouble(),
+              min: KelvinEngine.minKelvin.toDouble(),
+              max: KelvinEngine.maxKelvin.toDouble(),
+              divisions: (KelvinEngine.maxKelvin - KelvinEngine.minKelvin) ~/ 100,
               onChanged: (val) => onChanged(val.round()),
             ),
           ),
