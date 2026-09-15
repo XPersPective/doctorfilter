@@ -2,17 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class LanguageItem {
-  const LanguageItem({
-    required this.code,
-    required this.englishName,
-    required this.nativeName,
-  });
+import 'supported_languages.dart';
 
-  final String code;
-  final String englishName;
-  final String nativeName;
-}
+export 'supported_languages.dart' show LanguageItem, kSupportedLanguages;
 
 class AppLocalizations {
   AppLocalizations(this.locale);
@@ -103,41 +95,8 @@ class AppLocalizations {
     'search_language': 'Search languages...',
   };
 
-  /// Supported 71 languages matching assets/Localizations/*.json
-  static const List<LanguageItem> supportedLanguages = [
-    LanguageItem(code: 'en', englishName: 'English', nativeName: 'English'),
-    LanguageItem(code: 'tr', englishName: 'Turkish', nativeName: 'Türkçe'),
-    LanguageItem(code: 'de', englishName: 'German', nativeName: 'Deutsch'),
-    LanguageItem(code: 'fr', englishName: 'French', nativeName: 'Français'),
-    LanguageItem(code: 'es', englishName: 'Spanish', nativeName: 'Español'),
-    LanguageItem(code: 'it', englishName: 'Italian', nativeName: 'Italiano'),
-    LanguageItem(code: 'pt', englishName: 'Portuguese', nativeName: 'Português'),
-    LanguageItem(code: 'ru', englishName: 'Russian', nativeName: 'Русский'),
-    LanguageItem(code: 'ja', englishName: 'Japanese', nativeName: '日本語'),
-    LanguageItem(code: 'ko', englishName: 'Korean', nativeName: '한국어'),
-    LanguageItem(code: 'zh', englishName: 'Chinese', nativeName: '中文'),
-    LanguageItem(code: 'ar', englishName: 'Arabic', nativeName: 'العربية'),
-    LanguageItem(code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी'),
-    LanguageItem(code: 'nl', englishName: 'Dutch', nativeName: 'Nederlands'),
-    LanguageItem(code: 'pl', englishName: 'Polish', nativeName: 'Polski'),
-    LanguageItem(code: 'sv', englishName: 'Swedish', nativeName: 'Svenska'),
-    LanguageItem(code: 'da', englishName: 'Danish', nativeName: 'Dansk'),
-    LanguageItem(code: 'fi', englishName: 'Finnish', nativeName: 'Suomi'),
-    LanguageItem(code: 'az', englishName: 'Azerbaijani', nativeName: 'Azərbaycan'),
-    LanguageItem(code: 'id', englishName: 'Indonesian', nativeName: 'Bahasa Indonesia'),
-    LanguageItem(code: 'ms', englishName: 'Malay', nativeName: 'Bahasa Melayu'),
-    LanguageItem(code: 'vi', englishName: 'Vietnamese', nativeName: 'Tiếng Việt'),
-    LanguageItem(code: 'th', englishName: 'Thai', nativeName: 'ไทย'),
-    LanguageItem(code: 'uk', englishName: 'Ukrainian', nativeName: 'Українська'),
-    LanguageItem(code: 'el', englishName: 'Greek', nativeName: 'Ελληνικά'),
-    LanguageItem(code: 'he', englishName: 'Hebrew', nativeName: 'עברית'),
-    LanguageItem(code: 'hu', englishName: 'Hungarian', nativeName: 'Magyar'),
-    LanguageItem(code: 'cs', englishName: 'Czech', nativeName: 'Čeština'),
-    LanguageItem(code: 'ro', englishName: 'Romanian', nativeName: 'Română'),
-    LanguageItem(code: 'bg', englishName: 'Bulgarian', nativeName: 'Български'),
-    LanguageItem(code: 'fa', englishName: 'Persian', nativeName: 'فارسی'),
-    LanguageItem(code: 'ur', englishName: 'Urdu', nativeName: 'اردو'),
-  ];
+  /// Languages with a translation file. Defined in `supported_languages.dart`.
+  static const List<LanguageItem> supportedLanguages = kSupportedLanguages;
 
   static List<Locale> get supportedLocales =>
       supportedLanguages.map((lang) => Locale(lang.code)).toList();
