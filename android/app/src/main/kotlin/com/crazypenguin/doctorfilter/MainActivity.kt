@@ -102,6 +102,16 @@ class MainActivity : FlutterActivity() {
 
                 "getUsageMinutes" -> result.success(UsageLog.read(this))
 
+                "setBreakReminder" -> {
+                    BreakReminderReceiver.update(
+                        context = this,
+                        isEnabled = call.argument<Boolean>("isEnabled") ?: false,
+                        intervalMinutes = call.argument<Int>("intervalMinutes")
+                            ?: BreakReminderReceiver.DEFAULT_INTERVAL_MINUTES
+                    )
+                    result.success(true)
+                }
+
                 "isBatteryOptimised" -> result.success(isBatteryOptimised())
                 "openBatterySettings" -> {
                     openBatterySettings()

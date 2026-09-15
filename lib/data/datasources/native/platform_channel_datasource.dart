@@ -104,6 +104,16 @@ class PlatformChannelDataSource {
     }
   }
 
+  /// Arms or disarms the 20-20-20 break reminder.
+  Future<bool> setBreakReminder({
+    required bool isEnabled,
+    required int intervalMinutes,
+  }) =>
+      _invokeBool('setBreakReminder', {
+        'isEnabled': isEnabled,
+        'intervalMinutes': intervalMinutes,
+      });
+
   /// Whether the OS may still doze this app, killing the filter overnight.
   Future<bool> isBatteryOptimised() => _invokeBool('isBatteryOptimised');
 

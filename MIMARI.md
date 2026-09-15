@@ -920,7 +920,18 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       Ek alarm yok: ön plan servisi zaten ayakta. Elle yapılan ayarlar süzülmez —
       kullanıcının çektiği kaydırıcının gecikmeli gelmesi gecikme gibi hissedilirdi.
       Kapanışta da aynı süreyle söner.
-- [ ] **H3.** 20-20-20 göz molası hatırlatıcısı (ücretsizde sabit, Pro'da özelleştirilebilir).
+- [x] **H3.** 20-20-20 göz molası hatırlatıcısı. `BreakReminderReceiver`, yerel
+      **kesin olmayan** tekrarlı alarm (uykudaki telefonu saniyesi saniyesine uyandırmak
+      değdiğinden fazla pil harcar; kimse hatırlatmanın 21. dakikada geldiğini fark
+      etmez). Yalnızca **filtre çalışırken** bildirir — hatırlatıcı uygulamayı kullanmanın
+      bir parçası, çekmecedeki telefona yapılacak bir şey değil. Sessiz kanal, iki
+      dakika sonra kendini siler. Yeniden başlatmada yeniden kurulur.
+      **Ücretsizde 20 dk sabit, Pro'da 10/20/30/45/60.** Kanıtın işaret ettiği sayı 20
+      olduğu için ücretsiz sürüm *çalışan* sürümdür; ödeme farklı bir sayıyı satın alır,
+      çalışan bir şeyi değil.
+      **Bilimsel temel:** mekanizması olan tek göz yorgunluğu tavsiyesi — sürekli yakın
+      odak ve düşen göz kırpma hızı; mavi ışık değil. Bölüm 5.8 gereği metin bir *konfor*
+      önlemi olarak yazıldı, tedavi olarak değil.
 - [x] **H4.** Yerel kullanım istatistiği. `UsageLog` **yerel tarafta** tutar: filtre
       ömrünün çoğunu ayakta bir Flutter motoru olmadan geçirir (zamanlayıcı başlatır,
       bildirimden durdurulur). Gün başına dakika, son 7 gün; hiçbir tanımlayıcı yok,
@@ -1110,7 +1121,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H3, H8–H11, H13–H15. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H8–H11, H13–H15. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.

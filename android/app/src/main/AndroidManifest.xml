@@ -70,6 +70,12 @@
                 android:value="Screen filter overlay to reduce blue light and eye strain" />
         </service>
 
+        <!-- 20-20-20 eye break reminder -->
+        <receiver
+            android:name=".BreakReminderReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
         <!-- Receiver for Schedule Timers and Boot Restore -->
         <receiver
             android:name=".ScheduleReceiver"
