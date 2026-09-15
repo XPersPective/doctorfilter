@@ -217,3 +217,8 @@ $RECYCLE.BIN/
 .svn/
 .swiftpm/
 migrate_working_dir/
+
+# Local store publishing packages and machine-specific paths
+/.publishing/
+/AppPublishing/
+/publishing.local.json
