@@ -1,203 +1,381 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
-import 'package:doctorfilter/core/theme/app_theme.dart';
+import 'package:doctorfilter/domain/repositories/i_purchase_repository.dart';
+import 'package:doctorfilter/presentation/providers/core_providers.dart';
+import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 
-class PaywallScreen extends StatelessWidget {
+/// The Pro upgrade screen.
+///
+/// Sells one thing, once. No subscription, no tiers, no countdown timer, no
+/// fake discount — a screen-comfort tool that pressures people at bedtime has
+/// the wrong idea of what it is for.
+class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key});
+
+  @override
+  ConsumerState<PaywallScreen> createState() => _PaywallScreenState();
+}
+
+class _PaywallScreenState extends ConsumerState<PaywallScreen> {
+  bool _busy = false;
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
-
-    final features = [
-      (
-        icon: Icons.block_rounded,
-        title: '100% Ad-Free Experience',
-        desc: 'Zero interruptions, zero banners, clean view.',
-      ),
-      (
-        icon: Icons.tune_rounded,
-        title: 'Unlimited Custom Presets',
-        desc: 'Save and name infinite custom RGB & Kelvin profiles.',
-      ),
-      (
-        icon: Icons.wb_twilight_rounded,
-        title: 'Smart Sunset/Sunrise Automation',
-        desc: 'Synchronizes smoothly with solar circadian cycles.',
-      ),
-      (
-        icon: Icons.bolt_rounded,
-        title: 'Ultra Sub-Zero Engine',
-        desc: 'Fine-tuned 0.5% increment density controls.',
-      ),
-    ];
+    final theme = Theme.of(context);
+    final isPro = ref.watch(isProProvider);
+    final store = ref.watch(purchaseRepositoryProvider);
+    final offer = ref.watch(proOfferProvider);
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close_rounded),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () => Navigator.pop(context),
         ),
+        title: Text(loc?.translate('pro_title') ?? 'DoctorFilter Pro'),
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            // Header
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppTheme.amberPrimary.withValues(alpha: 0.15),
-                  border: Border.all(color: AppTheme.amberPrimary, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.amberPrimary.withValues(alpha: 0.3),
-                      blurRadius: 24,
-                      spreadRadius: 4,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.workspace_premium_rounded,
-                  color: AppTheme.amberPrimary,
-                  size: 52,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: Text(
-                loc?.translate('pro_title') ?? 'DoctorFilter Pro',
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: Text(
-                loc?.translate('pro_subtitle') ??
-                    'Lifetime eye protection without ads and with unlimited custom profiles',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade400, height: 1.4),
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // Feature List
-            ...features.map(
-              (f) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppTheme.deepNightCard,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppTheme.deepNightBorder),
-                      ),
-                      child: Icon(f.icon, color: AppTheme.amberPrimary, size: 22),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            f.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            f.desc,
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
+            _Header(isPro: isPro),
             const SizedBox(height: 24),
-
-            // Plan Card (Lifetime)
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: AppTheme.amberPrimary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.amberPrimary, width: 2),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Lifetime Access',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Pay once, enjoy forever',
-                        style: TextStyle(fontSize: 12, color: AppTheme.amberSecondary),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    'PRO',
-                    style: TextStyle(
-                      fontFamily: 'Orbitron',
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.amberPrimary,
-                    ),
-                  ),
-                ],
+            ..._benefits(loc).map(
+              (benefit) => _BenefitTile(
+                icon: benefit.icon,
+                title: benefit.title,
+                detail: benefit.detail,
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Upgrade Button
-            ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('DoctorFilter Pro activated!')),
-                );
-                Navigator.pop(context);
-              },
-              child: Text(
-                loc?.translate('pro_upgrade_btn') ?? 'Unlock Lifetime Access',
+            if (isPro)
+              _OwnedNotice(loc: loc)
+            else if (!store.isAvailable)
+              _UnavailableNotice(loc: loc)
+            else
+              _PurchaseSection(
+                loc: loc,
+                busy: _busy,
+                price: offer.maybeWhen(
+                  data: (value) => value?.formattedPrice,
+                  orElse: () => null,
+                ),
+                onBuy: _buy,
+                onRestore: _restore,
+              ),
+            const SizedBox(height: 16),
+            Text(
+              loc?.translate('pro_no_subscription_note') ??
+                  'One payment, yours forever. DoctorFilter has no subscriptions '
+                      'and no account — your settings never leave this device.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
 
-            const SizedBox(height: 12),
+  List<({IconData icon, String title, String detail})> _benefits(
+    AppLocalizations? loc,
+  ) =>
+      [
+        (
+          icon: Icons.block_rounded,
+          title: loc?.translate('pro_benefit_no_ads_title') ?? 'No ads at all',
+          detail: loc?.translate('pro_benefit_no_ads_detail') ??
+              'Every ad disappears, including the banner.',
+        ),
+        (
+          icon: Icons.notifications_active_rounded,
+          title: loc?.translate('pro_benefit_notification_title') ??
+              'Full control from the notification',
+          detail: loc?.translate('pro_benefit_notification_detail') ??
+              'Switch between every preset and adjust all three axes without '
+                  'opening the app.',
+        ),
+        (
+          icon: Icons.tune_rounded,
+          title: loc?.translate('pro_benefit_presets_title') ??
+              'Unlimited custom presets',
+          detail: loc?.translate('pro_benefit_presets_detail') ??
+              'Build and reorder as many profiles as you like.',
+        ),
+        (
+          icon: Icons.schedule_rounded,
+          title: loc?.translate('pro_benefit_schedule_title') ??
+              'Multiple schedules',
+          detail: loc?.translate('pro_benefit_schedule_detail') ??
+              'Different filters for weeknights, weekends and shift work.',
+        ),
+      ];
 
-            // Restore Purchases
-            Center(
-              child: TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Purchases restored successfully.')),
-                  );
-                },
-                child: Text(
-                  loc?.translate('pro_restore_btn') ?? 'Restore Purchases',
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+  Future<void> _buy() async {
+    setState(() => _busy = true);
+    final result = await ref.read(purchaseRepositoryProvider).buyLifetime();
+    if (!mounted) return;
+    setState(() => _busy = false);
+
+    result.fold(
+      (_) => _say('error_store_unavailable', 'The store is not reachable right now.'),
+      (outcome) => _handle(outcome),
+    );
+  }
+
+  Future<void> _restore() async {
+    setState(() => _busy = true);
+    final result = await ref.read(purchaseRepositoryProvider).restorePurchases();
+    if (!mounted) return;
+    setState(() => _busy = false);
+
+    result.fold(
+      (_) => _say('error_store_unavailable', 'The store is not reachable right now.'),
+      (outcome) => _handle(outcome),
+    );
+  }
+
+  void _handle(PurchaseOutcome outcome) {
+    switch (outcome) {
+      case PurchaseOutcome.purchased:
+      case PurchaseOutcome.restored:
+        // Entitlement arrives through the store stream; this only closes the
+        // screen once it has.
+        ref.read(proStatusProvider.notifier).grantLifetime();
+        if (mounted) Navigator.pop(context);
+
+      // Backing out is a choice, not a failure. Saying anything here would be
+      // nagging someone who just said no.
+      case PurchaseOutcome.cancelled:
+        break;
+
+      case PurchaseOutcome.pending:
+        _say('purchase_pending',
+            'Your purchase is being processed. Pro unlocks as soon as it clears.');
+
+      case PurchaseOutcome.nothingToRestore:
+        _say('purchase_nothing_to_restore',
+            'No previous purchase was found on this account.');
+
+      case PurchaseOutcome.unavailable:
+        _say('error_store_unavailable', 'The store is not reachable right now.');
+    }
+  }
+
+  void _say(String key, String fallback) {
+    if (!mounted) return;
+    final loc = AppLocalizations.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(loc?.translate(key) ?? fallback)),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({required this.isPro});
+
+  final bool isPro;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+
+    return Column(
+      children: [
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: theme.colorScheme.primaryContainer,
+          ),
+          child: Icon(
+            Icons.workspace_premium_rounded,
+            size: 38,
+            color: theme.colorScheme.onPrimaryContainer,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          isPro
+              ? (loc?.translate('pro_owned_title') ?? 'You have Pro')
+              : (loc?.translate('pro_headline') ?? 'Unlock everything, once'),
+          textAlign: TextAlign.center,
+          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+}
+
+class _BenefitTile extends StatelessWidget {
+  const _BenefitTile({
+    required this.icon,
+    required this.title,
+    required this.detail,
+  });
+
+  final IconData icon;
+  final String title;
+  final String detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: theme.colorScheme.primary),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  detail,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PurchaseSection extends StatelessWidget {
+  const _PurchaseSection({
+    required this.loc,
+    required this.busy,
+    required this.price,
+    required this.onBuy,
+    required this.onRestore,
+  });
+
+  final AppLocalizations? loc;
+  final bool busy;
+  final String? price;
+  final Future<void> Function() onBuy;
+  final Future<void> Function() onRestore;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      children: [
+        FilledButton(
+          onPressed: busy ? null : onBuy,
+          style: FilledButton.styleFrom(
+            minimumSize: const Size.fromHeight(52),
+          ),
+          child: busy
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(strokeWidth: 2.5),
+                )
+              // The price comes straight from the store, already in the user's
+              // currency. While it loads the button still says what it does.
+              : Text(
+                  price == null
+                      ? (loc?.translate('pro_upgrade_btn') ?? 'Get Pro')
+                      : '${loc?.translate('pro_upgrade_btn') ?? 'Get Pro'} · $price',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+        ),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: busy ? null : onRestore,
+          child: Text(loc?.translate('pro_restore_btn') ?? 'Restore purchase'),
+        ),
+        Text(
+          loc?.translate('pro_payment_note') ??
+              'Paid through your app store, with the payment method already on '
+                  'your account.',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OwnedNotice extends StatelessWidget {
+  const _OwnedNotice({required this.loc});
+
+  final AppLocalizations? loc;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      margin: EdgeInsets.zero,
+      color: theme.colorScheme.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(Icons.check_circle_rounded, color: theme.colorScheme.onSecondaryContainer),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                loc?.translate('pro_owned_detail') ??
+                    'Everything is unlocked. Thank you for supporting the app.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSecondaryContainer,
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _UnavailableNotice extends StatelessWidget {
+  const _UnavailableNotice({required this.loc});
+
+  final AppLocalizations? loc;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          loc?.translate('pro_unavailable_platform') ??
+              'Pro is not sold on this platform yet.',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ),
     );
