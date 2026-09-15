@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
+import 'package:doctorfilter/domain/entities/ad_policy.dart';
 import 'package:doctorfilter/presentation/ads/banner_ad_widget.dart';
 import 'package:doctorfilter/presentation/providers/ad_providers.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
@@ -21,6 +22,16 @@ import 'settings_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
+
+  /// Shows an interstitial only if the policy allows one, and only records it
+  /// as shown if one actually appeared.
+  static Future<void> _maybeShowAd(WidgetRef ref, AdMoment moment) async {
+    final policy = ref.read(adPolicyProvider.notifier);
+    if (!policy.mayShowInterstitial(moment)) return;
+
+    final shown = await ref.read(interstitialAdManagerProvider).show();
+    if (shown) policy.recordInterstitialShown();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -109,12 +120,12 @@ class HomeScreen extends ConsumerWidget {
                 onTap: () async {
                   final wasEnabled = filterState.config.isEnabled;
                   await filterNotifier.toggle();
-                  // Natural pause point for an occasional interstitial ad
-                  if (wasEnabled &&
-                      !ref.read(filterProvider).config.isEnabled) {
-                    ref
-                        .read(interstitialAdManagerProvider)
-                        .maybeShowOnFilterDisabled();
+                  if (!context.mounted) return;
+
+                  // Turning the filter off is the user saying they are done: the
+                  // one moment an ad interrupts nothing.
+                  if (wasEnabled && !ref.read(filterProvider).config.isEnabled) {
+                    await _maybeShowAd(ref, AdMoment.filterDisabled);
                   }
                 },
               ),
@@ -169,7 +180,10 @@ class HomeScreen extends ConsumerWidget {
             PresetCarousel(
               presets: presetState.presets,
               activePresetId: filterState.config.activePresetId,
-              onPresetSelected: presetNotifier.select,
+              onPresetSelected: (id) {
+                ref.read(adPolicyProvider.notifier).recordPresetChange();
+                presetNotifier.select(id);
+              },
             ),
 
             const SizedBox(height: 20),

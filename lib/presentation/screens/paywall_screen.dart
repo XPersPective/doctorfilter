@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/domain/repositories/i_purchase_repository.dart';
+import 'package:doctorfilter/domain/entities/ad_policy.dart';
+import 'package:doctorfilter/presentation/providers/ad_providers.dart';
 import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 
@@ -66,6 +68,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 onBuy: _buy,
                 onRestore: _restore,
               ),
+            if (!isPro && ref.watch(adPolicyProvider.notifier).mayWatchRewarded)
+              _TryProSection(loc: loc, busy: _busy, onWatch: _watchForPass),
             const SizedBox(height: 16),
             Text(
               loc?.translate('pro_no_subscription_note') ??
@@ -165,6 +169,34 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       case PurchaseOutcome.unavailable:
         _say('error_store_unavailable', 'The store is not reachable right now.');
     }
+  }
+
+  /// Trades one ad for a day of Pro.
+  ///
+  /// Entirely opt-in, from a button that states the deal plainly. The reward is
+  /// only granted if the ad was actually watched to the end — AdMob requires
+  /// that, and granting it to someone who closed the ad early would make the
+  /// button a lie.
+  Future<void> _watchForPass() async {
+    final policy = ref.read(adPolicyProvider.notifier);
+    if (!policy.mayWatchRewarded) return;
+
+    setState(() => _busy = true);
+    final ads = ref.read(rewardedAdManagerProvider);
+    await ads.preload();
+    final earned = await ads.showForReward();
+    if (!mounted) return;
+    setState(() => _busy = false);
+
+    if (!earned) {
+      _say('reward_not_earned', 'The ad was not finished, so no pass was given.');
+      return;
+    }
+
+    await policy.recordRewardedWatched();
+    if (!mounted) return;
+    _say('reward_granted', 'Pro is unlocked for 24 hours. Enjoy.');
+    Navigator.pop(context);
   }
 
   void _say(String key, String fallback) {
@@ -318,6 +350,46 @@ class _PurchaseSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// The try-before-you-buy offer.
+///
+/// Sits below the purchase button on purpose: buying is the main path, and this
+/// is for the user who is not ready to decide. Hidden once the daily cap is
+/// reached rather than shown greyed out — an offer that cannot be taken is just
+/// clutter on a screen that is asking for money.
+class _TryProSection extends StatelessWidget {
+  const _TryProSection({
+    required this.loc,
+    required this.busy,
+    required this.onWatch,
+  });
+
+  final AppLocalizations? loc;
+  final bool busy;
+  final Future<void> Function() onWatch;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final hours = '${AdPolicy.rewardedPassDuration.inHours}';
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: OutlinedButton.icon(
+        onPressed: busy ? null : onWatch,
+        icon: const Icon(Icons.play_circle_outline_rounded),
+        label: Text(
+          loc?.translate('pro_try_with_ad', args: {'hours': hours}) ??
+              'Watch an ad for $hours hours of Pro',
+        ),
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size.fromHeight(48),
+          foregroundColor: theme.colorScheme.onSurface,
+        ),
+      ),
     );
   }
 }

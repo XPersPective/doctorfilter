@@ -4,13 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:doctorfilter/core/config/env_config.dart';
 
-/// Loads and shows full-screen ads.
+/// Loads and shows rewarded ads — the optional trade of attention for a
+/// temporary Pro pass.
 ///
-/// Knows nothing about *when* one is allowed — that is [AdPolicy]'s job, and the
-/// caller has already asked it. This class only deals with the SDK, so the rules
-/// stay testable without one.
-class InterstitialAdManager {
-  InterstitialAd? _ad;
+/// Never shown on its own initiative. The user asks for it, from a button that
+/// says exactly what they get; an ad that appears uninvited is not a reward.
+class RewardedAdManager {
+  RewardedAd? _ad;
   bool _isLoading = false;
 
   static bool get _isSupported => Platform.isAndroid || Platform.isIOS;
@@ -21,10 +21,10 @@ class InterstitialAdManager {
     if (!_isSupported || _ad != null || _isLoading) return;
     _isLoading = true;
 
-    await InterstitialAd.load(
-      adUnitId: EnvConfig.adMobInterstitialUnitId,
+    await RewardedAd.load(
+      adUnitId: EnvConfig.adMobRewardedUnitId,
       request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           _ad = ad;
           _isLoading = false;
@@ -33,29 +33,29 @@ class InterstitialAdManager {
           _ad = null;
           _isLoading = false;
           if (kDebugMode) {
-            debugPrint('[Ads] Interstitial failed to load: ${error.message}');
+            debugPrint('[Ads] Rewarded failed to load: ${error.message}');
           }
         },
       ),
     );
   }
 
-  /// Shows a preloaded ad, returning whether one actually appeared.
+  /// Shows the ad and reports whether the user earned the reward.
   ///
-  /// The answer matters: the caller only marks the user's ad budget as spent
-  /// when an ad really showed, so a failed load does not quietly cost them their
-  /// next eligible slot.
-  Future<bool> show() async {
+  /// False when they closed it early. The reward is for watching, and quietly
+  /// granting it anyway would breach AdMob's terms as well as being a lie about
+  /// what the button said.
+  Future<bool> showForReward() async {
     if (!_isSupported) return false;
 
     final ad = _ad;
     _ad = null;
     if (ad == null) {
-      // Nothing ready. Fetch one for next time rather than blocking the user.
       preload();
       return false;
     }
 
+    var earned = false;
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
         ad.dispose();
@@ -67,8 +67,8 @@ class InterstitialAdManager {
       },
     );
 
-    await ad.show();
-    return true;
+    await ad.show(onUserEarnedReward: (_, _) => earned = true);
+    return earned;
   }
 
   void dispose() {

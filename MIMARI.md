@@ -734,16 +734,31 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       cihazda tamamlanan satın alma). — **cihazda doğrulanmalı**
       ⚠️ `legacyIds` şu an tahmini bir değer içeriyor; Play Console'daki gerçek eski
       ürün kimliği ile **doğrulanmalı**.
-- [ ] **C5.** Reklam politikası motoru: 3 gün / 5 oturum dokunulmazlık, oturum tavanı,
-      minimum aralık, doğal durak tetikleyicileri.
-- [ ] 🔴 **C6.** UMP/GDPR onay akışı + iOS ATT izni; onay alınmadan reklam yüklenmez.
-- [ ] 🔴 **C7.** Ödüllü reklam → 24 saatlik Pro geçişi (günde 2 sınırı).
+- [x] **C5.** `AdPolicy` **saf ve test edilebilir** bir domain nesnesi: 3 gün **ve** 5
+      oturum dokunulmazlığı (ikisi birden, "veya" değil — haftada bir açan kullanıcı da
+      aynı nefes payını hak ediyor), oturumda 1 tavanı, gösterimler arası 4 dk (uygulamayı
+      açıp kapatmak reklam makinesine dönüşmesin), doğal durak tetikleyicileri
+      (filtre kapatma / preset ekranından çıkış / 4+ preset gezinmesi). Reklam SDK'sı
+      olmadan 16 testle doğrulandı. Gösterim **ancak reklam gerçekten göründüyse**
+      kaydediliyor; yüklenemeyen reklam kullanıcının sırasını yakmıyor.
+- [~] 🔴 **C6.** `AdConsent`: UMP (AB/İngiltere) + iOS ATT. Başlatma sırası `main.dart`'ta
+      sabitlendi: **önce onay, sonra `MobileAds.initialize()`** — onay çözülmeden reklam
+      istemek AdMob politikasını ihlal eder ve Google uygulamaya reklam servisini
+      tamamen kesebilir. Onay hatası uygulamayı düşürmüyor, yalnızca kişiselleştirilmemiş
+      reklama düşürüyor. — **AB/İngiltere VPN'i ile cihazda doğrulanmalı**
+- [~] 🔴 **C7.** Ödüllü reklam → 24 saatlik Pro geçişi, günde 2. Yalnızca paywall'da,
+      yalnızca kullanıcı isterse, ne kazanacağını yazan bir düğmeyle. Ödül **sonuna kadar
+      izlenmezse verilmiyor** (AdMob şartı ve düğmenin sözü). Günlük hak bitince düğme
+      gizleniyor, soluk gösterilmiyor. — **cihazda doğrulanmalı**
 - [~] **C8.** Paywall yeniden yazıldı: dört gerçek fayda, mağazadan gelen fiyat,
       "tek ödeme, abonelik yok" vurgusu, geri yükleme düğmesi, satın alınmışsa teşekkür
       kartı, mağazasız platformda açıklama. Sayaç/sahte indirim yok — yatma saatinde
       kullanıcıyı sıkıştıran bir ekran konfor aracının ne işe yaradığını yanlış anlamış
       olurdu. Tema token'ları kullanıldı (sabit renk yok). — **iki temada gözle bakılmalı**
-- [ ] **C9.** Pro'da reklam kaldırılınca düzende boşluk/bozulma olmaması.
+- [x] **C9.** `BannerAdWidget` göstermediği her durumda (yükleniyor, desteklenmeyen
+      platform, Pro) `SizedBox.shrink()` döndürüyor ve `bottomNavigationBar` içindeki
+      `Column` daralıyor — "düzen zıplamasın" diye boş şerit ayırmak, ödeme yapmış her
+      kullanıcıyı eskiden reklam gösterilen bir boşluğa baktırırdı.
 
 ## FAZ D — Arayüz ve deneyim
 - [ ] 🔴 **D1.** Ana ekran yeniden düzeni: preset'ler ızgara (satır başına ~4), güç düğmesi
@@ -869,6 +884,10 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **FAZ C kod tarafı bitti.** C5 (reklam politikası) ve C9 testli; C2/C4/C6/C7/C8
+  mağaza/cihaz doğrulaması bekliyor. `EnvConfig`'ten ölü alanlar (RevenueCat anahtarları,
+  Sentry DSN, `apiBaseUrl`) **silindi** — RevenueCat terk edilmişti, analitik/crash SDK
+  politika gereği yok, backend yok. `flutter test` 79/79.
 * **C1, C3 tamam; C2, C4, C8 kod tarafı tamam** (mağaza testi bekliyor). `in_app_purchase`
   eklendi, Pro tek noktadan okunuyor, paywall yeniden yazıldı. `flutter test` 63/63.
 * **FAZ B kod tarafı bitti** (B1–B9 hepsi cihaz onayı bekliyor, Bölüm 12.1'de adımları var).
@@ -897,6 +916,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 3. "Karart"a bas → ekran belirgin biçimde koyulaşmalı, bildirim metnindeki
    "Ekstra karartma %" değeri artmalı.
 4. "Sonraki"ye bas → başka bir preset'e geçmeli, uygulamayı açtığında o preset seçili olmalı.
+
+**C6/C7 — Onay ve ödüllü reklam**
+1. AB/İngiltere VPN'i ile temiz kurulum → ilk açılışta **UMP onay formu** çıkmalı,
+   form kapanmadan hiçbir reklam yüklenmemeli.
+2. iOS'ta (G1 sonrası) ATT izni sorulmalı.
+3. Paywall'da "reklam izle, 24 saat Pro" düğmesi görünmeli; izle → Pro açılmalı.
+4. Reklamı yarıda kapat → Pro **verilmemeli**, açıklayıcı mesaj çıkmalı.
+5. Günde 2 kez izledikten sonra düğme **kaybolmalı**.
+6. Pro alındıktan sonra: banner kaybolmalı, alt gezinme çubuğunda **boşluk kalmamalı**.
 
 **C2/C4/C8 — Satın alma** (Play Console'da lisanslı test hesabı gerekir)
 1. Play Console'da `doctorfilter_pro_lifetime` ürününü oluştur ve etkinleştir.
@@ -951,7 +979,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `C5` (reklam politikası motoru).
+**Sıradaki madde:** `D1` (ana ekran yeniden düzeni). FAZ C kod tarafı bitti.
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar
