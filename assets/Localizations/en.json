@@ -156,5 +156,7 @@
   "schedule_transition": "Fade in and out over",
   "schedule_transition_desc": "The filter arrives gradually instead of all at once.",
   "schedule_transition_off": "Instant",
-  "duration_minutes": "{minutes} min"
+  "duration_minutes": "{minutes} min",
+  "settings_theme_follows": "Go dark with the filter",
+  "settings_theme_follows_desc": "A bright app on a dimmed screen undoes the filter."
 }

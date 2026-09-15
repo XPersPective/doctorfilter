@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core_providers.dart';
+import 'filter_provider.dart';
 
 /// Light / dark preference.
 ///
@@ -54,6 +55,39 @@ final amoledProvider = StateNotifierProvider<AmoledNotifier, bool>((ref) {
 /// The dark theme actually in use: AMOLED if the user asked for it.
 final darkThemeProvider = Provider<ThemeData>((ref) {
   return ref.watch(amoledProvider) ? AppTheme.amoledTheme : AppTheme.darkTheme;
+});
+
+/// Whether the app's own theme should go dark while the filter is running.
+///
+/// A bright white app on top of a warm dimmed screen is the one thing in the
+/// app that undoes what the filter just did.
+class ThemeFollowsFilterNotifier extends StateNotifier<bool> {
+  ThemeFollowsFilterNotifier(this._ref)
+      : super(_ref.read(preferencesDataSourceProvider).themeFollowsFilter());
+
+  final Ref _ref;
+
+  Future<void> toggle() async {
+    state = !state;
+    await _ref.read(preferencesDataSourceProvider).setThemeFollowsFilter(state);
+  }
+}
+
+final themeFollowsFilterProvider =
+    StateNotifierProvider<ThemeFollowsFilterNotifier, bool>((ref) {
+  return ThemeFollowsFilterNotifier(ref);
+});
+
+/// The theme mode actually in use.
+///
+/// The user's own choice, except while the filter is running and they have asked
+/// the app to follow it. Their stored preference is never overwritten — switch
+/// the filter off and light mode comes straight back.
+final effectiveThemeModeProvider = Provider<ThemeMode>((ref) {
+  final chosen = ref.watch(themeModeProvider);
+  if (chosen == ThemeMode.dark) return chosen;
+  if (!ref.watch(themeFollowsFilterProvider)) return chosen;
+  return ref.watch(filterConfigProvider).isEnabled ? ThemeMode.dark : chosen;
 });
 
 /// Selected language, or null to follow the device.

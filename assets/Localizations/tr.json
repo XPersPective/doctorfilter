@@ -156,5 +156,7 @@
   "schedule_transition": "Geçiş süresi",
   "schedule_transition_desc": "Filtre bir anda değil, yavaşça gelir.",
   "schedule_transition_off": "Anında",
-  "duration_minutes": "{minutes} dk"
+  "duration_minutes": "{minutes} dk",
+  "settings_theme_follows": "Filtreyle birlikte koyulaş",
+  "settings_theme_follows_desc": "Karartılmış ekranda parlak bir uygulama filtrenin yaptığını bozar."
 }
