@@ -630,16 +630,19 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       var oluş sebebi olan yatma saati aralığı. Yerine CIE 1960 UCS'de Planckian locus'a
       en yakın nokta araması (CCT'nin tanımı). Round-trip artık %2 içinde; %2 8-bit
       kuantizasyon tabanı, motor sınırı değil.*
-- [ ] **A1b.** **Veri göçü:** A2 `FilterConfig` şemasını değiştiriyor. Eski
-      SharedPreferences anahtarlarından (`df_filter_alpha`, `df_filter_brightness`, ...)
-      ve 1.x anahtarlarından yeni üç eksene **tek yönlü göç** yaz; şema sürümü tut.
-      Güncelleme alan kullanıcının ayarları **sıfırlanmamalıdır**. Göç testi zorunlu.
+- [x] **A1b.** **Veri göçü:** `PreferencesDataSource.migrate()` (şema sürümü 2) eski
+      `df_filter_alpha` → yoğunluk, `df_filter_brightness` → ekstra karartma (tersi) olarak
+      taşır, ölü RGB anahtarlarını siler, Kelvin'i yeni aralığa normalize eder.
+      `DatabaseHelper._onUpgrade` kullanıcının **özel preset'lerini** aynı mantıkla taşır;
+      yerleşik preset'ler değiştirilir (v1 değerleri kendi içinde tutarsızdı).
 - [ ] **A2.** `FilterConfig`'i üç eksene (kelvin / density / extraDim) göre yeniden modelle;
       güvenlik sınırlarını entity'de zorla; siyah ekranı imkânsızlaştır. (K5)
 - [ ] **A3.** Preset RGB'lerini Kelvin'den türet; 7 varsayılan preset'in Kelvin değerlerini
       bilimsel olarak gözden geçir. (K9)
-- [ ] **A4.** Kalıcılık mimarisini 4.2'ye göre değiştir: bellekte tek kaynak + debounce'lu
-      tam yazma; oku-değiştir-yaz yarışını kaldır; ayar kaybı testi yaz. (K1)
+- [x] **A4.** Kalıcılık 4.2'ye taşındı. `IFilterRepository`'den **alan bazlı güncelleme
+      kaldırıldı**; `persist(config)` tam kaydı 150 ms debounce ile yazar, `flush()` uygulama
+      arka plana alınırken/kapanırken bekleyeni diske indirir. Yarışın kaynağı olan
+      `UpdateFilterParamsUseCase` **silindi**. (K1)
 - [ ] **A5.** `PresetNotifier` ↔ `FilterNotifier` desenkronizasyonunu gider; aktif preset
       tek yerde tutulsun. (K2)
 - [ ] **A6.** Geri Al (undo) yığını + ana ekranda geri al düğmesi. (K17)
@@ -659,8 +662,11 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       kurulum, boot restore, hedef preset ile başlatma. (K13)
 - [ ] 🔴 **B5.** Overlay servisini gözden geçir: yapılandırma değişikliği, çoklu ekran,
       çentik, servis yeniden başlatmada durum geri yükleme.
-- [ ] 🔴 **B6.** Overlay izni verilip dönüldüğünde banner'ın kendini yenilemesi; izin yokken
+- [~] 🔴 **B6.** Overlay izni verilip dönüldüğünde banner'ın kendini yenilemesi; izin yokken
       net ve zorunlu akış. (K6)
+      *`FilterNotifier` artık `WidgetsBindingObserver`; `resumed` olayında izin yeniden
+      sorgulanıyor, `paused`/`detached` olayında bekleyen yazma diske iniliyor. Cihazda
+      doğrulanmalı.*
 - [ ] 🔴 **B7.** OEM pil optimizasyonu servisi öldürdüğünde kurtarma + kullanıcı yönlendirmesi.
 - [ ] 🔴 **B8.** Quick Settings Tile ve ana ekran widget'ı ile uygulamayı açmadan aç/kapat.
 - [ ] 🔴 **B9.** Android 15 edge-to-edge + predictive back desteği.
@@ -686,9 +692,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **D3.** Preset kartlarında Kelvin değeri okunaklı boyut ve kontrastta. (K15)
 - [ ] 🔴 **D4.** Light/dark denetimi: sabit renkleri temizle, her ekranı iki temada da doğrula
       (Pro kartının altındaki beyaz yazı dâhil). (K8)
-- [ ] **D5.** Özel preset: üç değer + isim + ikon seçimi. (K16)
+- [~] **D5.** Özel preset: üç değer + isim + ikon seçimi. (K16)
+      *Üçüncü eksen (Ekstra Karartma) kaydırıcısı eklendi ve `saveCustom` üç ekseni de
+      kaydediyor. İkon seçimi ve düzenleme akışı D fazında tamamlanacak.*
 - [ ] **D6.** Ana ekranda preset sırasını sürükleyerek değiştirme + varsayılana sıfırlama. (K16)
+      *Veri tarafı hazır: `sort_order` sütunu, `DatabaseHelper.updateSortOrder`,
+      `PresetNotifier.reorder`. Geriye arayüz kaldı.*
 - [ ] **D7.** Preset'i varsayılanına döndürme ("bu preset'i sıfırla").
+      *Veri tarafı hazır: `DatabaseHelper.resetPresetToDefault`, `PresetNotifier.resetToDefault`.
+      Geriye arayüz kaldı.*
 - [ ] **D8.** Bilgi Merkezi'ni **sıfırdan yaz**. Mevcut metinler 1.x'ten gelmiş, eskimiş ve
       kısmen yanlış (retina hasarı, sarı nokta, "sürekli acıktırır" iddiaları). Bkz. 5.8.
   - [ ] **D8.1** Yasak iddiaları tüm dillerden temizle; yerine kanıta dayalı metinler.
@@ -787,9 +799,14 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 
 **Son durum (2026-09-15):**
 * Doküman protokol + analiz + yol haritası olarak yazıldı.
-* **A1 tamamlandı.** `KelvinEngine` yeniden yazıldı (Planckian locus + UCS tabanlı ters
-  dönüşüm), çağıranlar (`kelvin_dial.dart`, `presets_screen.dart`) ve testler güncellendi.
-  `flutter analyze` 0, `flutter test` 18/18.
+* **A1–A5 tamamlandı** (A1b dâhil). `KelvinEngine` Planckian locus'a taşındı; `FilterConfig`
+  ve `FilterPreset` üç eksenli ve kendi kendini sınırlayan hâle geldi; preset'ler Kelvin'den
+  türetiliyor; kalıcılık bellekte-tek-kaynak + debounce'lu tam yazmaya geçti; aktif preset
+  tek yerde. `UpdateFilterParamsUseCase` silindi. SharedPreferences ve SQLite göçleri yazıldı.
+  `flutter analyze` 0, `flutter test` 32/32.
+* **Sırada A6 (geri al) ve A7 (ekstra karartmanın native tarafta uygulanması) var.**
+  A7 yapılana kadar Ekstra Karartma ekseni Dart tarafında doğru hesaplanıyor ama Kotlin
+  `OverlayService` hâlâ yalnızca alfa tint çiziyor.
 * Çalışma ağacında bu oturumdan önce gelen, commit edilmemiş değişiklikler var:
   `.gitignore`, `README.md`, `ios/Runner/Info.plist`, `lib/main.dart`,
   `lib/presentation/screens/home_screen.dart`, `pubspec.yaml`, `pubspec.lock`,
@@ -805,7 +822,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 
 *(şu an boş)*
 
-**Sıradaki madde:** `A1b` (veri göçü).
+**Sıradaki madde:** `A6` (geri al yığını).
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar

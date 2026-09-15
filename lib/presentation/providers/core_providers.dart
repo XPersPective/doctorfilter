@@ -12,16 +12,14 @@ import 'package:doctorfilter/domain/repositories/i_schedule_repository.dart';
 import 'package:doctorfilter/domain/usecases/apply_preset_usecase.dart';
 import 'package:doctorfilter/domain/usecases/manage_schedule_usecase.dart';
 import 'package:doctorfilter/domain/usecases/toggle_filter_usecase.dart';
-import 'package:doctorfilter/domain/usecases/update_filter_params_usecase.dart';
 
-/// SharedPreferences instance provider, overridden at app bootstrap.
+/// Overridden at startup, once SharedPreferences has loaded.
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError('sharedPreferencesProvider must be overridden at startup');
 });
 
 final preferencesDataSourceProvider = Provider<PreferencesDataSource>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return PreferencesDataSource(prefs);
+  return PreferencesDataSource(ref.watch(sharedPreferencesProvider));
 });
 
 final databaseHelperProvider = Provider<DatabaseHelper>((ref) {
@@ -29,54 +27,42 @@ final databaseHelperProvider = Provider<DatabaseHelper>((ref) {
 });
 
 final platformChannelDataSourceProvider = Provider<PlatformChannelDataSource>((ref) {
-  final ds = PlatformChannelDataSource();
-  ref.onDispose(ds.dispose);
-  return ds;
+  final dataSource = PlatformChannelDataSource();
+  ref.onDispose(dataSource.dispose);
+  return dataSource;
 });
 
 final filterRepositoryProvider = Provider<IFilterRepository>((ref) {
-  final prefsDs = ref.watch(preferencesDataSourceProvider);
-  final nativeDs = ref.watch(platformChannelDataSourceProvider);
-  final repo = FilterRepositoryImpl(
-    preferencesDataSource: prefsDs,
-    platformChannelDataSource: nativeDs,
+  final repository = FilterRepositoryImpl(
+    preferencesDataSource: ref.watch(preferencesDataSourceProvider),
+    platformChannelDataSource: ref.watch(platformChannelDataSourceProvider),
   );
-  ref.onDispose(repo.dispose);
-  return repo;
+  ref.onDispose(repository.dispose);
+  return repository;
 });
 
 final presetRepositoryProvider = Provider<IPresetRepository>((ref) {
-  final dbHelper = ref.watch(databaseHelperProvider);
-  return PresetRepositoryImpl(dbHelper);
+  return PresetRepositoryImpl(ref.watch(databaseHelperProvider));
 });
 
 final scheduleRepositoryProvider = Provider<IScheduleRepository>((ref) {
-  final prefsDs = ref.watch(preferencesDataSourceProvider);
-  final nativeDs = ref.watch(platformChannelDataSourceProvider);
   return ScheduleRepositoryImpl(
-    preferencesDataSource: prefsDs,
-    platformChannelDataSource: nativeDs,
+    preferencesDataSource: ref.watch(preferencesDataSourceProvider),
+    platformChannelDataSource: ref.watch(platformChannelDataSourceProvider),
   );
 });
 
-// Use Cases
 final toggleFilterUseCaseProvider = Provider<ToggleFilterUseCase>((ref) {
-  final repo = ref.watch(filterRepositoryProvider);
-  return ToggleFilterUseCase(repo);
+  return ToggleFilterUseCase(ref.watch(filterRepositoryProvider));
 });
 
 final applyPresetUseCaseProvider = Provider<ApplyPresetUseCase>((ref) {
-  final filterRepo = ref.watch(filterRepositoryProvider);
-  final presetRepo = ref.watch(presetRepositoryProvider);
-  return ApplyPresetUseCase(filterRepo, presetRepo);
-});
-
-final updateFilterParamsUseCaseProvider = Provider<UpdateFilterParamsUseCase>((ref) {
-  final repo = ref.watch(filterRepositoryProvider);
-  return UpdateFilterParamsUseCase(repo);
+  return ApplyPresetUseCase(
+    ref.watch(filterRepositoryProvider),
+    ref.watch(presetRepositoryProvider),
+  );
 });
 
 final manageScheduleUseCaseProvider = Provider<ManageScheduleUseCase>((ref) {
-  final repo = ref.watch(scheduleRepositoryProvider);
-  return ManageScheduleUseCase(repo);
+  return ManageScheduleUseCase(ref.watch(scheduleRepositoryProvider));
 });

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/math/kelvin_engine.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
+import 'package:doctorfilter/domain/entities/filter_config.dart';
+import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 
 class PresetsScreen extends ConsumerWidget {
@@ -40,7 +42,7 @@ class PresetsScreen extends ConsumerWidget {
                 ),
               );
               if (confirm == true) {
-                await presetNotifier.resetToDefaults();
+                await presetNotifier.resetAllToDefaults();
               }
             },
           ),
@@ -52,7 +54,7 @@ class PresetsScreen extends ConsumerWidget {
         separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final preset = presetState.presets[index];
-          final isSelected = preset.id == presetState.activePresetId;
+          final isSelected = preset.id == ref.watch(filterConfigProvider).activePresetId;
           final rgb = KelvinEngine.kelvinToRgb(preset.kelvin);
           final presetColor = Color.fromARGB(255, rgb.r, rgb.g, rgb.b);
 
@@ -94,7 +96,7 @@ class PresetsScreen extends ConsumerWidget {
                 ),
               ),
               subtitle: Text(
-                '${preset.kelvin}K • Density: ${preset.alphaPercent}% • Brightness: ${preset.brightnessPercent}%',
+                '${preset.kelvin} K • ${preset.densityPercent}% • ${preset.extraDimPercent}%',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade400,
@@ -103,7 +105,7 @@ class PresetsScreen extends ConsumerWidget {
               trailing: isSelected
                   ? const Icon(Icons.check_circle_rounded, color: AppTheme.amberPrimary)
                   : ElevatedButton(
-                      onPressed: () => presetNotifier.selectPreset(preset.id),
+                      onPressed: () => presetNotifier.select(preset.id),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         minimumSize: const Size(48, 36),
@@ -126,8 +128,8 @@ class PresetsScreen extends ConsumerWidget {
 
   void _showAddCustomPresetDialog(BuildContext context, WidgetRef ref) {
     int kelvin = 3000;
-    int alpha = 60;
-    int brightness = 180;
+    int densityPercent = 45;
+    int extraDimPercent = 30;
     final textController = TextEditingController(text: 'My Night Profile');
 
     showModalBottomSheet(
@@ -188,27 +190,31 @@ class PresetsScreen extends ConsumerWidget {
                         (KelvinEngine.maxKelvin - KelvinEngine.minKelvin) ~/ 100,
                     onChanged: (val) => setState(() => kelvin = val.round()),
                   ),
-                  Text('Density: $alpha', style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text('Filter Density: $densityPercent%',
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
                   Slider(
-                    value: alpha.toDouble(),
-                    min: 10,
-                    max: 220,
-                    divisions: 42,
-                    onChanged: (val) => setState(() => alpha = val.round()),
+                    value: densityPercent.toDouble(),
+                    max: FilterConfig.maxDensityPercent.toDouble(),
+                    divisions: FilterConfig.maxDensityPercent ~/ 5,
+                    onChanged: (val) => setState(() => densityPercent = val.round()),
+                  ),
+                  Text('Extra Dim: $extraDimPercent%',
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Slider(
+                    value: extraDimPercent.toDouble(),
+                    max: FilterConfig.maxExtraDimPercent.toDouble(),
+                    divisions: FilterConfig.maxExtraDimPercent ~/ 5,
+                    onChanged: (val) => setState(() => extraDimPercent = val.round()),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () async {
                       if (textController.text.trim().isEmpty) return;
-                      final rgb = KelvinEngine.kelvinToRgb(kelvin);
-                      await ref.read(presetProvider.notifier).saveCustomPreset(
+                      await ref.read(presetProvider.notifier).saveCustom(
                             name: textController.text.trim(),
                             kelvin: kelvin,
-                            red: rgb.r,
-                            green: rgb.g,
-                            blue: rgb.b,
-                            alpha: alpha,
-                            brightness: brightness,
+                            densityPercent: densityPercent,
+                            extraDimPercent: extraDimPercent,
                           );
                       if (ctx.mounted) Navigator.pop(ctx);
                     },

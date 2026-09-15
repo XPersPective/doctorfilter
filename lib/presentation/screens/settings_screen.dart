@@ -75,7 +75,9 @@ class SettingsScreen extends ConsumerWidget {
                 ListTile(
                   leading: const Icon(Icons.language_rounded, color: AppTheme.amberPrimary),
                   title: Text(loc?.translate('app_language') ?? 'Language'),
-                  subtitle: Text(_getLanguageName(currentLocale.languageCode)),
+                  subtitle: Text(_getLanguageName(
+                      currentLocale?.languageCode ??
+                          Localizations.localeOf(context).languageCode)),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _showLanguagePicker(context, ref),
                 ),
@@ -89,7 +91,7 @@ class SettingsScreen extends ConsumerWidget {
                   title: const Text('Dark Mode'),
                   subtitle: const Text('Reduces eye fatigue at night'),
                   value: isDark,
-                  onChanged: (_) => ref.read(themeModeProvider.notifier).toggleTheme(),
+                  onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
                 ),
                 const Divider(height: 1, indent: 56),
                 // Notification Bar Control Toggle
@@ -195,7 +197,7 @@ class SettingsScreen extends ConsumerWidget {
                       itemCount: filtered.length,
                       itemBuilder: (context, index) {
                         final lang = filtered[index];
-                        final isCurrent = ref.watch(localeProvider).languageCode == lang.code;
+                        final isCurrent = ref.watch(localeProvider)?.languageCode == lang.code;
 
                         return ListTile(
                           title: Text(
