@@ -84,7 +84,7 @@ class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp> {
       title: 'DoctorFilter',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      darkTheme: ref.watch(darkThemeProvider),
       themeMode: themeMode,
       // Null follows the device, which is what someone whose phone is in Turkish
       // expects to see on first launch.

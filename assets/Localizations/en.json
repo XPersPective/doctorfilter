@@ -139,5 +139,18 @@
   "error_filter_failed": "The filter could not be started.",
   "error_presets_load": "Presets could not be loaded.",
   "error_preset_apply": "That preset could not be applied.",
-  "error_store_unavailable": "The store is not reachable right now."
+  "error_store_unavailable": "The store is not reachable right now.",
+  "settings_amoled": "True black (OLED)",
+  "settings_amoled_desc": "Unlit pixels emit no light at all, and use less battery.",
+  "settings_backup": "Back up settings",
+  "settings_backup_desc": "Save your presets and filter settings as a file.",
+  "settings_restore": "Restore from a file",
+  "backup_exported": "Backup created.",
+  "backup_failed": "The backup could not be created.",
+  "backup_imported": "Settings restored.",
+  "backup_import_failed": "That file could not be read.",
+  "bypass_action": "Pause briefly",
+  "bypass_active": "Filter paused · {seconds}s",
+  "bypass_resume": "Resume now",
+  "bypass_hint": "Lifts the filter for a moment, then puts it back."
 }

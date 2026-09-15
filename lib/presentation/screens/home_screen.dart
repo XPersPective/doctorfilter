@@ -6,6 +6,7 @@ import 'package:doctorfilter/domain/entities/ad_policy.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/presentation/ads/banner_ad_widget.dart';
 import 'package:doctorfilter/presentation/providers/ad_providers.dart';
+import 'package:doctorfilter/presentation/providers/bypass_provider.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/notification_sync_provider.dart';
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
@@ -41,11 +42,19 @@ class HomeScreen extends ConsumerWidget {
     // Keeps the notification's copy of the preset list current.
     ref.watch(notificationCatalogSyncProvider);
 
+    final bypass = ref.watch(bypassProvider);
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 16,
         title: _Title(isPro: ref.watch(isProProvider)),
         actions: [
+          if (config.isEnabled)
+            _BypassAction(
+              remaining: bypass,
+              onStart: ref.read(bypassProvider.notifier).start,
+              onCancel: ref.read(bypassProvider.notifier).cancel,
+            ),
           if (filterState.canUndo)
             IconButton(
               tooltip: loc?.translate('action_undo') ?? 'Undo',
@@ -342,6 +351,45 @@ class _ColourOnlyHint extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Pause-and-peek, in the app bar.
+///
+/// A button while the filter is running, a live countdown once it is paused —
+/// same control, so nobody has to find a second one to put the filter back.
+class _BypassAction extends StatelessWidget {
+  const _BypassAction({
+    required this.remaining,
+    required this.onStart,
+    required this.onCancel,
+  });
+
+  final Duration? remaining;
+  final Future<void> Function() onStart;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
+    if (remaining == null) {
+      return IconButton(
+        tooltip: loc?.translate('bypass_action') ?? 'Pause briefly',
+        icon: const Icon(Icons.visibility_outlined),
+        onPressed: onStart,
+      );
+    }
+
+    return TextButton.icon(
+      onPressed: onCancel,
+      icon: const Icon(Icons.play_arrow_rounded, size: 18),
+      label: Text('${remaining!.inSeconds}'),
+      style: TextButton.styleFrom(
+        foregroundColor: context.colours.primary,
+        minimumSize: const Size(48, 44),
       ),
     );
   }

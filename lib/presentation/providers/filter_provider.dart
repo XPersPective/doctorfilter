@@ -183,6 +183,19 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
   void setExtraDim(int percent) =>
       _apply(state.config.copyWith(extraDimPercent: percent));
 
+  /// Re-reads the stored configuration and puts it on screen.
+  ///
+  /// For the one case where something outside this notifier writes to storage:
+  /// restoring a backup. Undo history is left alone — a restore is not an edit
+  /// the user should be able to step back through one slider at a time.
+  Future<void> reload() async {
+    final loaded = await _repository.loadConfig();
+    final config = loaded.dataOrNull;
+    if (!mounted || config == null) return;
+    state = state.copyWith(config: config);
+    if (config.isEnabled) await _repository.applyToPlatform(config);
+  }
+
   /// Adopts a configuration produced elsewhere (applying a preset).
   void adopt(FilterConfig config) {
     if (!mounted || config == state.config) return;

@@ -914,9 +914,17 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **H2.** Yumuşak geçiş: zamanlayıcı devreye girerken ani değil, kademeli (ör. 30 dk) geçiş.
 - [ ] **H3.** 20-20-20 göz molası hatırlatıcısı (ücretsizde sabit, Pro'da özelleştirilebilir).
 - [ ] **H4.** Yerel kullanım istatistiği: "bu hafta X saat korumalı ekran" (cihazda kalır).
-- [ ] **H5.** AMOLED tam siyah tema seçeneği.
+- [x] **H5.** AMOLED tam siyah tema seçeneği. `AppTheme.amoledTheme` (gerçek siyah;
+      kenarlıklar koyulaştırılmak yerine açıldı, aksi hâlde siyah üstünde kaybolup
+      düzen yapısı yok oluyor), `amoledProvider` + `darkThemeProvider`, ayarlarda
+      anahtar (yalnızca koyu tema açıkken görünür).
 - [ ] **H6.** Uygulama kısayolları (uzun basınca hızlı preset).
-- [ ] **H7.** Ayarları JSON olarak dışa/içe aktarma.
+- [x] **H7.** Ayarları JSON olarak dışa/içe aktarma. `SettingsBackup` (`formatVersion`
+      ileride dosyayı sessizce yanlış okumak yerine reddedebilsin diye). Dışa aktarım
+      paylaşım sayfasına verir; içe aktarımda **her değer** `FilterConfig`/`FilterPreset`
+      üzerinden geçer, yani elle düzenlenmiş bir dosya güvenlik tavanlarını aşamaz.
+      Yalnızca özel preset'ler taşınır (yerleşikler her kurulumda zaten var) ve **Pro
+      hakkı kasıtlen dosyada yoktur** — mağazadan gelir, düzenlenebilir bir dosyadan değil.
 - [ ] **H8.** **Melanopik hedef göstergesi:** "akşam hedefine (10 lx melanopik EDI) ne kadar
       yakınsın" halkası; gündüz/akşam/uyku bantları. Uygulamanın bilimsel farklılaştırıcısı.
 - [ ] **H9.** **Yatma rutini asistanı:** kullanıcı yatma saatini girer, uygulama 3 saat
@@ -925,7 +933,12 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       Tek seferlik "beyaz kağıt gibi görünene kadar ayarla" ince ayarı; hesaplar bu
       düzeltme katsayısıyla çalışır.
 - [ ] **H11.** **Ortam ışığına uyum:** ışık sensörüne göre yoğunluğu otomatik ayarla (Pro).
-- [ ] **H12.** **Geçici atlama:** uzun basınca filtreyi 10 sn kapat (fotoğraf/renk işi için).
+- [x] **H12.** **Geçici atlama:** `BypassNotifier`, varsayılan 15 sn (10 sn bir fotoğrafa
+      doğru dürüst bakmaya yetmiyor). Üst çubuktaki düğme duraklatır, geri sayıma dönüşür,
+      dokununca erken geri getirir. Yapılandırma **doğrudan platforma** yazılır: bu geçici
+      bir askıya alma, kullanıcının ayarında bir değişiklik değil — kalıcılaşmamalı ve geri
+      al geçmişine girmemeli. `dispose` filtreyi geri koyar; ekran kapandı diye katmanın
+      inik kalması olabilecek en kötü hata olurdu.
 - [ ] **H13.** **Vardiyalı çalışan modu:** ters uyku programı için zamanlama şablonu.
 - [ ] **H14.** **OLED enerji göstergesi:** karartmanın pil kazancını göster (yalnızca OLED).
 - [ ] **H15.** **Preset paylaşımı:** preset'i kısa kodla paylaş/içe aktar (sunucusuz, kod
@@ -1068,7 +1081,18 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `E3.2`/`E3.3` (kalan 47 dil) → FAZ H (büyüme özellikleri) → FAZ G (iOS/Windows).
+**Sıradaki madde:** FAZ H — kalan: H1–H4, H6, H8–H11, H13–H16. Sonra `E3.3` (kalan 31
+dil) → FAZ G (iOS/Windows).
+
+> **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.
+> `PreferencesDataSource` ve `DatabaseHelper` somut sınıflar ve depoda sahte (mock)
+> kütüphanesi yok; elle sahte yazmanın maliyeti kazancından büyük. Asıl risk olan
+> "elle düzenlenmiş dosya ekranı karartır mı" sorusu zaten `FilterConfig` tavan
+> testleriyle kapalı. Depoya bir sahte kütüphanesi girerse bu test yazılsın.
+
+> **Sıra değişikliği (Bölüm 1.3):** FAZ H, E3.3'ün önüne alındı. Kalan 31 dil küçük
+> pazarlar ve hepsi zaten İngilizce'ye düşüyor (anahtar adı asla görünmüyor); FAZ H ise
+> proje sahibinin adıyla istediği özellikler ve **her dildeki** kullanıcıya dokunuyor.
 
 > **Sıra değişikliği (Bölüm 1.3):** F1–F5, F7, F8 E3'ün önüne alındı. Bunlar dokuz küçük
 > madde ve depoyu **yayınlanabilir** hâle getiriyorlar; kalan diller ise tamamen toplamsal
