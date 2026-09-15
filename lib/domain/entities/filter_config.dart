@@ -98,6 +98,13 @@ final class FilterConfig {
         compositeAlpha: compositeAlpha,
       );
 
+  /// Fraction of the screen's melanopic (circadian) output this configuration
+  /// removes (0.0–1.0). The headline figure shown to the user.
+  double get melanopicReduction => KelvinEngine.melanopicReduction(
+        tintKelvin: kelvin,
+        compositeAlpha: compositeAlpha,
+      );
+
   /// Fraction by which this configuration reduces overall screen luminance.
   double get luminanceReduction => KelvinEngine.luminanceReduction(
         tintKelvin: kelvin,

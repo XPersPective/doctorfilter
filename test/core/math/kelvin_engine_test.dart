@@ -111,6 +111,56 @@ void main() {
     });
   });
 
+  group('melanopicReduction — the number the user is actually shown', () {
+    test('no filter claims nothing', () {
+      expect(
+        KelvinEngine.melanopicReduction(tintKelvin: 2200, compositeAlpha: 0),
+        0.0,
+      );
+    });
+
+    test('dimming alone still reduces circadian light', () {
+      // The point of Nagare et al. (2019): brightness matters on its own. A
+      // metric that only rewarded warming would mislead the user.
+      final neutralDimmed = KelvinEngine.melanopicReduction(
+        tintKelvin: KelvinEngine.neutralDaylightKelvin,
+        compositeAlpha: 0.7,
+      );
+      expect(neutralDimmed, greaterThan(0.0));
+    });
+
+    test('warming and dimming together beat either alone', () {
+      final warmOnly =
+          KelvinEngine.melanopicReduction(tintKelvin: 1850, compositeAlpha: 0.4);
+      final both =
+          KelvinEngine.melanopicReduction(tintKelvin: 1850, compositeAlpha: 0.8);
+      expect(both, greaterThan(warmOnly));
+    });
+
+    test('is stricter than the blue-channel proxy it replaced', () {
+      // Melanopsin responds across green as well as blue, so a warm tint that
+      // kills the blue channel does not remove the whole circadian signal.
+      // Overstating that was the old formula's core dishonesty.
+      const alpha = 0.6;
+      final melanopic =
+          KelvinEngine.melanopicReduction(tintKelvin: 1850, compositeAlpha: alpha);
+      final blueOnly =
+          KelvinEngine.blueLightReduction(tintKelvin: 1850, compositeAlpha: alpha);
+      expect(melanopic, lessThan(blueOnly));
+    });
+
+    test('stays within 0-100%', () {
+      for (var k = KelvinEngine.minKelvin; k <= KelvinEngine.maxKelvin; k += 250) {
+        for (var a = 0.0; a <= 1.0; a += 0.1) {
+          expect(
+            KelvinEngine.melanopicReduction(tintKelvin: k, compositeAlpha: a),
+            inInclusiveRange(0.0, 1.0),
+          );
+        }
+      }
+    });
+  });
+
   group('luminanceReduction', () {
     test('dimming dominates: a strong warm overlay cuts luminance substantially', () {
       final reduction =

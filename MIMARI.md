@@ -654,9 +654,12 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       alanı Kotlin'den **kaldırıldı**; Dart kompozit renk + alfa gönderiyor, servis
       yalnızca çiziyor. Üç ekseni birleştirme ve sınırlar tek yerde (domain), böylece
       "saklanan ama hiç uygulanmayan alan" durumu tekrarlanamaz. (K4)
-- [ ] **A8.** "% mavi ışık engellendi" uydurma formülünü kaldır; yerine filtrenin kendi
-      denkleminden çıkan **göreli melanopik azalma** göstergesi koy (bkz. 5.6). Mutlak lx
-      iddia etme. Testle doğrula.
+- [x] **A8.** Uydurma yüzde kaldırıldı. `KelvinEngine.melanopicReduction` CIE S 026
+      melanopik ağırlıklarıyla (R 0.03 / G 0.39 / B 0.58, tipik LED panel yaklaşımı)
+      filtrenin kendi kompozit denkleminden **göreli** azalmayı hesaplıyor. Mutlak lx
+      iddia edilmiyor — panel spektrumu ve göz mesafesi bilinmeden ölçülemez, göreli
+      oranda ise panel karakteristiği büyük ölçüde sadeleşir. Karartma tek başına da
+      sayıyı düşürüyor (Nagare 2019); test bunu ayrıca doğruluyor.
 - [ ] **A9.** Riverpod kullanımını tek yönde netleştir (`Notifier`/`AsyncNotifier`'a geç
       veya `StateNotifier`'da kal); doküman ile kodu aynı hizaya getir. (K18)
 
@@ -826,7 +829,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   `OverlayService` (kompozit çizim, restart/rotasyon dayanıklılığı), `FilterNotificationManager`
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
-  `flutter analyze` 0, `flutter test` 45/45, `flutter build apk --debug` başarılı.
+  `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **A8 tamamlandı:** melanopik azalma metriği.
   A7 yapılana kadar Ekstra Karartma ekseni Dart tarafında doğru hesaplanıyor ama Kotlin
   `OverlayService` hâlâ yalnızca alfa tint çiziyor.
 * Çalışma ağacında bu oturumdan önce gelen, commit edilmemiş değişiklikler var:
@@ -870,7 +874,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `A8` (melanopik metrik) → sonra `B2` (bildirim kokpiti RemoteViews).
+**Sıradaki madde:** `A9` (Riverpod netleştirme) → sonra `B2` (bildirim kokpiti).
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar

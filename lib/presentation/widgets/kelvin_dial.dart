@@ -20,7 +20,7 @@ class KelvinDial extends StatelessWidget {
     final rgb = KelvinEngine.kelvinToRgb(kelvin);
     final filterColor = Color.fromARGB(255, rgb.r, rgb.g, rgb.b);
     final safetyLevel = KelvinEngine.safetyLevel(kelvin);
-    final blockedPercent = (KelvinEngine.blueLightReduction(
+    final melanopicPercent = (KelvinEngine.melanopicReduction(
               tintKelvin: kelvin,
               compositeAlpha: opacityPercent / 100.0,
             ) *
@@ -179,7 +179,9 @@ class KelvinDial extends StatelessWidget {
                 ),
               ),
               Text(
-                '$blockedPercent% Blue Light Blocked',
+                loc?.translate('melanopic_reduction',
+                        args: {'percent': '$melanopicPercent'}) ??
+                    '$melanopicPercent% less circadian light',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
