@@ -57,6 +57,7 @@ class PreferencesDataSource {
   static const _keyBreakEnabled = 'df_break_enabled';
   static const _keyBreakInterval = 'df_break_interval_minutes';
   static const _keyCalibration = 'df_calibration_offset_k';
+  static const _keyAmbient = 'df_ambient_adaptation';
 
   // v1 keys, read once by the migration and then removed.
   static const _legacyKeyAlpha = 'df_filter_alpha';
@@ -193,6 +194,10 @@ class PreferencesDataSource {
   bool breakReminderEnabled() => _prefs.getBool(_keyBreakEnabled) ?? false;
   Future<void> setBreakReminderEnabled(bool isEnabled) =>
       _prefs.setBool(_keyBreakEnabled, isEnabled);
+
+  bool ambientAdaptation() => _prefs.getBool(_keyAmbient) ?? false;
+  Future<void> setAmbientAdaptation(bool isEnabled) =>
+      _prefs.setBool(_keyAmbient, isEnabled);
 
   /// Panel white-point correction, in kelvin.
   ///

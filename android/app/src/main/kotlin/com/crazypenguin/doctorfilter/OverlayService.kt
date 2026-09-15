@@ -42,6 +42,17 @@ class OverlayService : Service() {
      */
     private var rampAlpha: Int? = null
 
+    private var ambientSensor: AmbientLightSensor? = null
+
+    /**
+     * The room's contribution to the painted alpha, in points out of 255.
+     *
+     * Kept apart from [current] for the same reason [rampAlpha] is: it is a
+     * condition of the moment, not something the user chose, and it must never
+     * be written to disk or shown as their setting.
+     */
+    private var ambientAdjustment = 0
+
     companion object {
         const val ACTION_START = "com.crazypenguin.doctorfilter.action.START"
         const val ACTION_STOP = "com.crazypenguin.doctorfilter.action.STOP"
@@ -64,6 +75,20 @@ class OverlayService : Service() {
          * all. Absent or zero means the old instant behaviour.
          */
         const val EXTRA_RAMP_MILLIS = "extra_ramp_millis"
+
+        private const val PREFS = "doctorfilter_ambient"
+        private const val KEY_AMBIENT = "enabled"
+
+        /** Persisted natively: the service restarts without Dart having run. */
+        fun setAmbientEnabled(context: Context, isEnabled: Boolean) {
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putBoolean(KEY_AMBIENT, isEnabled)
+                .apply()
+        }
+
+        fun isAmbientEnabled(context: Context): Boolean =
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getBoolean(KEY_AMBIENT, false)
 
         @Volatile
         var isRunning = false
@@ -126,6 +151,7 @@ class OverlayService : Service() {
                     cancelRamp()
                     applyOverlay()
                 }
+                syncAmbientSensor()
                 START_STICKY
             }
 
@@ -211,9 +237,41 @@ class OverlayService : Service() {
         rampAlpha = null
     }
 
+    /**
+     * Starts or stops the light sensor to match the setting.
+     *
+     * Only while the overlay is up: a sensor listening for a filter that is not
+     * running is pure battery cost.
+     */
+    private fun syncAmbientSensor() {
+        val wanted = isAmbientEnabled(this) && overlayView != null
+
+        if (!wanted) {
+            ambientSensor?.stop()
+            ambientSensor = null
+            ambientAdjustment = 0
+            return
+        }
+
+        if (ambientSensor != null) return
+
+        ambientSensor = AmbientLightSensor(this) { adjustment ->
+            ambientAdjustment = adjustment
+            applyOverlay()
+        }.also { sensor ->
+            // No light sensor on this device: nothing to fall back to, so the
+            // filter simply stays where the user put it.
+            if (!sensor.start()) ambientSensor = null
+        }
+    }
+
     private fun applyOverlay() {
         val wm = windowManager ?: return
-        val alpha = rampAlpha ?: current.alpha
+        // The ramp wins while it is running: during a fade the alpha is going
+        // somewhere specific, and a second adjuster pulling at it would make the
+        // transition visibly uneven.
+        val base = rampAlpha ?: (current.alpha + ambientAdjustment)
+        val alpha = base.coerceIn(0, MAX_ALPHA)
         val filterColor = Color.argb(alpha, current.red, current.green, current.blue)
 
         val view = overlayView
@@ -268,6 +326,9 @@ class OverlayService : Service() {
 
     private fun stopOverlay() {
         cancelRamp()
+        ambientSensor?.stop()
+        ambientSensor = null
+        ambientAdjustment = 0
         overlayView?.let { view ->
             try {
                 windowManager?.removeView(view)

@@ -193,5 +193,8 @@
   "calibration_cooler": "Cooler",
   "calibration_none": "No correction",
   "calibration_filter_off": "Turn the filter on to see the correction on the real screen rather than just on this card.",
-  "oled_energy": "Your screen is emitting about {percent}% less light. On an OLED panel its power draw falls with it, though not exactly one-for-one."
+  "oled_energy": "Your screen is emitting about {percent}% less light. On an OLED panel its power draw falls with it, though not exactly one-for-one.",
+  "settings_ambient": "Adapt to the room",
+  "settings_ambient_desc": "Dims a little more in the dark, backs off in daylight.",
+  "settings_ambient_locked": "Included with Pro."
 }
