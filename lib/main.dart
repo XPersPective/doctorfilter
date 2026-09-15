@@ -77,7 +77,7 @@ class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp> {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeModeProvider);
+    final themeMode = ref.watch(effectiveThemeModeProvider);
     final locale = ref.watch(localeProvider);
 
     return MaterialApp(

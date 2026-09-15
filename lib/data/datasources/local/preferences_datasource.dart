@@ -53,6 +53,7 @@ class PreferencesDataSource {
   static const _keyLocale = 'df_app_locale';
   static const _keyIsDarkMode = 'df_app_is_dark_mode';
   static const _keyAmoled = 'df_app_amoled';
+  static const _keyThemeFollowsFilter = 'df_theme_follows_filter';
 
   // v1 keys, read once by the migration and then removed.
   static const _legacyKeyAlpha = 'df_filter_alpha';
@@ -181,6 +182,10 @@ class PreferencesDataSource {
 
   bool isAmoled() => _prefs.getBool(_keyAmoled) ?? false;
   Future<void> setAmoled(bool amoled) => _prefs.setBool(_keyAmoled, amoled);
+
+  bool themeFollowsFilter() => _prefs.getBool(_keyThemeFollowsFilter) ?? true;
+  Future<void> setThemeFollowsFilter(bool follows) =>
+      _prefs.setBool(_keyThemeFollowsFilter, follows);
 
   /// Brings settings written by an older version forward.
   ///

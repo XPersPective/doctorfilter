@@ -25,6 +25,7 @@ class SettingsScreen extends ConsumerWidget {
     final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
     final isPro = ref.watch(isProProvider);
     final isAmoled = ref.watch(amoledProvider);
+    final themeFollowsFilter = ref.watch(themeFollowsFilterProvider);
     final config = ref.watch(filterConfigProvider);
 
     return Scaffold(
@@ -88,6 +89,24 @@ class SettingsScreen extends ConsumerWidget {
                     onChanged: (_) => ref.read(amoledProvider.notifier).toggle(),
                   ),
                 ],
+                const Divider(height: 1, indent: 56),
+                SwitchListTile(
+                  secondary: Icon(
+                    Icons.auto_mode_rounded,
+                    color: context.colours.primary,
+                  ),
+                  title: Text(
+                    loc?.translate('settings_theme_follows') ??
+                        'Go dark with the filter',
+                  ),
+                  subtitle: Text(
+                    loc?.translate('settings_theme_follows_desc') ??
+                        'A bright app on a dimmed screen undoes the filter.',
+                  ),
+                  value: themeFollowsFilter,
+                  onChanged: (_) =>
+                      ref.read(themeFollowsFilterProvider.notifier).toggle(),
+                ),
                 const Divider(height: 1, indent: 56),
                 SwitchListTile(
                   secondary: Icon(

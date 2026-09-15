@@ -959,7 +959,11 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **H14.** **OLED enerji göstergesi:** karartmanın pil kazancını göster (yalnızca OLED).
 - [ ] **H15.** **Preset paylaşımı:** preset'i kısa kodla paylaş/içe aktar (sunucusuz, kod
       içinde kodlanmış). Organik büyüme sağlar, veri toplamaz.
-- [ ] **H16.** Filtre açıkken uygulama temasının da koyuya geçmesi (tutarlı his).
+- [x] **H16.** Filtre açıkken uygulama teması da koyuya geçer
+      (`effectiveThemeModeProvider`). Karartılmış bir ekranın üstündeki parlak beyaz
+      uygulama, filtrenin yaptığı tek şeyi geri alan şeydi. Kullanıcının **kayıtlı
+      tercihi asla üzerine yazılmaz**: filtre kapanınca açık tema geri gelir.
+      Ayarlardan kapatılabilir; varsayılan açık.
 
 ---
 
@@ -1097,7 +1101,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H3, H4, H8–H11, H13–H16. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H3, H4, H8–H11, H13–H15. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.
