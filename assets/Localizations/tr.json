@@ -139,5 +139,18 @@
   "error_filter_failed": "Filtre başlatılamadı.",
   "error_presets_load": "Ayarlar yüklenemedi.",
   "error_preset_apply": "Bu ayar uygulanamadı.",
-  "error_store_unavailable": "Mağazaya şu anda ulaşılamıyor."
+  "error_store_unavailable": "Mağazaya şu anda ulaşılamıyor.",
+  "settings_amoled": "Tam siyah (OLED)",
+  "settings_amoled_desc": "Yanmayan piksel hiç ışık yaymaz ve daha az pil harcar.",
+  "settings_backup": "Ayarları yedekle",
+  "settings_backup_desc": "Preset'lerinizi ve filtre ayarlarınızı dosya olarak kaydedin.",
+  "settings_restore": "Dosyadan geri yükle",
+  "backup_exported": "Yedek oluşturuldu.",
+  "backup_failed": "Yedek oluşturulamadı.",
+  "backup_imported": "Ayarlar geri yüklendi.",
+  "backup_import_failed": "Bu dosya okunamadı.",
+  "bypass_action": "Kısa süre duraklat",
+  "bypass_active": "Filtre duraklatıldı · {seconds} sn",
+  "bypass_resume": "Şimdi devam et",
+  "bypass_hint": "Filtreyi bir anlığına kaldırır, sonra geri koyar."
 }

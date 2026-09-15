@@ -121,6 +121,25 @@ abstract final class AppTheme {
         bands: CircadianColors.dark,
       );
 
+  /// True black, for OLED panels.
+  ///
+  /// On an OLED screen a black pixel is an unlit pixel: it emits nothing at all,
+  /// which is both the least light possible at bedtime and the least battery.
+  /// The near-black of the normal dark theme still lights every pixel faintly.
+  ///
+  /// Borders are lifted rather than darkened — against true black, the usual
+  /// divider colour disappears and the layout loses all structure.
+  static ThemeData get amoledTheme => _build(
+        brightness: Brightness.dark,
+        accent: _darkAccent,
+        onAccent: Colors.black,
+        background: Colors.black,
+        surface: Colors.black,
+        card: const Color(0xFF0A0A0A),
+        border: const Color(0xFF2A2A2A),
+        bands: CircadianColors.dark,
+      );
+
   static ThemeData get lightTheme => _build(
         brightness: Brightness.light,
         accent: _lightAccent,

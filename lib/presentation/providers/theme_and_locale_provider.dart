@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core_providers.dart';
 
@@ -27,6 +28,32 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 
 final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
   return ThemeModeNotifier(ref);
+});
+
+/// Whether the dark theme should be true black.
+///
+/// Separate from [themeModeProvider] because it is a property of the dark theme
+/// rather than a third mode: someone on "light" who turns this on should get
+/// AMOLED black the next time they switch to dark, not immediately.
+class AmoledNotifier extends StateNotifier<bool> {
+  AmoledNotifier(this._ref)
+      : super(_ref.read(preferencesDataSourceProvider).isAmoled());
+
+  final Ref _ref;
+
+  Future<void> toggle() async {
+    state = !state;
+    await _ref.read(preferencesDataSourceProvider).setAmoled(state);
+  }
+}
+
+final amoledProvider = StateNotifierProvider<AmoledNotifier, bool>((ref) {
+  return AmoledNotifier(ref);
+});
+
+/// The dark theme actually in use: AMOLED if the user asked for it.
+final darkThemeProvider = Provider<ThemeData>((ref) {
+  return ref.watch(amoledProvider) ? AppTheme.amoledTheme : AppTheme.darkTheme;
 });
 
 /// Selected language, or null to follow the device.

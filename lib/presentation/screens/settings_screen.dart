@@ -5,7 +5,12 @@ import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
+import 'package:doctorfilter/presentation/providers/core_providers.dart';
+import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 import 'package:doctorfilter/presentation/services/app_links.dart';
+import 'package:doctorfilter/presentation/services/settings_backup.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 import 'about_screen.dart';
 import 'language_screen.dart';
 import 'paywall_screen.dart';
@@ -19,6 +24,7 @@ class SettingsScreen extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
     final isPro = ref.watch(isProProvider);
+    final isAmoled = ref.watch(amoledProvider);
     final config = ref.watch(filterConfigProvider);
 
     return Scaffold(
@@ -61,6 +67,27 @@ class SettingsScreen extends ConsumerWidget {
                   value: isDark,
                   onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
                 ),
+                // Only while the dark theme is actually showing: a "true black"
+                // switch under a white screen does nothing visible, and a
+                // control that appears to do nothing reads as broken.
+                if (isDark) ...[
+                  const Divider(height: 1, indent: 56),
+                  SwitchListTile(
+                    secondary: Icon(
+                      Icons.contrast_rounded,
+                      color: context.colours.primary,
+                    ),
+                    title: Text(
+                      loc?.translate('settings_amoled') ?? 'True black (OLED)',
+                    ),
+                    subtitle: Text(
+                      loc?.translate('settings_amoled_desc') ??
+                          'Unlit pixels emit no light at all, and use less battery.',
+                    ),
+                    value: isAmoled,
+                    onChanged: (_) => ref.read(amoledProvider.notifier).toggle(),
+                  ),
+                ],
                 const Divider(height: 1, indent: 56),
                 SwitchListTile(
                   secondary: Icon(
@@ -78,6 +105,35 @@ class SettingsScreen extends ConsumerWidget {
                   value: config.isNotificationEnabled,
                   onChanged:
                       ref.read(filterProvider.notifier).setNotificationEnabled,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+          _SectionLabel(loc?.translate('settings_backup') ?? 'Back up settings'),
+          Card(
+            margin: EdgeInsets.zero,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.save_alt_rounded),
+                  title: Text(
+                    loc?.translate('settings_backup') ?? 'Back up settings',
+                  ),
+                  subtitle: Text(
+                    loc?.translate('settings_backup_desc') ??
+                        'Save your presets and filter settings as a file.',
+                  ),
+                  onTap: () => _export(context, ref),
+                ),
+                const Divider(height: 1, indent: 56),
+                ListTile(
+                  leading: const Icon(Icons.restore_page_outlined),
+                  title: Text(
+                    loc?.translate('settings_restore') ?? 'Restore from a file',
+                  ),
+                  onTap: () => _import(context, ref),
                 ),
               ],
             ),
@@ -118,6 +174,65 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  static Future<void> _export(BuildContext context, WidgetRef ref) async {
+    final loc = AppLocalizations.of(context);
+    final ok = await SettingsBackup.export(
+      config: ref.read(filterConfigProvider),
+      presets: ref.read(presetProvider).presets,
+    );
+    if (!context.mounted) return;
+    _toast(
+      context,
+      ok
+          ? loc?.translate('backup_exported') ?? 'Backup created.'
+          : loc?.translate('backup_failed') ?? 'The backup could not be created.',
+    );
+  }
+
+  static Future<void> _import(BuildContext context, WidgetRef ref) async {
+    final loc = AppLocalizations.of(context);
+    final picked = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+      withData: true,
+    );
+    final file = picked?.files.singleOrNull;
+    if (file == null) return;
+
+    // withData is honoured on Android and iOS; on desktop the bytes can come
+    // back null and only the path is set.
+    final json = file.bytes != null
+        ? String.fromCharCodes(file.bytes!)
+        : file.path != null
+            ? await File(file.path!).readAsString()
+            : null;
+
+    final ok = json != null &&
+        await SettingsBackup.import(
+          json: json,
+          preferences: ref.read(preferencesDataSourceProvider),
+          database: ref.read(databaseHelperProvider),
+        );
+
+    if (ok) {
+      await ref.read(filterProvider.notifier).reload();
+      await ref.read(presetProvider.notifier).load();
+    }
+    if (!context.mounted) return;
+    _toast(
+      context,
+      ok
+          ? loc?.translate('backup_imported') ?? 'Settings restored.'
+          : loc?.translate('backup_import_failed') ??
+              'That file could not be read.',
+    );
+  }
+
+  static void _toast(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   static void _open(BuildContext context, Widget screen) {
