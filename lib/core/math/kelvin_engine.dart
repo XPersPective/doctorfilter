@@ -1,146 +1,267 @@
 import 'dart:math' as math;
 
-/// Represents a Kelvin color temperature safety rating according to
-/// circadian rhythm and melatonin suppression scientific studies.
+/// Circadian impact band of a colour temperature.
+///
+/// Thresholds follow melanopsin/ipRGC sensitivity, which peaks near 480 nm: the
+/// higher the CCT, the larger the short-wavelength share of the spectrum and the
+/// stronger the evening melatonin suppression.
 enum MelatoninSafetyLevel {
-  /// < 2500K: Minimal to zero melatonin suppression. Ideal for nighttime and bedtime.
-  safeBedtime,
+  /// < 2700 K — deep amber. Bedtime friendly.
+  sleepFriendly,
 
-  /// 2500K - 4500K: Warm and soothing light. Suitable for relaxing evenings.
-  relaxingEvening,
+  /// 2700–4000 K — warm white. Comfortable for the evening.
+  evening,
 
-  /// 4500K - 5500K: Balanced light for indoor daytime reading and study.
-  balancedDaylight,
+  /// 4000–5000 K — neutral white. Balanced indoor daytime use.
+  balanced,
 
-  /// > 5500K: High-energy visible (HEV) blue light. Suppresses melatonin; day use only.
-  highBlueLightRisk,
+  /// > 5000 K — daylight white, significant blue content. Daytime only.
+  blueLightRisk,
 }
 
-/// High-precision mathematical engine for Kelvin color temperature conversions,
-/// CIE 1931 xy chromaticity, and Correlated Color Temperature (CCT) estimations.
+/// CIE 1931 chromaticity coordinates.
+typedef Chromaticity = ({double x, double y});
+
+/// 8-bit sRGB triple.
+typedef Rgb = ({int r, int g, int b});
+
+/// Linear-light sRGB triple (0.0–1.0 per channel).
+typedef LinearRgb = ({double r, double g, double b});
+
+/// Colour-science engine behind the screen filter.
+///
+/// Forward (Kelvin → tint): Planckian locus (Kim et al., 2002 piecewise cubic fit
+/// of the blackbody curve in CIE 1931) → CIE XYZ → linear sRGB (D65) → sRGB gamma.
+///
+/// Reverse (tint → Kelvin): sRGB → linear → XYZ → CIE 1960 UCS → nearest point
+/// on the Planckian locus (the definition of CCT).
+///
+/// Both directions are round-trip tested: the app shows the user a Kelvin number
+/// and must not fabricate it.
 abstract final class KelvinEngine {
-  /// Supported minimum Kelvin for eye protection filters.
-  static const int minKelvin = 1000;
-
-  /// Supported maximum Kelvin for eye protection filters.
-  static const int maxKelvin = 7000;
-
-  /// Standard reference daylight (D65).
-  static const int standardDaylightKelvin = 6500;
-
-  /// Converts a Kelvin color temperature into 8-bit RGB components (0-255)
-  /// using Tanner Helland's Planckian locus approximation algorithm.
+  /// Lowest supported colour temperature.
   ///
-  /// Returns a Dart 3 Record `(int r, int g, int b)`.
-  static ({int r, int g, int b}) kelvinToRgb(int kelvin) {
-    final clampedKelvin = kelvin.clamp(minKelvin, maxKelvin);
-    final temp = clampedKelvin / 100.0;
+  /// The Kim et al. fit is only defined from 1667 K up, and nothing the app models
+  /// is colder — a candle flame sits near 1850 K. 1700 K is the honest floor.
+  static const int minKelvin = 1700;
 
-    double red;
-    double green;
-    double blue;
+  /// Highest supported colour temperature (CIE standard illuminant D65).
+  static const int maxKelvin = 6500;
 
-    // Calculate Red
-    if (temp <= 66.0) {
-      red = 255.0;
+  /// Reference daylight white point — the "no warming applied" anchor.
+  static const int neutralDaylightKelvin = 6500;
+
+  // --- Forward: Kelvin -> chromaticity -> sRGB ------------------------------
+
+  /// CIE 1931 (x, y) chromaticity of a Planckian (blackbody) radiator.
+  ///
+  /// Kim, Y. et al. (2002). Accurate to ~0.0005 in (x, y) over 1667–25000 K.
+  static Chromaticity planckianChromaticity(int kelvin) {
+    final t = kelvin.clamp(1667, 25000).toDouble();
+    final t2 = t * t;
+    final t3 = t2 * t;
+
+    final double x;
+    if (t <= 4000) {
+      x = -0.2661239e9 / t3 - 0.2343589e6 / t2 + 0.8776956e3 / t + 0.179910;
     } else {
-      red = temp - 60.0;
-      red = 329.698727446 * math.pow(red, -0.1332047592);
+      x = -3.0258469e9 / t3 + 2.1070379e6 / t2 + 0.2226347e3 / t + 0.240390;
     }
 
-    // Calculate Green
-    if (temp <= 66.0) {
-      green = temp;
-      green = 99.4708025861 * math.log(green) - 161.1195681661;
+    final x2 = x * x;
+    final x3 = x2 * x;
+
+    final double y;
+    if (t <= 2222) {
+      y = -1.1063814 * x3 - 1.34811020 * x2 + 2.18555832 * x - 0.20219683;
+    } else if (t <= 4000) {
+      y = -0.9549476 * x3 - 1.37418593 * x2 + 2.09137015 * x - 0.16748867;
     } else {
-      green = temp - 60.0;
-      green = 288.1221695283 * math.pow(green, -0.0755148492);
+      y = 3.0817580 * x3 - 5.87338670 * x2 + 3.75112997 * x - 0.37001483;
     }
 
-    // Calculate Blue
-    if (temp >= 66.0) {
-      blue = 255.0;
-    } else if (temp <= 19.0) {
-      blue = 0.0;
-    } else {
-      blue = temp - 10.0;
-      blue = 138.5177312231 * math.log(blue) - 305.0447927307;
-    }
+    return (x: x, y: y);
+  }
 
+  /// Screen tint colour for a target temperature, in linear light (0.0–1.0).
+  ///
+  /// Normalised so the brightest channel is 1.0: the tint carries only the *hue*
+  /// of the target blackbody. How strongly it is applied is the separate density
+  /// axis — without normalisation a warm tint would also darken the screen and
+  /// the density slider would mean two things at once.
+  static LinearRgb kelvinToLinearRgb(int kelvin) {
+    final (:x, :y) = planckianChromaticity(kelvin);
+    if (y <= 0) return (r: 1.0, g: 1.0, b: 1.0);
+
+    // Chromaticity -> CIE XYZ at unit luminance.
+    final xX = x / y;
+    const yY = 1.0;
+    final zZ = (1.0 - x - y) / y;
+
+    // CIE XYZ -> linear sRGB (IEC 61966-2-1, D65 white point).
+    var r = 3.2404542 * xX - 1.5371385 * yY - 0.4985314 * zZ;
+    var g = -0.9692660 * xX + 1.8760108 * yY + 0.0415560 * zZ;
+    var b = 0.0556434 * xX - 0.2040259 * yY + 1.0572252 * zZ;
+
+    // Temperatures outside the sRGB gamut yield small negative components.
+    r = math.max(0.0, r);
+    g = math.max(0.0, g);
+    b = math.max(0.0, b);
+
+    final peak = math.max(r, math.max(g, b));
+    if (peak <= 0) return (r: 1.0, g: 1.0, b: 1.0);
+
+    return (r: r / peak, g: g / peak, b: b / peak);
+  }
+
+  /// Screen tint colour for a target temperature, as 8-bit sRGB.
+  static Rgb kelvinToRgb(int kelvin) {
+    final lin = kelvinToLinearRgb(kelvin);
     return (
-      r: red.clamp(0.0, 255.0).round(),
-      g: green.clamp(0.0, 255.0).round(),
-      b: blue.clamp(0.0, 255.0).round(),
+      r: _encodeGamma(lin.r),
+      g: _encodeGamma(lin.g),
+      b: _encodeGamma(lin.b),
     );
   }
 
-  /// Calculates the Correlated Color Temperature (CCT) in Kelvin from RGB values
-  /// using CIE 1931 xy chromaticity coordinates and McCamy's empirical formula.
+  // --- Reverse: sRGB -> chromaticity -> CCT ---------------------------------
+
+  /// Maximum distance from the Planckian locus (in CIE 1960 UCS) at which a
+  /// correlated colour temperature is still meaningful. The CIE considers CCT
+  /// undefined beyond |Duv| ≈ 0.05.
+  static const double _maxDuv = 0.05;
+
+  /// Correlated colour temperature of an sRGB colour.
   ///
-  /// Returns estimated Kelvin (1000 - 15000), or `null` if calculation is out of bounds.
+  /// Finds the point on the Planckian locus closest to the sample in the CIE
+  /// 1960 UCS (u, v) plane — the definition of CCT — by searching the locus
+  /// coarsely and then refining.
+  ///
+  /// McCamy's (1992) cubic approximation is the usual shortcut here and is what
+  /// this engine used previously, but it is only accurate above roughly 2000 K:
+  /// at 1700 K it errs by ~5%. That is precisely the bedtime range this app
+  /// exists for, and the number is shown to the user, so the exact search is
+  /// used instead. It costs a few hundred cheap evaluations.
+  ///
+  /// Returns `null` for black, or when the sample sits too far from the locus
+  /// for a CCT to mean anything — the UI then shows nothing rather than
+  /// inventing a number.
   static int? rgbToKelvin(int r, int g, int b) {
     if (r == 0 && g == 0 && b == 0) return null;
 
-    // 1. Gamma expansion (sRGB -> Linear RGB)
-    double linearize(int channel) {
-      final v = channel / 255.0;
-      return (v > 0.04045) ? math.pow((v + 0.055) / 1.055, 2.4).toDouble() : (v / 12.92);
-    }
+    final rLin = _decodeGamma(r);
+    final gLin = _decodeGamma(g);
+    final bLin = _decodeGamma(b);
 
-    final rLin = linearize(r);
-    final gLin = linearize(g);
-    final bLin = linearize(b);
+    final xX = 0.4124564 * rLin + 0.3575761 * gLin + 0.1804375 * bLin;
+    final yY = 0.2126729 * rLin + 0.7151522 * gLin + 0.0721750 * bLin;
+    final zZ = 0.0193339 * rLin + 0.1191920 * gLin + 0.9503041 * bLin;
 
-    // 2. Convert to CIE 1931 XYZ
-    final xX = (rLin * 0.4124) + (gLin * 0.3576) + (bLin * 0.1805);
-    final yY = (rLin * 0.2126) + (gLin * 0.7152) + (bLin * 0.0722);
-    final zZ = (rLin * 0.0193) + (gLin * 0.1192) + (bLin * 0.9505);
+    final sum = xX + yY + zZ;
+    if (sum <= 0 || !sum.isFinite) return null;
 
-    final sumXYZ = xX + yY + zZ;
-    if (sumXYZ <= 0.0 || !sumXYZ.isFinite) return null;
+    final sample = _toUcs(x: xX / sum, y: yY / sum);
 
-    // 3. Chromaticity coordinates
-    final x = xX / sumXYZ;
-    final y = yY / sumXYZ;
+    var best = _nearestOnLocus(sample, from: 1667, to: 25000, step: 100);
+    best = _nearestOnLocus(
+      sample,
+      from: best.kelvin - 100,
+      to: best.kelvin + 100,
+      step: 1,
+    );
 
-    final denominator = 0.1858 - y;
-    if (denominator.abs() < 1e-6) return null;
-
-    // 4. McCamy's approximation
-    final n = (x - 0.3320) / denominator;
-    final cct = (437 * math.pow(n, 3)) +
-        (3601 * math.pow(n, 2)) +
-        (6861 * n) +
-        5517;
-
-    if (!cct.isFinite || cct < 500 || cct > 20000) {
-      return null;
-    }
-
-    return cct.round();
+    if (best.distance > _maxDuv) return null;
+    return best.kelvin;
   }
 
-  /// Categorizes a Kelvin color temperature into its biological melatonin impact.
-  static MelatoninSafetyLevel getSafetyLevel(int kelvin) {
-    if (kelvin < 2500) {
-      return MelatoninSafetyLevel.safeBedtime;
-    } else if (kelvin < 4500) {
-      return MelatoninSafetyLevel.relaxingEvening;
-    } else if (kelvin < 5500) {
-      return MelatoninSafetyLevel.balancedDaylight;
-    } else {
-      return MelatoninSafetyLevel.highBlueLightRisk;
-    }
+  /// CIE 1931 (x, y) -> CIE 1960 UCS (u, v), the plane CCT is defined in.
+  static ({double u, double v}) _toUcs({required double x, required double y}) {
+    final denominator = -2 * x + 12 * y + 3;
+    if (denominator.abs() < 1e-12) return (u: 0, v: 0);
+    return (u: 4 * x / denominator, v: 6 * y / denominator);
   }
 
-  /// Calculates estimated percentage of harmful high-energy blue light blocked (0% - 100%).
-  static double calculateBlueLightBlockedPercentage(int kelvin, int opacityPercent) {
-    final clampedK = kelvin.clamp(minKelvin, 6500);
-    // As kelvin decreases from 6500K to 1000K, blue spectral energy decreases
-    final spectralBlueFactor = 1.0 - ((clampedK - minKelvin) / (6500 - minKelvin));
-    final opacityFactor = (opacityPercent.clamp(0, 100)) / 100.0;
+  static ({int kelvin, double distance}) _nearestOnLocus(
+    ({double u, double v}) sample, {
+    required int from,
+    required int to,
+    required int step,
+  }) {
+    var bestKelvin = from;
+    var bestDistance = double.infinity;
 
-    final blocked = (spectralBlueFactor * 0.8 + opacityFactor * 0.2) * 100.0;
-    return blocked.clamp(0.0, 99.0);
+    for (var k = from.clamp(1667, 25000); k <= to.clamp(1667, 25000); k += step) {
+      final (:x, :y) = planckianChromaticity(k);
+      final locus = _toUcs(x: x, y: y);
+      final du = sample.u - locus.u;
+      final dv = sample.v - locus.v;
+      final distance = math.sqrt(du * du + dv * dv);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestKelvin = k;
+      }
+    }
+
+    return (kelvin: bestKelvin, distance: bestDistance);
+  }
+
+  // --- Interpretation -------------------------------------------------------
+
+  /// Circadian impact band of a colour temperature.
+  static MelatoninSafetyLevel safetyLevel(int kelvin) {
+    if (kelvin < 2700) return MelatoninSafetyLevel.sleepFriendly;
+    if (kelvin < 4000) return MelatoninSafetyLevel.evening;
+    if (kelvin < 5000) return MelatoninSafetyLevel.balanced;
+    return MelatoninSafetyLevel.blueLightRisk;
+  }
+
+  /// Fraction of the screen's blue output the filter removes (0.0–1.0).
+  ///
+  /// The overlay composites as `out = screen * (1 - a) + tint * a`, so for a white
+  /// screen the blue channel is transmitted at `T = (1 - a) + tintBlue * a` in
+  /// linear light, and the reduction is `1 - T`. This falls straight out of how
+  /// the filter actually works — it is not a marketing figure.
+  ///
+  /// [compositeAlpha] is the effective overlay alpha (0.0–1.0) after density and
+  /// extra dimming are combined.
+  static double blueLightReduction({
+    required int tintKelvin,
+    required double compositeAlpha,
+  }) {
+    final a = compositeAlpha.clamp(0.0, 1.0);
+    final tintBlue = kelvinToLinearRgb(tintKelvin).b;
+    return (1.0 - ((1.0 - a) + tintBlue * a)).clamp(0.0, 1.0);
+  }
+
+  /// Fraction by which overall screen luminance is reduced (0.0–1.0).
+  ///
+  /// Same composite, weighted by the Rec. 709 luminance coefficients sRGB uses,
+  /// so it reflects perceived dimming rather than a raw channel average.
+  static double luminanceReduction({
+    required int tintKelvin,
+    required double compositeAlpha,
+  }) {
+    final a = compositeAlpha.clamp(0.0, 1.0);
+    final tint = kelvinToLinearRgb(tintKelvin);
+    final tintLuminance =
+        0.2126729 * tint.r + 0.7151522 * tint.g + 0.0721750 * tint.b;
+    return (1.0 - ((1.0 - a) + tintLuminance * a)).clamp(0.0, 1.0);
+  }
+
+  // --- sRGB transfer function (IEC 61966-2-1) -------------------------------
+
+  static int _encodeGamma(double linear) {
+    final v = linear.clamp(0.0, 1.0);
+    final encoded = v <= 0.0031308
+        ? v * 12.92
+        : 1.055 * math.pow(v, 1 / 2.4).toDouble() - 0.055;
+    return (encoded * 255).round().clamp(0, 255);
+  }
+
+  static double _decodeGamma(int channel) {
+    final v = channel.clamp(0, 255) / 255.0;
+    return v <= 0.04045
+        ? v / 12.92
+        : math.pow((v + 0.055) / 1.055, 2.4).toDouble();
   }
 }

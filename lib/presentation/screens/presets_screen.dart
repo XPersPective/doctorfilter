@@ -182,9 +182,10 @@ class PresetsScreen extends ConsumerWidget {
                   Text('Color Temperature: $kelvin K', style: const TextStyle(fontWeight: FontWeight.w600)),
                   Slider(
                     value: kelvin.toDouble(),
-                    min: 1000,
-                    max: 6500,
-                    divisions: 55,
+                    min: KelvinEngine.minKelvin.toDouble(),
+                    max: KelvinEngine.maxKelvin.toDouble(),
+                    divisions:
+                        (KelvinEngine.maxKelvin - KelvinEngine.minKelvin) ~/ 100,
                     onChanged: (val) => setState(() => kelvin = val.round()),
                   ),
                   Text('Density: $alpha', style: const TextStyle(fontWeight: FontWeight.w600)),

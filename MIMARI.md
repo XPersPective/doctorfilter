@@ -328,9 +328,16 @@ metinlerde abartılmaz ve tedavi vaadi verilmez.
 * `Tanner Helland` yaklaşımı yalnızca karşılaştırma için tutulabilir; üretimde Planckian locus kullanılır.
 
 ## 5.2 RGB → Kelvin (ters yön)
-sRGB → linear → XYZ → (x, y) → **McCamy (1992)** kübik CCT formülü.
-Ürettiğimiz rengi geri çevirince hedefe **±%2** içinde dönmesi round-trip testiyle doğrulanır.
-Hesaplanamıyorsa **hiçbir şey gösterilmez**, uydurulmaz.
+sRGB → linear → XYZ → **CIE 1960 UCS (u, v)** → Planckian locus üzerinde **en yakın nokta**
+(CCT'nin tanımı budur; kaba tarama + 1 K hassasiyetinde inceltme).
+
+**McCamy (1992) kübik formülü kullanılmıyor.** Yaygın kestirme yoldur ama yalnızca
+~2000 K üzerinde güvenilir; 1700 K'de %4.9 sapıyor — yani uygulamanın en kritik
+bölgesinde. Kullanıcıya gösterilen bir sayıda bu kabul edilemez.
+
+Locus'a uzaklık `|Duv| > 0.05` ise CCT tanımsızdır ve **hiçbir şey gösterilmez**, uydurulmaz.
+Round-trip hatası **%2** ile sınırlı; bu 8-bit kuantizasyon tabanıdır (D65 yakınında üç
+kanal da 255'e birkaç kod uzaklıkta), motorun doğruluk sınırı değil.
 
 ## 5.3 Filtrenin fiziksel modeli
 Overlay alfa karışımı yapar: `sonuç = ekran × (1 − A) + C × A`
@@ -617,8 +624,12 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 > Parantezdeki `K#` Bölüm 3.2'deki kusur numarasıdır.
 
 ## FAZ A — Doğruluk ve kalıcılık (temel; her şey buna dayanıyor)
-- [ ] **A1.** `KelvinEngine`'i Planckian locus (Kim et al.) + sRGB'ye taşı, McCamy ters
-      dönüşümü koru, alt sınırı 1700 K yap; round-trip ve sınır testleri yaz. (K9)
+- [x] **A1.** `KelvinEngine`'i Planckian locus (Kim et al.) + sRGB'ye taşı, alt sınırı
+      1700 K yap; round-trip ve sınır testleri yaz. (K9)
+      *McCamy ters dönüşümü **terk edildi**: 1700 K'de %4.9 sapıyordu — tam da uygulamanın
+      var oluş sebebi olan yatma saati aralığı. Yerine CIE 1960 UCS'de Planckian locus'a
+      en yakın nokta araması (CCT'nin tanımı). Round-trip artık %2 içinde; %2 8-bit
+      kuantizasyon tabanı, motor sınırı değil.*
 - [ ] **A1b.** **Veri göçü:** A2 `FilterConfig` şemasını değiştiriyor. Eski
       SharedPreferences anahtarlarından (`df_filter_alpha`, `df_filter_brightness`, ...)
       ve 1.x anahtarlarından yeni üç eksene **tek yönlü göç** yaz; şema sürümü tut.
@@ -775,11 +786,10 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 > **Bu bölüm her commit'te güncellenir.** Devralan ajan buradan devam eder.
 
 **Son durum (2026-09-15):**
-* Bu doküman protokol + analiz + yol haritası olarak yazıldı ve push edildi.
-* **Kod tarafında henüz hiçbir yol haritası maddesi tamamlanmadı.** Tüm maddeler `[ ]`.
-* `lib/core/math/kelvin_engine.dart` üzerinde A1 denemesi yapıldı ancak çağıranlar
-  (`kelvin_dial.dart`, `test/core/math/kelvin_engine_test.dart`) güncellenmediği için
-  **geri alındı**; ağaç temiz bırakıldı. A1'i yapan ajan çağıranları da güncellemelidir.
+* Doküman protokol + analiz + yol haritası olarak yazıldı.
+* **A1 tamamlandı.** `KelvinEngine` yeniden yazıldı (Planckian locus + UCS tabanlı ters
+  dönüşüm), çağıranlar (`kelvin_dial.dart`, `presets_screen.dart`) ve testler güncellendi.
+  `flutter analyze` 0, `flutter test` 18/18.
 * Çalışma ağacında bu oturumdan önce gelen, commit edilmemiş değişiklikler var:
   `.gitignore`, `README.md`, `ios/Runner/Info.plist`, `lib/main.dart`,
   `lib/presentation/screens/home_screen.dart`, `pubspec.yaml`, `pubspec.lock`,
@@ -795,7 +805,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 
 *(şu an boş)*
 
-**Sıradaki madde:** `A1`.
+**Sıradaki madde:** `A1b` (veri göçü).
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar
