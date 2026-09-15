@@ -96,6 +96,7 @@ class MainActivity : FlutterActivity() {
                         isPro = call.argument<Boolean>("isPro") ?: false
                     )
                     refreshNotification()
+                    AppShortcuts.refresh(this)
                     result.success(true)
                 }
 

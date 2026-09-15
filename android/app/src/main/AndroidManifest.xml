@@ -43,6 +43,16 @@
             </intent-filter>
         </activity>
 
+        <!-- Invisible trampoline for launcher shortcuts: starts the filter and
+             finishes without drawing anything. -->
+        <activity
+            android:name=".ShortcutActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

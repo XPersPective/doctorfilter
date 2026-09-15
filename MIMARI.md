@@ -926,7 +926,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       kenarlıklar koyulaştırılmak yerine açıldı, aksi hâlde siyah üstünde kaybolup
       düzen yapısı yok oluyor), `amoledProvider` + `darkThemeProvider`, ayarlarda
       anahtar (yalnızca koyu tema açıkken görünür).
-- [ ] **H6.** Uygulama kısayolları (uzun basınca hızlı preset).
+- [x] **H6.** Uygulama kısayolları. `AppShortcuts` dinamik kısayolları bildirimle
+      aynı `PresetCatalog`'tan üretir — sabit bir liste, kullanıcı kendi preset'ini
+      yapar yapmaz yanlış olurdu. En fazla 4 (neredeyse her başlatıcının gösterdiği
+      sayı), kilitli olanlar elenir. Simge preset'in kendi renginde dolu bir daire:
+      dört özdeş simge kullanıcıya hiçbir şey anlatmaz, renk ise uygulamanın her
+      yerinde preset'leri ayıran şey. Kısayol bir etkinliği hedeflemek zorunda
+      olduğu için görünmez `ShortcutActivity` var; servisi başlatıp hiçbir şey
+      çizmeden kapanır (kısayolun amacı uygulamayı *açmak değil*). Overlay izni
+      yoksa sessizce hiçbir şey yapmak yerine söyler ve uygulamayı açar.
 - [x] **H7.** Ayarları JSON olarak dışa/içe aktarma. `SettingsBackup` (`formatVersion`
       ileride dosyayı sessizce yanlış okumak yerine reddedebilsin diye). Dışa aktarım
       paylaşım sayfasına verir; içe aktarımda **her değer** `FilterConfig`/`FilterPreset`
@@ -1089,7 +1097,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H3, H4, H6, H8–H11, H13–H16. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H3, H4, H8–H11, H13–H16. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.
