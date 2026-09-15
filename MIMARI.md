@@ -324,6 +324,17 @@ domain/repositories/i_purchase_repository.dart      ← platform-bağımsız sö
 ```
 
 * Paket: **`in_app_purchase`** (resmî Flutter eklentisi, ücretsiz, Android + iOS ortak API).
+* **Ödeme her zaman platformun kendi mağaza akışıdır — bu bir yasaktır, tercih değil.**
+  * Android → **Google Play Billing** (kullanıcının Play hesabında kayıtlı ödeme yöntemi,
+    Google Pay, operatör faturası — hangisi tanımlıysa o, iki dokunuşla biter).
+  * iOS → **App Store In-App Purchase** (Apple ID / Apple Pay).
+  * Windows → **Microsoft Store** satın alma API'si.
+  * Uygulama **hiçbir zaman kredi kartı numarası, IBAN veya ödeme bilgisi istemez**,
+    hiçbir ödeme formu göstermez, hiçbir tarayıcı ödeme sayfasına yönlendirmez.
+  * **Stripe, PayPal, iyzico, harici link ile ödeme vb. üçüncü taraf ödeme yöntemi
+    EKLENMEZ.** Hem kullanıcıyı kaçırır hem de Play ve App Store politikalarını ihlal
+    eder (dijital içerik satışı mağaza faturalandırmasından geçmek zorundadır).
+  * Fiyat, para birimi ve vergi mağazadan gelir; koda hiçbir tutar yazılmaz.
 * Ürün: **tek, non-consumable** → `doctorfilter_pro_lifetime`. **Abonelik yok.**
   Fiyat mağazadan çekilir, koda yazılmaz.
 * Zorunlu davranışlar: satın alma akışı, **"Satın Alımları Geri Yükle"** (App Store şartı),
@@ -580,3 +591,4 @@ yüzünden hata ekranı göstermez.**
 | 2026-09-15 | Filtre üç eksene ayrıldı (Kelvin / Yoğunluk / Ekstra Karartma) | "Sub-Zero" belirsizdi ve parlaklık alanı hiç uygulanmıyordu (K4) |
 | 2026-09-15 | Kelvin alt sınırı 1000 K → **1700 K** | Kullanılan Planckian yaklaşımı 1667 K altında tanımsız; mum alevi ~1850 K. 1000 K bilimsel olarak yanlıştı (K9) |
 | 2026-09-15 | Mağaza sırası Android → iOS → Microsoft Store | Proje sahibinin yayın planı |
+| 2026-09-15 | Ödeme **yalnızca** platformun yerel mağaza akışı (Play Billing / App Store IAP / MS Store); üçüncü taraf ödeme yasak | Kullanıcı zaten kayıtlı ödeme yöntemiyle iki dokunuşta öder; kart formu dönüşümü düşürür. Ayrıca dijital içerikte harici ödeme mağaza politikalarını ihlal eder |
