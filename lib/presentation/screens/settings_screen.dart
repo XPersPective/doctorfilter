@@ -15,6 +15,7 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'about_screen.dart';
 import 'calibration_screen.dart';
+import 'exclusions_screen.dart';
 import 'language_screen.dart';
 import 'paywall_screen.dart';
 
@@ -94,6 +95,19 @@ class SettingsScreen extends ConsumerWidget {
                     onChanged: (_) => ref.read(amoledProvider.notifier).toggle(),
                   ),
                 ],
+                const Divider(height: 1, indent: 56),
+                ListTile(
+                  leading: const Icon(Icons.pause_circle_outline_rounded),
+                  title: Text(
+                    loc?.translate('exclusions_title') ?? 'Pause in these apps',
+                  ),
+                  subtitle: Text(
+                    loc?.translate('exclusions_desc') ??
+                        'Step aside for the camera, the gallery, a video player.',
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => _open(context, const ExclusionsScreen()),
+                ),
                 const Divider(height: 1, indent: 56),
                 SwitchListTile(
                   secondary: Icon(

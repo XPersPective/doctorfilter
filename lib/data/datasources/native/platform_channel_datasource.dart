@@ -3,6 +3,22 @@ import 'package:flutter/services.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/domain/entities/schedule_rule.dart';
 
+/// An installed app, as shown in the exclusion picker.
+final class InstalledApp {
+  const InstalledApp({
+    required this.packageName,
+    required this.label,
+    this.icon,
+  });
+
+  final String packageName;
+  final String label;
+
+  /// A small PNG, or null where the icon could not be rendered. One bad icon
+  /// should cost its own row, not the whole list.
+  final Uint8List? icon;
+}
+
 /// Bridge to the native overlay service, notification and scheduler.
 ///
 /// The native side is told the *composite* colour and alpha rather than the
@@ -103,6 +119,43 @@ class PlatformChannelDataSource {
       return const {};
     }
   }
+
+  /// Whether the user has granted usage access, needed to name the app in
+  /// front. Revocable at any time, so it is asked rather than remembered.
+  Future<bool> hasUsageAccess() => _invokeBool('hasUsageAccess');
+
+  Future<void> requestUsageAccess() async {
+    await _invokeBool('requestUsageAccess');
+  }
+
+  /// Every app with a launcher entry: package, label and a small PNG icon.
+  Future<List<InstalledApp>> launchableApps() async {
+    try {
+      final result = await _channel.invokeListMethod<Object?>('getLaunchableApps');
+      return [
+        for (final entry in result ?? const [])
+          if (entry is Map)
+            InstalledApp(
+              packageName: entry['package'] as String? ?? '',
+              label: entry['label'] as String? ?? '',
+              icon: entry['icon'] as Uint8List?,
+            ),
+      ];
+    } on PlatformException {
+      return const [];
+    } on MissingPluginException {
+      return const [];
+    }
+  }
+
+  Future<bool> setAppExclusions({
+    required bool isEnabled,
+    required List<String> packages,
+  }) =>
+      _invokeBool('setAppExclusions', {
+        'isEnabled': isEnabled,
+        'packages': packages,
+      });
 
   /// Turns ambient-light adaptation on or off on the native side.
   Future<bool> setAmbientAdaptation({required bool isEnabled}) =>

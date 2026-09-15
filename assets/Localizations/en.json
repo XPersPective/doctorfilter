@@ -196,5 +196,14 @@
   "oled_energy": "Your screen is emitting about {percent}% less light. On an OLED panel its power draw falls with it, though not exactly one-for-one.",
   "settings_ambient": "Adapt to the room",
   "settings_ambient_desc": "Dims a little more in the dark, backs off in daylight.",
-  "settings_ambient_locked": "Included with Pro."
+  "settings_ambient_locked": "Included with Pro.",
+  "exclusions_title": "Pause in these apps",
+  "exclusions_desc": "Step aside for the camera, the gallery, a video player.",
+  "exclusions_intro": "The filter lifts itself while one of these apps is in front, and comes back when you leave.",
+  "exclusions_enable": "Pause automatically",
+  "exclusions_search": "Search apps",
+  "exclusions_list_failed": "The app list could not be read.",
+  "exclusions_permission_title": "One permission first",
+  "exclusions_permission_body": "To step aside for your camera, the app needs to know which app is in front. Android calls this usage access and you grant it in system settings. DoctorFilter only reads the name of the app currently open, never your history, and nothing leaves your phone.",
+  "exclusions_permission_action": "Open settings"
 }

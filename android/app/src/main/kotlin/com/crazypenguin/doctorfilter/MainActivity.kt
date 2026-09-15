@@ -102,6 +102,33 @@ class MainActivity : FlutterActivity() {
 
                 "getUsageMinutes" -> result.success(UsageLog.read(this))
 
+                "hasUsageAccess" -> result.success(AppExclusions.hasUsageAccess(this))
+                "requestUsageAccess" -> {
+                    AppExclusions.openUsageAccessSettings(this)
+                    result.success(true)
+                }
+
+                "getLaunchableApps" -> result.success(AppExclusions.launchableApps(this))
+
+                "setAppExclusions" -> {
+                    AppExclusions.setEnabled(
+                        this,
+                        call.argument<Boolean>("isEnabled") ?: false
+                    )
+                    AppExclusions.setExcluded(
+                        this,
+                        call.argument<List<String>>("packages") ?: emptyList()
+                    )
+                    if (OverlayService.isRunning) {
+                        startService(
+                            Intent(this, OverlayService::class.java).apply {
+                                action = OverlayService.ACTION_UPDATE
+                            }
+                        )
+                    }
+                    result.success(true)
+                }
+
                 "setAmbientAdaptation" -> {
                     OverlayService.setAmbientEnabled(
                         this,
