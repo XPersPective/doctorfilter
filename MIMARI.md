@@ -10,7 +10,7 @@
 | **Ürün** | DoctorFilter — bilimsel temelli mavi ışık / ekran renk sıcaklığı filtresi |
 | **Paket** | `com.crazypenguin.doctorfilter` |
 | **Sürüm hattı** | 2.x (eski 1.x Play sürümünün modern yeniden yazımı) |
-| **Stack** | Flutter 3.47 · Dart 3.13 · Riverpod · Kotlin (Android native) |
+| **Stack** | Flutter 3.47 · Dart 3.13 · Riverpod 2.x (`StateNotifier`) · Kotlin |
 | **Mağaza sırası** | 1) Google Play 2) App Store 3) Microsoft Store · (Linux/macOS: mağazasız) |
 | **Lisans** | GPL-3.0 |
 | **Gelir** | Ücretsiz + reklam · **Pro = tek seferlik ömür boyu** (abonelik YOK) |
@@ -660,8 +660,9 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       iddia edilmiyor — panel spektrumu ve göz mesafesi bilinmeden ölçülemez, göreli
       oranda ise panel karakteristiği büyük ölçüde sadeleşir. Karartma tek başına da
       sayıyı düşürüyor (Nagare 2019); test bunu ayrıca doğruluyor.
-- [ ] **A9.** Riverpod kullanımını tek yönde netleştir (`Notifier`/`AsyncNotifier`'a geç
-      veya `StateNotifier`'da kal); doküman ile kodu aynı hizaya getir. (K18)
+- [x] **A9.** Karar: `flutter_riverpod` 2.x + `StateNotifier`'da kalınıyor; doküman
+      koda göre düzeltildi (bkz. 3.0). Sorunların kaynağı kütüphane değil disk yarışıydı
+      ve o düzeltildi. Yükseltme tetikleyicisi ve "iki stil karıştırılmaz" kuralı yazıldı. (K18)
 
 ## FAZ B — Android native
 - [~] 🔴 **B1.** Bildirim aksiyonlarına gerçek drawable ikonlar verildi
@@ -830,7 +831,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
-* **A8 tamamlandı:** melanopik azalma metriği.
+* **A8, A9 tamamlandı. FAZ A bitti.** Melanopik metrik yazıldı; durum yönetimi
+  tercihi `StateNotifier` olarak sabitlendi ve gerekçesi 3.0'a işlendi.
   A7 yapılana kadar Ekstra Karartma ekseni Dart tarafında doğru hesaplanıyor ama Kotlin
   `OverlayService` hâlâ yalnızca alfa tint çiziyor.
 * Çalışma ağacında bu oturumdan önce gelen, commit edilmemiş değişiklikler var:
@@ -874,7 +876,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `A9` (Riverpod netleştirme) → sonra `B2` (bildirim kokpiti).
+**Sıradaki madde:** `B2` (bildirim kokpiti — RemoteViews).
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar
@@ -894,6 +896,7 @@ temizleyecektir. O maddeye kadar bu metinler yeni ekranlarda **kullanılmamalıd
 | 2026-09-15 | Filtre üç eksene ayrıldı (Kelvin / Yoğunluk / Ekstra Karartma) | "Sub-Zero" belirsizdi ve parlaklık alanı hiç uygulanmıyordu (K4) |
 | 2026-09-15 | Kelvin alt sınırı 1000 K → **1700 K** | Kullanılan Planckian yaklaşımı 1667 K altında tanımsız; mum alevi ~1850 K. 1000 K bilimsel olarak yanlıştı (K9) |
 | 2026-09-15 | Mağaza sırası Android → iOS → Microsoft Store | Proje sahibinin yayın planı |
+| 2026-09-15 | `flutter_riverpod` 2.x + `StateNotifier`'da kalındı; Riverpod 3'e geçilmedi | Sorunların kaynağı kütüphane değil, diskteki oku-değiştir-yaz yarışıydı ve o düzeltildi. Çalışan testli katmanı API kozmetiği için yeniden yazmak karşılıksız regresyon riski |
 | 2026-09-15 | Metrik "% mavi ışık engellendi" yerine **göreli melanopik azalma** (CIE S 026 / Brown 2022) | Eski formül uydurma ağırlıklara dayanıyordu; melanopik EDI alanın bugünkü standardı ve doğrulanabilir |
 | 2026-09-15 | Karartma ekseni arayüzde Kelvin kadar öne çıkarılacak | Nagare ve ark. 2019: parlaklık düşmeden yalnızca spektrum değişimi melatonin baskılanmasını anlamlı azaltmıyor |
 | 2026-09-15 | Retina hasarı / AMD / göz yorgunluğu tedavisi iddiaları **yasaklandı** | Cochrane (Singh ve ark. 2023) bu iddiaları desteklemiyor; yanıltıcı sağlık iddiası hem etik dışı hem mağaza riski |
