@@ -31,4 +31,11 @@
     <string name="axis_dim">Extra dim</string>
     <string name="axis_value_kelvin">%1$d K</string>
     <string name="axis_value_percent">%1$d%%</string>
+
+    <string name="tile_subtitle_active">On · %1$d K</string>
+    <string name="tile_subtitle_off">Off</string>
+
+    <string name="widget_on">Filter on</string>
+    <string name="widget_off">Filter off</string>
+    <string name="widget_description">Turn the screen filter on or off with one tap.</string>
 </resources>
