@@ -55,6 +55,15 @@ class ScheduleNotifier extends StateNotifier<ScheduleRule> {
     }
   }
 
+  /// Rebuilds the schedule around a bedtime the user picked.
+  Future<void> applyBedtime({required int hour, required int minute}) async {
+    final updated = state.forBedtime(bedHour: hour, bedMinute: minute);
+    final result = await _manageScheduleUseCase.updateSchedule(updated);
+    if (result is Success<ScheduleRule>) {
+      state = result.data;
+    }
+  }
+
   Future<void> setTransition(int minutes) async {
     final updated = state.copyWith(transitionMinutes: minutes);
     final result = await _manageScheduleUseCase.updateSchedule(updated);

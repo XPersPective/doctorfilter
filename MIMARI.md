@@ -974,8 +974,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       göstermemeli.
       Bant adı/rengi artık `bandStyle()` içinde tek yerde — iki kopya kaçınılmaz
       olarak ayrışır (biri 3000 K'ya "akşam" derken öteki hâlâ "dengeli" der).
-- [ ] **H9.** **Yatma rutini asistanı:** kullanıcı yatma saatini girer, uygulama 3 saat
-      öncesinden kademeli olarak hedefe indirir (Brown 2022 penceresi).
+- [x] **H9.** **Yatma rutini asistanı.** Kullanıcı yalnızca yatma saatini söyler;
+      `ScheduleRule.forBedtime` başlangıcı 3 saat öncesine alır ve geçiş süresini
+      pencerenin tamamına (180 dk) yayar. Çoğu insan ne zaman yattığını bilir ve bir
+      filtrenin ne zaman açılması gerektiği konusunda hiçbir fikri yoktur; **bildikleri
+      şeyi sorup bilmedikleri şeyi hesaplamak**, kurulan bir özellikle ikinci ekranda
+      terk edilen bir özellik arasındaki fark. Erken yatma saati bir önceki akşama
+      sarar (01:00 → 22:00, eksi iki değil).
+      `maxTransitionMinutes` 60 → **180**'e çıkarıldı: Brown 2022'nin uyku öncesi
+      penceresi bu. 22:00'de basamak şeklinde bir değişim kullanıcının fark ettiği ve
+      rahatsız olduğu şeydir; rahatsız eden ayar kapatılır.
 - [ ] **H10.** **Ekran kalibrasyonu:** panel farkları gerçektir (OLED/LCD, üretici tonlaması).
       Tek seferlik "beyaz kağıt gibi görünene kadar ayarla" ince ayarı; hesaplar bu
       düzeltme katsayısıyla çalışır.
@@ -1132,7 +1140,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H9–H11, H13–H15. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H10, H11, H13–H15. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.

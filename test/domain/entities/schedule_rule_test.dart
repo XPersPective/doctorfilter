@@ -20,4 +20,26 @@ void main() {
       );
     });
   });
+
+  group('bedtime', () {
+    test('the wind-down starts three hours before bed and fills the window', () {
+      final rule = ScheduleRule.defaultBedtime()
+          .forBedtime(bedHour: 23, bedMinute: 30);
+
+      expect(rule.startHour, 20);
+      expect(rule.startMinute, 30);
+      expect(rule.transitionMinutes, ScheduleRule.windDownHours * 60);
+      expect(rule.isEnabled, isTrue);
+    });
+
+    test('an early bedtime wraps back to the previous evening', () {
+      // Bed at 01:00 means the descent starts at 22:00 the day before, not at
+      // minus two o'clock.
+      final rule = ScheduleRule.defaultBedtime()
+          .forBedtime(bedHour: 1, bedMinute: 0);
+
+      expect(rule.startHour, 22);
+      expect(rule.startMinute, 0);
+    });
+  });
 }

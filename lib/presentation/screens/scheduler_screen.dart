@@ -46,6 +46,28 @@ class _SchedulerScreenState extends ConsumerState<SchedulerScreen> {
         children: [
           Card(
             margin: EdgeInsets.zero,
+            child: ListTile(
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              leading: Icon(Icons.bedtime_outlined, color: context.colours.primary),
+              title: Text(
+                loc?.translate('schedule_bedtime') ?? 'Set up around my bedtime',
+                style: context.texts.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                loc?.translate('schedule_bedtime_desc') ??
+                    'The screen starts winding down three hours before you sleep.',
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => _pickBedtime(context, notifier, rule),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          Card(
+            margin: EdgeInsets.zero,
             child: SwitchListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               value: rule.isEnabled,
@@ -180,6 +202,28 @@ String _transitionLabel(AppLocalizations? loc, int minutes) {
   return template == null
       ? '$minutes min'
       : template.replaceAll('{minutes}', '$minutes');
+}
+
+/// Asks for one number and derives the whole schedule from it.
+///
+/// Most people know when they go to bed and have no opinion about when a filter
+/// should switch on. Asking for the thing they know, and computing the thing
+/// they do not, is the difference between a feature that gets set up and one
+/// that gets abandoned on the second screen.
+Future<void> _pickBedtime(
+  BuildContext context,
+  ScheduleNotifier notifier,
+  ScheduleRule rule,
+) async {
+  final bedtime = TimeOfDay(
+    hour: (rule.startHour + ScheduleRule.windDownHours) % 24,
+    minute: rule.startMinute,
+  );
+
+  final picked = await showTimePicker(context: context, initialTime: bedtime);
+  if (picked == null) return;
+
+  await notifier.applyBedtime(hour: picked.hour, minute: picked.minute);
 }
 
 class _TimeCard extends StatelessWidget {
