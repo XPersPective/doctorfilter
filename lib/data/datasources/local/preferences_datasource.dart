@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:doctorfilter/domain/entities/ad_policy.dart';
 import 'package:doctorfilter/domain/entities/circadian_mode.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/domain/entities/pro_status.dart';
@@ -39,6 +40,12 @@ class PreferencesDataSource {
 
   static const _keyProLifetime = 'df_pro_lifetime';
   static const _keyProPassExpiry = 'df_pro_pass_expiry';
+
+  static const _keyAdFirstLaunch = 'df_ad_first_launch';
+  static const _keyAdSessionCount = 'df_ad_session_count';
+  static const _keyAdLastInterstitial = 'df_ad_last_interstitial';
+  static const _keyAdRewardedViews = 'df_ad_rewarded_views';
+  static const _keyAdRewardedDay = 'df_ad_rewarded_day';
 
   static const _keyLocale = 'df_app_locale';
   static const _keyIsDarkMode = 'df_app_is_dark_mode';
@@ -115,6 +122,45 @@ class PreferencesDataSource {
     } else {
       await _prefs.setInt(_keyProPassExpiry, expiry.millisecondsSinceEpoch);
     }
+  }
+
+  /// Reads ad exposure, seeding the install date on first ever launch.
+  ///
+  /// Per-session counters deliberately start at zero: "one interstitial per
+  /// session" only means anything if a session is a real boundary.
+  AdPolicyState getAdPolicyState() {
+    final firstLaunchMillis = _prefs.getInt(_keyAdFirstLaunch);
+    final lastInterstitialMillis = _prefs.getInt(_keyAdLastInterstitial);
+    final rewardedDayMillis = _prefs.getInt(_keyAdRewardedDay);
+
+    return AdPolicyState(
+      firstLaunch: firstLaunchMillis == null
+          ? DateTime.now()
+          : DateTime.fromMillisecondsSinceEpoch(firstLaunchMillis),
+      sessionCount: _prefs.getInt(_keyAdSessionCount) ?? 0,
+      lastInterstitialAt: lastInterstitialMillis == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(lastInterstitialMillis),
+      rewardedViewsToday: _prefs.getInt(_keyAdRewardedViews) ?? 0,
+      rewardedDay: rewardedDayMillis == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(rewardedDayMillis),
+    );
+  }
+
+  Future<void> saveAdPolicyState(AdPolicyState state) async {
+    await Future.wait([
+      _prefs.setInt(_keyAdFirstLaunch, state.firstLaunch.millisecondsSinceEpoch),
+      _prefs.setInt(_keyAdSessionCount, state.sessionCount),
+      _prefs.setInt(_keyAdRewardedViews, state.rewardedViewsToday),
+      if (state.lastInterstitialAt != null)
+        _prefs.setInt(
+          _keyAdLastInterstitial,
+          state.lastInterstitialAt!.millisecondsSinceEpoch,
+        ),
+      if (state.rewardedDay != null)
+        _prefs.setInt(_keyAdRewardedDay, state.rewardedDay!.millisecondsSinceEpoch),
+    ]);
   }
 
   String? getLocale() => _prefs.getString(_keyLocale);

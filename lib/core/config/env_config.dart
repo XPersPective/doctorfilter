@@ -1,13 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// Centralized, type-safe configuration manager for application environments,
-/// API endpoints, In-App Purchases, and Advertisements.
+/// Where the app's ad unit ids come from.
 ///
-/// Supports hybrid configuration:
-/// 1. Compile-time `--dart-define` flags (highest priority, optimal for CI/CD)
-/// 2. Local `.env` file via `flutter_dotenv` (convenient for local development)
-/// 3. Safe fallback defaults (prevents runtime crashes in open-source builds)
+/// Three sources, in order:
+/// 1. `--dart-define` at build time, which is how release builds are signed.
+/// 2. A local `.env`, for development.
+/// 3. Google's own published *test* ids.
+///
+/// The third matters for an open-source project: anyone can clone this repo and
+/// run the app immediately, and they get test ads rather than a crash or, worse,
+/// traffic against the real account. No real id is ever committed.
+///
+/// There are deliberately no purchase keys here — `in_app_purchase` talks to the
+/// store with the app's signature, so there is no secret to keep. And no
+/// analytics or crash-reporting DSN, because the app collects neither.
 abstract final class EnvConfig {
   static bool _isInitialized = false;
 
@@ -63,40 +70,8 @@ abstract final class EnvConfig {
         defaultValue: 'DoctorFilter',
       );
 
-  static String get apiBaseUrl => _getValue(
-        'API_BASE_URL',
-        compileTimeValue: const String.fromEnvironment('API_BASE_URL'),
-        defaultValue: 'https://api.doctorfilter.com/v1',
-      );
-
   static bool get isProduction => appEnv.toLowerCase() == 'production';
   static bool get isDevelopment => appEnv.toLowerCase() == 'development';
-
-  // ---------------------------------------------------------------------------
-  // In-App Purchases (RevenueCat / StoreKit / Google Play Billing)
-  // ---------------------------------------------------------------------------
-  /// RevenueCat Public Apple SDK Key (Safe for client-side release)
-  static String get revenueCatAppleApiKey => _getValue(
-        'REVENUECAT_APPLE_API_KEY',
-        compileTimeValue:
-            const String.fromEnvironment('REVENUECAT_APPLE_API_KEY'),
-        defaultValue: 'appl_mock_key_for_development',
-      );
-
-  /// RevenueCat Public Google SDK Key (Safe for client-side release)
-  static String get revenueCatGoogleApiKey => _getValue(
-        'REVENUECAT_GOOGLE_API_KEY',
-        compileTimeValue:
-            const String.fromEnvironment('REVENUECAT_GOOGLE_API_KEY'),
-        defaultValue: 'goog_mock_key_for_development',
-      );
-
-  static String get revenueCatEntitlementId => _getValue(
-        'REVENUECAT_ENTITLEMENT_ID',
-        compileTimeValue:
-            const String.fromEnvironment('REVENUECAT_ENTITLEMENT_ID'),
-        defaultValue: 'pro_features',
-      );
 
   // ---------------------------------------------------------------------------
   // Google AdMob
@@ -160,12 +135,4 @@ abstract final class EnvConfig {
           defaultValue: 'ca-app-pub-3940256099942544/5224354917',
         );
 
-  // ---------------------------------------------------------------------------
-  // Monitoring & Crash Reporting
-  // ---------------------------------------------------------------------------
-  static String get sentryDsn => _getValue(
-        'SENTRY_DSN',
-        compileTimeValue: const String.fromEnvironment('SENTRY_DSN'),
-        defaultValue: '',
-      );
 }
