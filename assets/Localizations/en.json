@@ -185,5 +185,12 @@
   "preset_import": "Enter a preset code",
   "preset_import_hint": "Five characters",
   "preset_import_invalid": "That code is not valid.",
-  "action_add": "Add"
+  "action_add": "Add",
+  "calibration_title": "Calibrate screen",
+  "calibration_desc": "Match the app to what your panel actually shows.",
+  "calibration_intro": "Hold a sheet of white paper next to your screen in the light you normally use. Adjust until the panel below looks like the paper.",
+  "calibration_warmer": "Warmer",
+  "calibration_cooler": "Cooler",
+  "calibration_none": "No correction",
+  "calibration_filter_off": "Turn the filter on to see the correction on the real screen rather than just on this card."
 }
