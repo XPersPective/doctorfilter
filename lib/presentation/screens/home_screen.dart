@@ -6,6 +6,7 @@ import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/presentation/ads/banner_ad_widget.dart';
 import 'package:doctorfilter/presentation/providers/ad_providers.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
+import 'package:doctorfilter/presentation/providers/notification_sync_provider.dart';
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 import 'package:doctorfilter/presentation/widgets/kelvin_dial.dart';
 import 'package:doctorfilter/presentation/widgets/overlay_permission_banner.dart';
@@ -28,6 +29,10 @@ class HomeScreen extends ConsumerWidget {
     final filterNotifier = ref.read(filterProvider.notifier);
     final presetNotifier = ref.read(presetProvider.notifier);
     final loc = AppLocalizations.of(context);
+
+    // Keeps the notification's copy of the preset list current. Watched here
+    // because the home screen is alive for as long as the app is.
+    ref.watch(notificationCatalogSyncProvider);
 
     return Scaffold(
       appBar: AppBar(

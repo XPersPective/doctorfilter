@@ -670,8 +670,18 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       broadcast intent'leri artık `setPackage` ile açık. Aksiyonlar: Aç/Kapat, Karart,
       Aydınlat, Sonraki preset. Native metinler `values/strings.xml`'e taşındı (servis
       Flutter motoru olmadan da çalışabilmeli). (K3) — **cihazda doğrulanmalı**
-- [ ] 🔴 **B2.** `RemoteViews` ile özel bildirim kokpiti: preset geçişi + üç eksen kontrolü.
-- [ ] 🔴 **B3.** Bildirimde Pro kilidi: ücretsizde 1 preset açık, diğerleri kilitli → paywall.
+- [~] 🔴 **B2.** `RemoteViews` kokpiti yazıldı. Daraltılmış: durum + güç düğmesi.
+      Genişletilmiş: 6 preset çipi (renk örneği + ad + kilit rozeti) ve üç eksen için
+      artır/azalt. `<include>` kullanılamadı (RemoteViews'da iç id'ler tekrarlanır),
+      benzersiz id'li slotlar üretildi. Preset listesi native'e `PresetCatalog` ile
+      aktarılıyor — bildirim çoğu zaman Flutter motoru olmadan kuruluyor, veritabanına
+      ve çevirilere erişemez. — **cihazda doğrulanmalı**
+- [~] 🔴 **B3.** Bildirimde Pro kilidi kuruldu: ücretsizde **1 preset açık**, diğerleri
+      kilit rozetiyle **görünür** (kullanıcı ne kazanacağını görsün) ve dokununca paywall
+      açılıyor. Kelvin ve Yoğunluk eksenleri Pro; **Ekstra Karartma ücretsiz kalıyor** —
+      en çok işe yarayan eksen o (Nagare 2019) ve uygulamanın çalıştığını hiç hissetmemiş
+      kullanıcının satın alma sebebi olmaz. `ProStatus` entity'si ve `proStatusProvider`
+      yazıldı; gerçek satın alma C2'de bağlanacak. — **cihazda doğrulanmalı**
 - [~] 🔴 **B4.** Zamanlayıcı sağlamlaştırıldı: alarm **tetiklendikten sonra ertesi güne
       yeniden kuruluyor** (eskiden tek gece çalışıp susuyordu), Android 12+
       `canScheduleExactAlarms` kontrolü ve `SecurityException` yakalaması ile inexact'e
@@ -831,6 +841,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **B2, B3 kod tarafı tamam** (cihaz onayı bekliyor). `ProStatus` + `proStatusProvider`
+  eklendi; C2 satın almayı buraya bağlayacak. `flutter test` 55/55.
 * **A8, A9 tamamlandı. FAZ A bitti.** Melanopik metrik yazıldı; durum yönetimi
   tercihi `StateNotifier` olarak sabitlendi ve gerekçesi 3.0'a işlendi.
   A7 yapılana kadar Ekstra Karartma ekseni Dart tarafında doğru hesaplanıyor ama Kotlin
@@ -855,6 +867,17 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
    "Ekstra karartma %" değeri artmalı.
 4. "Sonraki"ye bas → başka bir preset'e geçmeli, uygulamayı açtığında o preset seçili olmalı.
 
+**B2/B3 — Bildirim kokpiti**
+1. Filtreyi aç, bildirimi **aşağı doğru genişlet**.
+2. Altı preset çipi görünmeli: renk örneği + ad. İlki dışındakilerde **kilit** rozeti olmalı.
+3. Kilitli bir çipe dokun → uygulama paywall ekranıyla açılmalı.
+4. Açık çipe dokun → o preset uygulanmalı, çipin arkası renklenmeli.
+5. "Ekstra karartma" satırındaki +/− çalışmalı (ücretsizde bile), değer anında değişmeli.
+6. "Renk sıcaklığı" ve "Filtre yoğunluğu" satırlarında +/− yerine **kilit** ikonu olmalı;
+   dokununca paywall açılmalı.
+7. Dil değiştir → çip adları o dilde görünmeli.
+8. Koyu ve açık sistem temasında bildirim okunaklı olmalı.
+
 **B4 — Zamanlayıcı**
 1. Başlangıcı 2 dakika sonraya kur, kaydet. Uygulamayı kapat.
 2. Saat geldiğinde filtre kendiliğinden açılmalı.
@@ -876,7 +899,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `B2` (bildirim kokpiti — RemoteViews).
+**Sıradaki madde:** `B6`'yı cihaz onayına bırak; kod sırası `B7` (OEM pil optimizasyonu).
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar

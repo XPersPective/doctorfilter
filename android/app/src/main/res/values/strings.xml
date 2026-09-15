@@ -24,5 +24,11 @@
     <string name="notification_action_brighter">Brighter</string>
     <string name="notification_action_next_preset">Next</string>
 
-    <string name="notification_pro_required">Unlock in DoctorFilter Pro</string>
+    <string name="notification_pro_required">Unlock all presets and controls with Pro</string>
+
+    <string name="axis_kelvin">Colour temperature</string>
+    <string name="axis_density">Filter density</string>
+    <string name="axis_dim">Extra dim</string>
+    <string name="axis_value_kelvin">%1$d K</string>
+    <string name="axis_value_percent">%1$d%%</string>
 </resources>
