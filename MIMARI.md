@@ -800,9 +800,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **D18.** Performans: kaydırıcılar takılmadan aksın, gereksiz rebuild olmasın.
 
 ## FAZ E — Yerelleştirme
-- [ ] **E1.** Tüm arayüz metinleri için anahtar seti; kodda çıplak string bırakma
-      (test ile doğrula). (K7)
-- [ ] **E2.** Türkçe ve İngilizce eksiksiz ve elle gözden geçirilmiş.
+- [x] **E1.** 191 anahtarlık tam set tanımlandı (gezinme, üç eksen, preset'ler,
+      zamanlayıcı, izinler, ayarlar, hakkında/feragat, Pro/paywall, ödüller, eğitim,
+      onboarding, hatalar). **Test ile korunuyor:** kodda `translate()` ile istenen her
+      anahtarın İngilizce'de bulunması, TR'nin EN setini kapsaması, yer tutucuların
+      ({percent} vb.) iki dilde eşleşmesi, 71 dosyanın geçerli JSON olması ve
+      dil listesi ile dosyaların birebir örtüşmesi. (K7)
+- [x] **E2.** İngilizce ve Türkçe elle yazıldı (makine çevirisi değil). Eski 1.x
+      anahtarları korundu. Dil listesi 32'den **71'e** çıkarıldı — dosyaların 39'u
+      seçilemiyordu.
 - [ ] **E3.** Kalan 69 dil tamamlanır; eksik anahtar İngilizce'ye düşer, anahtar adı
       asla görünmez. (K7)
       **Kalite kuralı:** Ham makine çevirisiyle 69 dili doldurup `[x]` işaretlemek
@@ -814,7 +820,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
         yanlış çeviri, çevirisizlikten kötüdür.
   - [ ] **E3.4** Bilimsel metinlerde (Bilgi Merkezi) çeviri anlamı kaydırmamalı;
         Bölüm 5.8'deki yasak iddialar hiçbir dile geri sızmamalı.
-- [ ] 🔴 **E4.** RTL (ar, fa, he, ur) düzen denetimi.
+- [~] 🔴 **E4.** `kRightToLeftLanguages` tanımlandı (ar, fa, he, ur, ps); Flutter yönü
+      locale'den türetiyor. — **cihazda Arapça ile düzen denetimi gerekli**
 - [ ] **E5.** Saat/sayı biçimleri locale'den (Türkçe'de PM yok).
 
 ## FAZ F — Açık kaynak, uyum ve teslim
@@ -884,6 +891,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **E1, E2 tamam** (sıra değişikliği: D'den önce yapıldı, gerekçesi aşağıda).
+  191 anahtar, EN+TR elle yazıldı, 5 koruyucu test. Dil listesi 71'e tamamlandı.
 * **FAZ C kod tarafı bitti.** C5 (reklam politikası) ve C9 testli; C2/C4/C6/C7/C8
   mağaza/cihaz doğrulaması bekliyor. `EnvConfig`'ten ölü alanlar (RevenueCat anahtarları,
   Sentry DSN, `apiBaseUrl`) **silindi** — RevenueCat terk edilmişti, analitik/crash SDK
@@ -979,7 +988,11 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `D1` (ana ekran yeniden düzeni). FAZ C kod tarafı bitti.
+**Sıradaki madde:** `D1` (ana ekran yeniden düzeni).
+
+> **Sıra değişikliği (Bölüm 1.3):** E1/E2 D'den **önce** yapıldı. D fazındaki her ekran
+> metinlerini anahtarlardan alacağı için anahtar setinin önce var olması gerekiyordu;
+> aksi hâlde her ekran iki kez yazılırdı. E3 (kalan 69 dil) D'den sonra gelecek.
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar
