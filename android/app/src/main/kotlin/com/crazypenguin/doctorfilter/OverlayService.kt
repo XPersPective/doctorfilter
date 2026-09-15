@@ -125,6 +125,7 @@ class OverlayService : Service() {
             startForeground(FilterNotificationManager.NOTIFICATION_ID, notification)
         }
         isRunning = true
+        FilterWidgetProvider.refreshAll(this)
     }
 
     private fun applyOverlay() {
@@ -192,6 +193,7 @@ class OverlayService : Service() {
         isRunning = false
         FilterState.setWasRunning(this, false)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        FilterWidgetProvider.refreshAll(this)
     }
 
     /**

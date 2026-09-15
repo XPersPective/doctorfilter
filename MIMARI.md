@@ -699,9 +699,18 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       *`FilterNotifier` artık `WidgetsBindingObserver`; `resumed` olayında izin yeniden
       sorgulanıyor, `paused`/`detached` olayında bekleyen yazma diske iniliyor. Cihazda
       doğrulanmalı.*
-- [ ] 🔴 **B7.** OEM pil optimizasyonu servisi öldürdüğünde kurtarma + kullanıcı yönlendirmesi.
-- [ ] 🔴 **B8.** Quick Settings Tile ve ana ekran widget'ı ile uygulamayı açmadan aç/kapat.
-- [ ] 🔴 **B9.** Android 15 edge-to-edge + predictive back desteği.
+- [~] 🔴 **B7.** `isBatteryOptimised` / `openBatterySettings` köprüsü eklendi. Sistemin
+      **listesi** açılıyor, doğrudan muafiyet istemi değil: o istem
+      `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` gerektiriyor ve Play bunu ekran filtresinin
+      dâhil olmadığı kısa bir gerekçe listesiyle sınırlıyor — istemek yayını riske atardı.
+      — **cihazda doğrulanmalı** (arayüz uyarısı D fazında)
+- [~] 🔴 **B8.** `FilterTileService` (Hızlı Ayarlar kutucuğu, alt başlıkta anlık Kelvin) ve
+      `FilterWidgetProvider` (ana ekran widget'ı, renk örneği + durum). İkisi de overlay
+      izni yoksa uygulamayı açıyor, görünmeyen bir filtre açmıyor. Widget, filtre
+      nereden değişirse değişsin `OverlayService` üzerinden yenileniyor.
+      — **cihazda doğrulanmalı**
+- [~] 🔴 **B9.** `enableOnBackInvokedCallback` açıldı (predictive back). Edge-to-edge
+      Flutter 3.47'de Android 15'te varsayılan; **cihazda kenar taşmaları kontrol edilmeli.**
 
 ## FAZ C — Ödeme ve gelir
 - [ ] **C1.** `IPurchaseRepository` sözleşmesi + platform gateway iskeletleri. (K12)
@@ -841,6 +850,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **FAZ B kod tarafı bitti** (B1–B9 hepsi cihaz onayı bekliyor, Bölüm 12.1'de adımları var).
 * **B2, B3 kod tarafı tamam** (cihaz onayı bekliyor). `ProStatus` + `proStatusProvider`
   eklendi; C2 satın almayı buraya bağlayacak. `flutter test` 55/55.
 * **A8, A9 tamamlandı. FAZ A bitti.** Melanopik metrik yazıldı; durum yönetimi
@@ -894,12 +904,21 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 4. Filtre açıkken Ayarlar'dan overlay iznini geri al → uygulama çökmemeli, filtre
    temiz şekilde durmalı.
 
-**B6 — İzin banner'ı**
+**B7/B8/B9 — Kutucuk, widget, sistem uyumu**
+1. Hızlı Ayarlar'ı düzenle → "DoctorFilter" kutucuğunu ekle. Dokun → filtre açılmalı,
+   kutucuk aktif görünmeli, alt başlıkta Kelvin yazmalı.
+2. Overlay izni yokken kutucuğa dokun → uygulama açılmalı (sessizce hiçbir şey yapmamalı).
+3. Ana ekrana widget ekle → tek dokunuşla açılıp kapanmalı, renk örneği o anki tonu göstermeli.
+4. Filtreyi bildirimden değiştir → widget kendiliğinden güncellenmeli.
+5. Android 15 cihazda: geri jestinde önizleme (predictive back) çalışmalı, alt/üst
+   sistem çubuklarının altında içerik kesilmemeli.
+
+**B6 — İzin banner'ı
 1. Overlay izni kapalıyken uygulamayı aç → uyarı banner'ı görünmeli.
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `B6`'yı cihaz onayına bırak; kod sırası `B7` (OEM pil optimizasyonu).
+**Sıradaki madde:** `C1` (satın alma sözleşmesi ve gateway iskeleti). FAZ B kod tarafı bitti.
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar

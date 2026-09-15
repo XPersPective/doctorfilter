@@ -88,6 +88,14 @@ class PlatformChannelDataSource {
         'isPro': isPro,
       });
 
+  /// Whether the OS may still doze this app, killing the filter overnight.
+  Future<bool> isBatteryOptimised() => _invokeBool('isBatteryOptimised');
+
+  /// Opens the system battery-optimisation list so the user can exempt the app.
+  Future<void> openBatterySettings() async {
+    await _invokeBool('openBatterySettings');
+  }
+
   /// Whether the OS will honour exact alarms (Android 12+ can refuse).
   Future<bool> canScheduleExactAlarms() => _invokeBool('canScheduleExactAlarms');
 

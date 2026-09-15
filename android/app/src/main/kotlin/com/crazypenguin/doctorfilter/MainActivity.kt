@@ -99,6 +99,12 @@ class MainActivity : FlutterActivity() {
                     result.success(true)
                 }
 
+                "isBatteryOptimised" -> result.success(isBatteryOptimised())
+                "openBatterySettings" -> {
+                    openBatterySettings()
+                    result.success(true)
+                }
+
                 "canScheduleExactAlarms" -> result.success(canScheduleExactAlarms())
                 "requestExactAlarmPermission" -> {
                     requestExactAlarmPermission()
@@ -190,6 +196,49 @@ class MainActivity : FlutterActivity() {
                 Uri.parse("package:$packageName")
             )
         )
+    }
+
+    /**
+     * Whether the OS is still allowed to doze this app.
+     *
+     * Aggressive OEM power management (Xiaomi, Huawei, Samsung and others) will
+     * kill even a foreground service, and the user sees the filter switch itself
+     * off overnight for no visible reason.
+     */
+    private fun isBatteryOptimised(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false
+        val powerManager = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+        return !powerManager.isIgnoringBatteryOptimizations(packageName)
+    }
+
+    /**
+     * Opens the system's battery-optimisation list.
+     *
+     * Deliberately the *list*, not a direct "exempt me" prompt: that prompt needs
+     * REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, which Play restricts to a short list
+     * of qualifying use cases a screen filter is not on. Asking for it would risk
+     * the listing; walking the user to the setting achieves the same thing and
+     * leaves the choice visibly theirs.
+     */
+    private fun openBatterySettings() {
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+        } else {
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:$packageName")
+            }
+        }
+        try {
+            startActivity(intent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            // Some OEM builds ship without the screen. Fall back to app info,
+            // which every device has.
+            startActivity(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.parse("package:$packageName")
+                }
+            )
+        }
     }
 
     /**
