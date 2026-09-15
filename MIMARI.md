@@ -1,235 +1,398 @@
-# DOCTORFILTER — MASTER ÇALIŞMA VE SİSTEM MİMARİSİ (SSOT)
-> **Versiyon:** 2.0.0 (Modern Master Roadmap)  
-> **Hedef Framework & Dil:** Flutter 3.47+ & Dart 3.13+ (Modern Pattern Matching, Records, Sealed Classes)  
-> **Hedef Platformlar:** Android (Öncelikli - Native Kotlin Overlay & Notification & WorkManager), iOS, Web/Desktop  
-> **Durum:** Aktif Canlı Mimari Kılavuzu & Tek Gerçek Kaynak (Single Source of Truth)  
-> **Gizlilik & Güvenlik:** SIFIR veri sızıntısı, yerel depolama, güvenli ortam değişkenleri.
+# DOCTORFILTER — MİMARİ, PROTOKOL VE YOL HARİTASI (SSOT)
+
+> **Bu dosya projenin tek gerçek kaynağıdır (Single Source of Truth).**
+> Projede çalışan her geliştirici veya yapay zekâ ajanı **önce bu dosyayı okur**, işini
+> buradaki protokole göre yapar ve bu dosyayı günceller. Başka hiçbir `.md` dosyası
+> mimari kaynak değildir (`README.md` yalnızca son kullanıcı / açık kaynak vitrinidir).
+
+| | |
+|---|---|
+| **Ürün** | DoctorFilter — bilimsel temelli mavi ışık / ekran sıcaklığı filtresi |
+| **Paket** | `com.crazypenguin.doctorfilter` |
+| **Sürüm hattı** | 2.x (eski 1.x Play sürümünün modern yeniden yazımı) |
+| **Stack** | Flutter (stable) · Dart 3 · Riverpod · Kotlin (Android native) |
+| **Hedef platformlar** | Android (öncelik) → iOS → Windows → Linux/macOS |
+| **Lisans** | GPL-3.0 — açık kaynak (bkz. Bölüm 9) |
+| **Gelir modeli** | Ücretsiz + reklam · **Pro = tek seferlik ömür boyu satın alma** (abonelik YOK) |
 
 ---
 
-## 0. ÇALIŞMA VE GİT PROTOKOLÜ (MUTLAK UYULACAK KURALLAR)
+## 0. ÇALIŞMA PROTOKOLÜ (MUTLAK)
 
-Bu belge, **DoctorFilter** projesinin baştan sona yeniden inşa edilmesindeki **tek yetkili kılavuzdur**. Projede çalışacak geliştirici veya yapay zekâ ajanı aşağıdaki protokol kurallarına istisnasız uymak zorundadır:
+Bu protokol pazarlığa kapalıdır. Her oturum, her ajan, her commit buna uyar.
 
-### 0.1. Sıralı Commit & Push Protokolü
-1. **Adım Adım İlerleme:** Aşağıdaki **Bölüm 6 (Yol Haritası ve Görev Listesi)** içindeki her bir ana/alt madde tek tek ele alınır. Birden fazla büyük görevi birbirine karıştırmak yasaktır.
-2. **Doğrulama (Build & Analyze):** Her adımdan sonra kod `flutter analyze` ve gerekirse test/derleme kontrolünden geçirilir; hata veya kırılma varsa düzeltilmeden bir sonraki adıma geçilmez.
-3. **MIMARI.md Güncellemesi:** Tamamlanan her görevin başındaki `[ ]` işareti `[x]` olarak güncellenir.
-4. **Atomik Commit & Push:** Her adım tamamlandığında, yapılan işi açıkça anlatan Conventional Commits standardında (`feat: ...`, `refactor: ...`, `fix: ...`) commit atılır ve derhal uzak depoya push edilir:
+### 0.1 — Görev döngüsü
+Bölüm 10'daki **Yapılacaklar Listesi**, tek otoritedir. Her tur şu 6 adımı uygular:
+
+1. **SEÇ** — Listeden sıradaki `[ ]` maddeyi al. Aynı anda birden fazla ana madde açma.
+   Bir madde başlamışsa `[~]` (devam ediyor) ile işaretle.
+2. **UYGULA** — Sadece o maddeyi kodla. Kapsam dışına taşma; yolda fark edilen yeni
+   iş **kodlanmaz**, listenin sonuna yeni `[ ]` madde olarak yazılır.
+3. **DOĞRULA** — Zorunlu:
    ```bash
-   git add <ilgili_degisen_dosyalar> MIMARI.md
-   git commit -m "feat(filter): implement modern kelvin color calculation engine"
-   git push origin master
+   flutter analyze          # 0 error, 0 warning
+   flutter test             # tümü yeşil
    ```
+   Native (Kotlin) dokunulduysa ek olarak `flutter build apk --debug` çalışmalı.
+   Kırmızı varsa bir sonraki adıma **geçilmez**.
+4. **MİMARİYİ GÜNCELLE** — Madde `[x]` yapılır. Eğer yapılan iş katman yapısını,
+   veri akışını, bağımlılıkları veya sözleşmeleri değiştirdiyse **Bölüm 3–8 de
+   güncellenir**. Mimari değiştiyse ve doküman güncellenmediyse commit geçersizdir.
+5. **COMMIT** — Conventional Commits. Dosyalar **tek tek** eklenir:
+   ```bash
+   git add lib/... android/... MIMARI.md
+   git commit -m "feat(filter): persist slider values atomically"
+   ```
+   `git add .` / `git add -A` **yasaktır**.
+6. **PUSH** — `git push origin master`. Her madde kendi commit'i ile push edilir.
 
-### 0.2. Kesin Git ve Güvenlik Sözleşmesi (Kritik)
-1. **`.gitignore` Dosyasına Dokunulamaz:** Mevcut `.gitignore` dosyası değiştirilmeyecek, silinmeyecek veya ezilmeyecektir.
-2. **`.env` ve Gizli Dosyalar Git'e Gidemez:** `.env`, `.env.local`, `key.properties`, `*.jks`, `google-services.json` gibi hassas dosyalar asla `git add` ile sahnelenmeyecek ve repoya gönderilmeyecektir.
-3. **`git add .` veya `git add -A` Kullanımı Yasaktır:** Dosyalar her zaman doğrudan isimleriyle (örn. `git add lib/... MIMARI.md`) seçilerek eklenecektir. `git status` ile gizli dosyaların sahnelenmediği her commit öncesi teyit edilecektir.
+### 0.2 — Güvenlik sözleşmesi (ihlali = kritik hata)
+* `.gitignore` **değiştirilmez, zayıflatılmaz**. Yeni sır türü çıkarsa sadece *eklenir*.
+* Şu dosyalar **hiçbir koşulda** repoya girmez:
+  `.env`, `.env.local`, `android/key.properties`, `*.jks`, `*.keystore`, `*.p12`,
+  `google-services.json`, `GoogleService-Info.plist`, fastlane oturum dosyaları.
+* Her commit öncesi `git status` ile sahnelenenler gözle doğrulanır.
+* Kaynak kodda **hiçbir gerçek anahtar sabit yazılmaz**. AdMob unit id'leri, ürün
+  id'leri ve store anahtarları `EnvConfig` üzerinden okunur; repoda yalnızca
+  Google'ın resmî **test** id'leri fallback olarak bulunur.
+* Uygulama `.env` olmadan da **derlenmeli ve çalışmalıdır** (test id'lerine düşer).
+
+### 0.3 — Doküman disiplini
+* İzin verilen `.md` dosyaları: `MIMARI.md`, `README.md`, `LICENSE`, `CHANGELOG.md`,
+  `CONTRIBUTING.md`, `PRIVACY.md`, `THIRD_PARTY_LICENSES.md`.
+* Başka bir `.md` üretilmez; üretildiyse silinir.
+* `migrate_working_dir/local_archive` = eski 1.x sürümün yerel arşivi.
+  **Git'e gitmez. Gerekmedikçe okunmaz, taranmaz, referans verilmez.** İçinden
+  alınacak her şey alınmıştır; yeni ajan bu klasörü açmaz.
+
+### 0.4 — Kod standardı
+* Dart 3: sealed class, pattern matching, records. `dynamic` yasak.
+* Katman ihlali yasak: `domain` → hiçbir şeye bağımlı değil; `presentation` →
+  `data` içine doğrudan uzanmaz, repository arayüzü üzerinden gider.
+* Her yeni davranışlı (branch/loop/hesap içeren) kod için **en az bir test**.
+* UI'da sabit renk yasak (`Colors.grey.shade400` vb.) — sadece `Theme.of(context)`
+  ve `AppTheme` token'ları. Light/dark ikisi de her ekranda gözle doğrulanır.
+* Kullanıcıya görünen **her** metin lokalizasyon anahtarından gelir. Kodda çıplak
+  İngilizce string yasak.
 
 ---
 
-## 1. UYGULAMA ANALİZİ, VİZYON VE BİLİMSEL TEMELLER
+## 1. ÜRÜN HEDEFİ
 
-### 1.1. DoctorFilter Ne Yapar?
-DoctorFilter; akıllı telefon ve tablet ekranlarından yayılan yüksek enerjili görünür mavi ışığı (HEV - High-Energy Visible Light, 380–500 nm) filtreleyen, ekran parlaklığını donanımsal en alt sınırın ("Sub-Zero / Extra Dim") dahi altına düşürebilen ve kullanıcıların sirkadiyen ritmini koruyarak uyku kalitesini artıran profesyonel bir göz sağlığı asistanıdır.
+DoctorFilter, ekrandan yayılan yüksek enerjili görünür mavi ışığı (HEV, ~380–500 nm)
+azaltan, ekranı donanım minimumunun altına karartabilen ve bunu **bilimsel olarak
+doğrulanabilir** renk sıcaklığı hesaplarıyla yapan bir göz sağlığı aracıdır.
 
-### 1.2. Biyomedikal ve Klinik Zemin
-* **Melatonin Sentezi ve Epifiz Bezi:** İnsan gözündeki melanopsin içeren ipRGC (intrinsik fotosensitif retinal ganglion) hücreleri, özellikle 460–480 nm dalga boyundaki mavi ışığa son derece duyarlıdır. Akşam saatlerinde mavi ışığa maruz kalındığında beyin günün devam ettiğini sanır; epifiz bezinden salgılanan ve uykuya geçişi sağlayan **melatonin hormonu baskılanır**. Bu durum uykuya dalma süresini (uyku latansı) uzatır, REM uykusu kalitesini bozar.
-* **Dijital Göz Yorgunluğu (Astenopi):** Mavi ışık yüksek frekanslı ve kısa dalga boylu olduğundan kornea ve lensten geçerken gözün arkasında daha önde odaklanır. Göz merceğini kasan siliyer kaslar sürekli odaklanma çabasıyla spazma girer. Bu da bulanık görme, baş ağrısı, göz kuruluğu ve batmaya neden olur.
-* **Fototoksisite ve Retina Sağlığı:** Yüksek Kelvin değerli (>5000 K) ışınlar, retina pigment epiteli üzerinde oksidatif stres biriktirerek uzun vadede makula dejenerasyonu (sarı nokta) riskini artırır.
-* **Sub-Zero Karartma (Donanım Altı Parlaklık):** Standart Android ekran parlaklığı donanım minimumuna ulaştığında dahi zifiri karanlık bir odada retinayı kör edecek kadar parlaktır. DoctorFilter, şeffaf siyah/alfa katmanı ile ekran parlaklığını %10-%80 oranında donanım sınırının altına çeker.
-
-### 1.3. Renk Sıcaklığı (Kelvin - CCT) Motoru
-* **Tanner Helland Algoritması:** 1000 K ile 7000 K arasındaki renk sıcaklıklarını Planck kara cisim ışıması yaklaşımıyla matematiksel olarak hassas RGB değerlerine dönüştürür:
-  - 1000 K – 1900 K: Mum alevi, derin kehribar (Sıfır melatonin baskısı).
-  - 2000 K – 3000 K: Akkor ampul, sıcak gece lambası (Dinlenme modu).
-  - 3500 K – 4500 K: Halojen / Florasan dengesi (Akşamüstü çalışma modu).
-  - 5000 K+: Doğal gün ışığı / Mavi ışık tehlikesi bölgesi.
-* **McCamy CCT Ters Hesaplama:** Ekrandaki herhangi bir RGB bileşeninin CIE 1931 xy kromatik koordinatları üzerinden o anki efektif Kelvin değerini gerçek zamanlı hesaplayarak kullanıcıya anlık gösterir.
+**Premium düzey ne demek (kabul kriterleri):**
+1. Hiçbir ayar kaybolmaz. Kullanıcı bir değeri değiştirdiği an kalıcıdır.
+2. Hiçbir ekranda çevrilmemiş metin yoktur; 71 dilde ve RTL dillerde doğru hizalanır.
+3. Light ve dark temada hiçbir yazı okunmaz hâlde değildir.
+4. Kelvin ve filtre hesapları literatüre dayanır ve testlerle doğrulanır.
+5. Reklam, deneyimi ilk kullanımda bozmaz; Pro kullanıcıda hiç görünmez.
+6. Bildirim kokpiti uygulamayı açmadan gerçek kontrol sağlar.
+7. Zamanlayıcı cihaz yeniden başlasa bile çalışır.
+8. Açık kaynaktır; kullanıcı ne yaptığını koddan doğrulayabilir; hiçbir veri dışarı çıkmaz.
 
 ---
 
-## 2. ESKİ (2020) KOD TABANININ ELEŞTİRİSİ VE NEDEN SIFIRDAN İNŞA?
+## 2. BİLİMSEL TEMEL (doğrulanabilir olmak zorunda)
 
-2020 yılında yazılan eski pazar sürümü incelendiğinde aşağıdaki kritik sorunlar tespit edilmiştir:
-1. **Eski Framework ve Dil:** Flutter 1.x ve Dart 2.3 ile yazılmıştır. Null-safety yoktur. Dart 3 modern özellikleri (Records, Pattern matching, Sealed classes) bulunmamaktadır.
-2. **Kriptik ve Okunamaz Mimari:** Sınıf ve klasör isimleri rastgele kısaltmalardan ibarettir (`AcApp`, `Clinvoke`, `ClDbl`, `GsmThemes`, `Maestro`, `MdLight`, `MxoColorValueToPercent`, `MxwBottomBarWpHome`, `WpHome`, `WsAlarm` vb.). Bu durum sürdürülebilirliği imkansız kılmaktadır.
-3. **Performans ve State Kirliliği:** Tek bir ekranda 12 adet ayrı `ChangeNotifierProvider` aynı anda dinlenmekte, her kaydırmada tüm arayüz baştan çizilmektedir.
-4. **Eski Android Java Katmanı:** Java 8 ile yazılmış, modern Android 13/14/15 mimarisinden tamamen uzaktır:
-   - Deprecated `startActivityForResult` kullanılmaktadır.
-   - Android 13 (`TIRAMISU`) `POST_NOTIFICATIONS` izni yönetimi yoktur.
-   - Android 14 (`UPSIDE_DOWN_CAKE`) Foreground Service Types (`specialUse` veya `systemExempted`) bildirilmediği için modern cihazlarda çökmektedir.
-   - Bildirim arayüzü eski RemoteViews düzeninde kalmıştır.
-5. **Eski Paket Bağımlılıkları:** `admob_flutter: 1.0.0-beta`, `intro_slider: 2.2.8`, `sqflite: 1.2.0`, `simple_connectivity` gibi paketler güncel Flutter 3.47+ ile derlenemez durumdadır.
-6. **Tasarım:** Material 1/2 dönemi kaba butonlar, sabit piksel değerleri ve karanlık tema eksiklikleri mevcuttur.
+Uygulama "bilimsel" iddiasında bulunduğu için aşağıdakiler **kodda test edilir**,
+metinlerde abartılmaz ve tıbbi tedavi vaadi verilmez (bkz. Bölüm 8 Feragatname).
+
+### 2.1 Renk sıcaklığı → RGB
+* **Planck kara cisim eğrisi (Planckian locus)**, CIE 1931 uzayında.
+  `Kim et al. (2002)` kübik yaklaşımı ile 1667 K–25000 K arası (x, y) kromatiklik,
+  oradan XYZ → sRGB (D65 matrisi, sRGB gamma).
+* `Tanner Helland` yaklaşımı yalnızca karşılaştırma/geriye uyumluluk için tutulur;
+  üretimde Planckian locus kullanılır. İkisi arasındaki sapma testle sınırlanır.
+* **Ters yön:** RGB → CIE 1931 (x, y) → **McCamy (1992)** kübik formülü ile CCT.
+  Kendi ürettiğimiz rengi geri çevirdiğimizde hedefe ±%2 içinde dönmesi test edilir
+  (round-trip testi).
+
+### 2.2 Ekran filtresinin fiziksel modeli
+Overlay, ekranın üstüne alfa karışımlı bir katman koyar:
+
+```
+sonuç = ekran × (1 − A) + C × A
+```
+
+* `C` (tint rengi) = hedef Kelvin'in **normalize** edilmiş (max kanal = 255) sRGB karşılığı.
+* `A` (yoğunluk / density) = kullanıcının seçtiği filtre gücü.
+* **Extra Dim (Sub-Zero)** ayrı bir kavramdır: tint rengini siyaha doğru çarpar ve
+  toplam alfayı yükseltir; donanım parlaklık minimumunun altına inmeyi sağlar.
+* Tam siyah ekranı engellemek için **sert üst sınırlar** vardır (bkz. 2.4).
+
+### 2.3 Üç bağımsız eksen (kullanıcıya bu şekilde anlatılır)
+| Eksen | Anlamı | Aralık |
+|---|---|---|
+| **Renk Sıcaklığı (K)** | Işığın sarılık/mavilik derecesi | 1000 K – 6500 K |
+| **Filtre Yoğunluğu (%)** | Tint'in ne kadar güçlü uygulandığı | 0 – 80 % |
+| **Ekstra Karartma (%)** | Donanım minimumunun altına inen karartma | 0 – 70 % |
+
+"Extra Dim / Sub-Zero" adı belirsiz; arayüzde **"Ekstra Karartma"** olarak geçer ve
+altında tek satır açıklaması bulunur.
+
+### 2.4 Güvenlik sınırları
+* `density ≤ 0.80`, `extraDim ≤ 0.70`, birleşik efektif alfa `≤ 0.92`.
+* Bu sınırlar `FilterConfig` içinde **entity seviyesinde** zorlanır; UI'ya güvenilmez.
+* Böylece "siyah ekran" durumu yapısal olarak imkânsız hâle gelir.
+
+### 2.5 Melatonin risk seviyeleri (etiketleme)
+ipRGC/melanopsin duyarlılığı ~460–480 nm'de tepe yapar; etiketler bu bilgiye dayanır:
+`< 2700 K` uyku dostu · `2700–4000 K` akşam · `4000–5000 K` dengeli · `> 5000 K` mavi ışık riski.
+Yüzde iddiaları ("%X mavi ışık engellendi") **spektral hesaba** dayandırılır, uydurulmaz;
+hesaplanamıyorsa gösterilmez.
 
 ---
 
-## 3. MODERN TEKNOLOJİ YIĞINI VE SİSTEM MİMARİSİ
+## 3. MİMARİ
 
-### 3.1. Teknoloji Yığını
-* **Framework:** Flutter 3.47.2 (Stable)
-* **Dil:** Dart 3.13.2 (Clean, Type-Safe, Null-Safe, Sealed Classes, Pattern Matching)
-* **Durum Yönetimi:** Riverpod 3 (Notifiers & AsyncNotifiers)
-* **Yerel Depolama:** SQLite (sqflite / sqlite3) + SharedPreferences
-* **Ortam & Konfigürasyon:** `EnvConfig` (Hibrit: Dart Defines + `.env` + Güvenli Fallback)
-* **Gelir Modeli:** RevenueCat (Pro Satın Alım) + Google Mobile Ads (AdMob)
-* **Native Katman:** Modern Kotlin (Android 14/15 uyumlu Foreground Service, WindowManager Overlay, Notification Channel, WorkManager / AlarmManager)
-* **Tasarım Sistemi:** Material 3 Dinamik Renkler, Karanlık/Aydınlık Tema, Akıcı Mikro Animasyonlar
-
-### 3.2. Clean Architecture Katman Yapısı
-Proje klasör yapısı kesin katman ayrımına (Separation of Concerns) göre düzenlenir:
 ```
 lib/
-├── core/                        # Çekirdek yardımcılar, temalar, sabitler
-│   ├── config/                  # EnvConfig ve ortam parametreleri
-│   ├── constants/               # Sabitler, renk paletleri, varsayılanlar
-│   ├── errors/                  # Hata sınıfları ve Failure modelleri
-│   ├── math/                    # Kelvin hesaplama (Tanner Helland, McCamy CCT)
-│   ├── theme/                   # Material 3 Light/Dark temaları, yazı tipleri
-│   └── utils/                   # Renk dönüşümleri, zaman formatlayıcılar
-├── domain/                      # Saf Dart - Sıfır Framework bağımlılığı
-│   ├── entities/                # FilterPreset, FilterState, ScheduleRule, EducationTopic
-│   ├── repositories/            # IFilterRepository, IScheduleRepository, IPresetRepository
-│   └── usecases/                # ToggleFilter, UpdateFilterSettings, SaveSchedule, ApplyPreset
-├── data/                        # Veri kaynakları ve implementasyonlar
+├── core/
+│   ├── config/         EnvConfig (dart-define > .env > güvenli test fallback)
+│   ├── constants/      sınırlar, süreler, ürün id'leri
+│   ├── errors/         Failure, Result (sealed)
+│   ├── localization/   AppLocalizations + 71 dil yükleyici + RTL
+│   ├── math/           kelvin_engine (Planck, McCamy, spektral tahmin)
+│   ├── theme/          Material 3 light/dark token'ları, tipografi
+│   └── utils/          zaman/format yardımcıları (locale'e duyarlı)
+├── domain/             saf Dart, sıfır framework
+│   ├── entities/       FilterConfig, FilterPreset, ScheduleRule, ProStatus...
+│   ├── repositories/   I*Repository arayüzleri
+│   └── usecases/
+├── data/
 │   ├── datasources/
-│   │   ├── local/               # SQLite veritabanı (ön ayarlar, geçmiş)
-│   │   └── native/              # MethodChannel (Overlay, Bildirim, Alarm köprüsü)
-│   ├── models/                  # JSON/Database model serileştirmeleri
-│   └── repositories/            # Repository implementasyonları
-├── presentation/                # UI ve Riverpod katmanı
-│   ├── providers/               # FilterNotifier, ScheduleNotifier, ThemeNotifier, PurchaseNotifier
-│   ├── screens/                 # Ana Ekran, Zamanlayıcı, Ön Ayarlar, Bilgi Merkezi, Ayarlar, Paywall
-│   └── widgets/                 # Kelvin Dial, SubZero Slider, Preset Card, Quick Action Bar
-└── main.dart                    # Uygulama başlangıcı ve bağımlılık enjeksiyonu
+│   │   ├── local/      SharedPreferences (in-memory cache) + SQLite (preset)
+│   │   └── native/     MethodChannel köprüsü
+│   └── repositories/   implementasyonlar
+└── presentation/
+    ├── providers/      Riverpod notifier'ları
+    ├── screens/
+    ├── widgets/
+    └── ads/
 ```
 
----
+**Kural:** `presentation` yalnızca `domain` tiplerini ve provider'ları bilir.
+`data` yalnızca `domain` arayüzlerini implemente eder.
 
-## 4. BİLİMSEL MODÜLLER VE ÖZELLİK SETİ
+### 3.1 Durum ve kalıcılık modeli (kritik — eski hatanın kaynağı)
+Eski kod her slider hareketinde `prefs`'ten okuyup geri yazıyordu; eşzamanlı
+yazmalarda **son yazan kazanıyor** ve diğer alanlar eski değere dönüyordu
+("ayarlar sıfırlanıyor" hatası). Yeni model:
 
-### 4.1. 7 Klasik + Özel Ön Ayarlar (Presets)
-Eski uygulamadaki harika ön ayarlar korunur ve parametreleri hassaslaştırılır:
-1. **Güneş (Daylight - 5500 K):** Gün içi ekran parlama önleyici ve göz dinlendirici yumuşak ton.
-2. **Florasan (Fluorescent - 4200 K):** Ofis ve okul ortamındaki beyaz ışık yansımasını nötralize eden ton.
-3. **Lamba (Incandescent - 3200 K):** Akşam ev oturmalarında rahatlatıcı sarımtırak sıcak ışık.
-4. **Ay (Moonlight - 2200 K):** Gece geç saatler için güçlü mavi ışık engelleyici derin kehribar.
-5. **Mum (Candlelight - 1400 K):** Uyku öncesi sıfır mavi ışık salınımı, melatonin dostu alev tonu.
-6. **Kitap (Reading Mode - 2700 K Sepia):** E-kitap ve makale okurken kontrastı koruyan, harfleri yumuşatan özel sepya ton.
-7. **Ağaç (Forest / Nature - Yeşil Ton):** Göz kaslarını gevşeten, siliyer spazmı azaltan doğal yeşil/toprak filtresi.
-8. **Özel Mod (Custom RGB & Kelvin):** Kullanıcının Kırmızı, Yeşil, Mavi, Yoğunluk (Alfa) ve Parlaklık değerlerini bağımsız ayarlayabildiği ve kaydedebildiği profil.
-
-### 4.2. İnteraktif Kelvin & Spektrum Kadranı
-* 1000 K'den 7000 K'ye kadar pürüzsüz dokunmatik dairesel veya yatay kadran.
-* Canlı Kelvin göstergesi ve tehlike göstergesi:
-  - 1000K–3000K: Güvenli / Melatonin Dostu (Yeşil gösterge)
-  - 3000K–4500K: Dengeli / Akşamüstü (Sarı gösterge)
-  - 5000K+: Mavi Işık Riski (Kırmızı gösterge)
-
-### 4.3. Sub-Zero Ekran Karartma (Extra Dim)
-* Cihazın kendi donanım parlaklığının altına inen pürüzsüz karartma motoru.
-* Yüzdelik (%0 - %100) ve yaklaşık lümen/kandela simülasyonu.
-
-### 4.4. Hızlı Bildirim Çubuğu Kokpiti (Persistent Notification)
-* Kullanıcı başka bir uygulamadayken (kitap okurken, video izlerken) uygulamayı açmadan:
-  - Tek tıkla açma/kapama (Power).
-  - Parlaklık artır/azalt.
-  - Yoğunluk artır/azalt.
-  - Ön ayarlar arasında geçiş.
-
-### 4.5. Sirkadiyen Otomasyon / Akıllı Zamanlayıcı (Scheduler)
-* Gün batımı ve gün doğumu saatlerine göre otomatik devreye girme.
-* Kullanıcı tanımlı özel saat aralığı (örn: 22:30 - 07:00).
-* Android WorkManager / Exact Alarm Manager ile cihaz yeniden başlasa bile kesintisiz çalışma.
-
-### 4.6. Melatonin & Göz Sağlığı Bilgi Merkezi (Education Hub)
-Eski sürümdeki eğitici içerikler zenginleştirilerek modern infografik kartlarına dönüştürülür:
-* Görülebilir ışık spektrumu (390-780 nm) ve mavi ışık pencereleri.
-* Renk sıcaklığı (Kelvin) nedir?
-* Melatonin hormonu, epifiz bezi ve sirkadiyen döngü mekanizması.
-* Mavi ışığın biyolojik zararları (Retina hasarı, uyku bozukluğu, metabolik etkiler).
-* Pratik göz egzersizleri (20-20-20 kuralı).
-
-### 4.7. 71 Dilde Kusursuz Çoklu Dil Desteği
-* Eski projedeki 71 adet dil dosyası (`tr`, `en`, `de`, `fr`, `es`, `it`, `ja`, `ko`, `zh`, `ar`, `ru` vb.) eksiksiz modernize edilip yeni özelliklerin çevirileriyle tamamlanır.
+* **Tek gerçek kaynak bellekte**: `FilterNotifier` state'i otoritedir.
+* Yazma **tek yönlüdür**: state → (anında native) → (debounce'lu disk).
+* Disk asla okuma-değiştir-yaz döngüsüne sokulmaz; her zaman **tam config** yazılır.
+* Uygulama açılışında disk bir kez okunur.
+* Native'den gelen değişiklik (bildirim/zamanlayıcı) state'e patch olarak uygulanır.
+* **Geri al (Undo):** `FilterNotifier` son N (=20) config anlık görüntüsünü tutar;
+  kullanıcı yanlış kaydırmayı geri alabilir.
 
 ---
 
-## 5. MODERN NATIVE ANDROID KATMANI (KOTLIN)
+## 4. GELİR MODELİ VE PRO
 
-Modern Android (Android 14 & 15) kısıtlamalarına tam uyum için Kotlin ile yeniden yazılacak bileşenler:
-1. **`OverlayService.kt`:**
-   - `TYPE_APPLICATION_OVERLAY` pencere tipi.
-   - `FLAG_NOT_TOUCHABLE | FLAG_NOT_FOCUSABLE | FLAG_LAYOUT_IN_SCREEN | FLAG_LAYOUT_NO_LIMITS` bayrakları.
-   - Android 14 `foregroundServiceType="specialUse"` desteği.
-2. **`FilterNotificationManager.kt`:**
-   - Android 8.0+ `NotificationChannel` (Öncelik: Low/Min, sessiz ve rahatsız etmeyen).
-   - `FLAG_IMMUTABLE` PendingIntent'ler.
-   - Bildirim üzerinden doğrudan Service komutları (BroadcastReceiver).
-3. **`BootAndScheduleReceiver.kt`:**
-   - Cihaz açılışında (`BOOT_COMPLETED`) zamanlayıcıyı geri yükleme.
-   - Kesin zamanlı filtre açma/kapama.
-4. **`FilterMethodChannel.kt`:**
-   - Flutter ile Kotlin arasında senkronize çift yönlü haberleşme.
+### 4.1 Ödeme mimarisi (çok platformlu — ilk seferde doğru kurulacak)
+```
+domain/repositories/i_purchase_repository.dart      ← platform-bağımsız sözleşme
+ ├─ data/.../store_purchase_gateway.dart            (in_app_purchase: Play + App Store)
+ ├─ data/.../msstore_purchase_gateway.dart          (Windows, sonra)
+ └─ data/.../unsupported_purchase_gateway.dart      (Linux/desktop: Pro kilitli değil,
+                                                     mağaza yok → satın alma gizlenir)
+```
+* Paket: **`in_app_purchase`** (resmî Flutter eklentisi, ücretsiz, Android + iOS ortak API).
+* Ürün: **tek, non-consumable** → `doctorfilter_pro_lifetime` (Android ve iOS'ta aynı
+  ürün kimliği; fiyat mağazadan çekilir, koda yazılmaz). **Abonelik yok.**
+* Zorunlu davranışlar: satın alma akışı, **"Satın Alımları Geri Yükle"** (iOS için
+  App Store şartı), `pending` durum yönetimi, `completePurchase` çağrısı, uygulama
+  açılışında sessiz geri yükleme.
+* Doğrulama: sunucu yok (açık kaynak, backend yok) → cihaz üstü doğrulama; bu durum
+  README'de açıkça yazılır. Gizli anahtar yok, dolayısıyla repo güvenli.
+* Pro durumu tek yerden okunur: `proStatusProvider`. Reklam, bildirim kokpiti ve
+  preset kilitleri **hep bu provider'a** bakar.
+
+### 4.2 Pro'nun getirdikleri (paywall'da bu şekilde gösterilir)
+1. Tüm reklamların tamamen kaldırılması (banner dâhil).
+2. Bildirim kokpitinden **tüm** preset'lere geçiş + 3 değerin canlı ayarı.
+3. Sınırsız özel preset oluşturma ve ana ekranda sıralama.
+4. Zamanlayıcıda çoklu kural.
+5. Ömür boyu, tek seferlik. Abonelik yok.
+
+### 4.3 Reklam politikası (kullanıcıyı yormayan)
+* **Alt banner:** her zaman (ücretsiz kullanıcıda), yeri sabit, içerik kaydırmaz.
+* **Geçiş (interstitial) reklamı yasak olduğu durumlar:** ilk kurulumdan sonraki
+  **ilk 3 gün** ve ilk **5 oturum** boyunca hiç gösterilmez.
+* Sonrasında: en fazla **oturumda 1**, ardışık gösterimler arası **en az 4 dakika**,
+  yalnızca doğal duraklarda (filtre kapatma, preset ekranından çıkış).
+* Preset değiştirme sayacı: aynı oturumda 4+ değişimden sonra tek seferlik gösterim
+  hakkı doğar (yukarıdaki tavanlara tabi).
+* **Ödüllü reklam (rewarded):** isteğe bağlı — izleyen kullanıcı **24 saatlik Pro
+  geçişi** kazanır. Günde en fazla 2. Asla zorunlu değil, asla kendiliğinden açılmaz.
+* Pro kullanıcıda reklam SDK'sı hiç başlatılmaz.
 
 ---
 
-## 6. YOL HARİTASI VE GÖREV KONTROL LİSTESİ
+## 5. BİLDİRİM KOKPİTİ (Android)
 
-> **Hatırlatma:** Aşağıdaki her bir madde tamamlandığında:  
-> 1. `flutter analyze` ile kod kontrol edilir.  
-> 2. `MIMARI.md` içindeki madde `[x]` yapılır.  
-> 3. Anlamlı bir commit mesajıyla commit edilip `git push origin master` yapılır.  
-> 4. `.gitignore` ve `.env` asla dokunulmaz ve asla push edilmez!
+* Kalıcı, sessiz (`IMPORTANCE_LOW`) bildirim; overlay çalışırken foreground service bildirimi.
+* **Ücretsiz:** Aç/Kapat + tek bir örnek preset. Diğerleri kilit ikonuyla görünür
+  (kullanıcı ne kazanacağını görsün) ve dokunulduğunda paywall'a götürür.
+* **Pro:** tüm preset'ler arasında geçiş + Kelvin / Yoğunluk / Ekstra Karartma için
+  artır–azalt kontrolleri; uygulamayı açmaya gerek yok.
+* `RemoteViews` ile özel, tema uyumlu, okunaklı düzen. Aksiyon ikonları **gerçek
+  drawable** olmalıdır (ikon id'si `0` verilince Android aksiyonları çizmez — mevcut
+  "bildirim var ama kontrol yok" hatasının sebebi budur).
+* Her aksiyon hem native durumu hem Flutter state'ini senkronlar.
 
-### Faz 1: Altyapı, Temizlik ve Çekirdek Konfigürasyon
-- [x] **1.1.** `pubspec.yaml` dosyasını modern paketlerle güncellemek (`flutter_riverpod`, `shared_preferences`, `sqflite`, `path`, `path_provider`, `google_mobile_ads`, `purchases_flutter`, `intl`, `flutter_svg`).
-- [x] **1.2.** Eski `assets/` klasöründen görsel kaynakları, logoları ve 71 dil dosyasını yeni projeye taşımak; `pubspec.yaml` içine asset tanımlarını eklemek.
-- [x] **1.3.** Çekirdek Kelvin ve Spektrum matematik motorunu (`core/math/kelvin_engine.dart`) Tanner Helland ve McCamy CCT formülleriyle sıfırdan yazmak ve unit testlerini hazırlamak.
-- [x] **1.4.** Material 3 dinamik tema sistemini (`core/theme/`) açık ve koyu mod desteğiyle inşa etmek.
+---
 
-### Faz 2: Domain ve Data Katmanı
-- [x] **2.1.** Domain Entity modellerini oluşturmak (`FilterPreset`, `FilterConfig`, `ScheduleRule`, `CircadianMode`).
-- [x] **2.2.** Repository arayüzlerini ve Use Case sınıflarını tanımlamak (`IFilterRepository`, `IPresetRepository`, `IScheduleRepository`).
-- [x] **2.3.** Yerel veritabanı (SQLite) veri kaynağını oluşturmak ve 7 klasik ön ayarı (Güneş, Florasan, Lamba, Ay, Mum, Kitap, Ağaç) varsayılan olarak yüklemek.
-- [x] **2.4.** Çoklu dil (Localization) yükleyicisini ve dil yöneticisini (71 dil destekli) hazırlamak.
+## 6. ZAMANLAYICI
 
-### Faz 3: Modern Native Android (Kotlin) Katmanı
-- [x] **3.1.** `AndroidManifest.xml` dosyasını Android 14/15 overlay, bildirim ve zamanlayıcı izinleriyle güncellemek (`SYSTEM_ALERT_WINDOW`, `POST_NOTIFICATIONS`, `FOREGROUND_SERVICE`, `RECEIVE_BOOT_COMPLETED`).
-- [x] **3.2.** `OverlayService.kt` servisini Kotlin ile sıfırdan yazmak (Donanım ivmeli, pürüzsüz renk ve alfa katmanı).
-- [x] **3.3.** `FilterNotificationManager.kt` bildirim kontrolcüsünü modern Android bildirim standartlarına uygun şekilde geliştirmek.
-- [x] **3.4.** `ScheduleReceiver.kt` zamanlayıcı ve cihaz açılış dinleyicisini yazmak.
-- [x] **3.5.** `MainActivity.kt` üzerinde MethodChannel köprüsünü kurmak; Flutter ile Kotlin durumlarını çift yönlü senkronize etmek.
+* Kullanıcı tanımlı başlangıç/bitiş; ayrıca gün batımı–gün doğumu modu.
+* `AlarmManager.setExactAndAllowWhileIdle` + Android 12+ `canScheduleExactAlarms`
+  kontrolü ve izin yönlendirmesi; izin yoksa `setAndAllowWhileIdle`'a düşülür.
+* `BOOT_COMPLETED` ile yeniden kurulum.
+* Alarm tetiklendikten sonra **bir sonraki güne yeniden kurulur** (tek seferlik kalmaz).
+* Saat gösterimi **locale'e duyarlıdır**: Türkçe'de "PM" yoktur → 24 saat biçimi;
+  biçim `MediaQuery.alwaysUse24HourFormat` ve locale'den türetilir, elle yazılmaz.
 
-### Faz 4: Presentation Katmanı ve Durum Yönetimi (Riverpod 3)
-- [x] **4.1.** `FilterNotifier` ve durum sağlayıcılarını yazmak (Filtre açık/kapalı, renk, alfa, parlaklık, aktif ön ayar).
-- [x] **4.2.** `PresetNotifier` ile ön ayar seçimi, özelleştirilmesi ve yeni özel profil kaydetme mantığını kurmak.
-- [x] **4.3.** `ScheduleNotifier` ile otomatik başlatma/durdurma saatlerini yönetmek.
-- [x] **4.4.** `ThemeNotifier` ve `LocaleNotifier` ile anlık dil ve tema değişimini sağlamak.
+---
 
-### Faz 5: Modern UI/UX Ekranlarının İnşası
-- [x] **5.1.** **Ana Kontrol Kokpiti (HomeScreen):** Büyük modern Power butonu, aktif durum kartı, hızlı preset seçici.
-- [x] **5.2.** **İnteraktif Kelvin & Renk Kadranı:** Gerçek zamanlı Kelvin değeri, renk spektrum eğrisi ve anlık önizleme.
-- [x] **5.3.** **Sub-Zero Parlaklık & Yoğunluk Kontrolleri:** Pürüzsüz haptik geri bildirimli modern slider bileşenleri.
-- [x] **5.4.** **Ön Ayarlar Yönetim Ekranı (PresetsScreen):** Ön ayar kartları, detaylı ayar düzenleme ve özel profil oluşturma.
-- [x] **5.5.** **Sirkadiyen Zamanlayıcı Ekranı (SchedulerScreen):** Gece modu otomatik başlatma/bitirme saat seçicileri.
-- [x] **5.6.** **Melatonin & Göz Sağlığı Bilgi Merkezi (EducationScreen):** İnteraktif infografikler, spektrum rehberi, melatonin döngüsü.
-- [x] **5.7.** **Ayarlar & Dil Seçici Ekranı (SettingsScreen):** 71 dilde arama yapılabilir dil seçici, bildirim ayarları, tema seçimi.
-- [x] **5.8.** **Pro Sürüm & Satın Alma Ekranı (PaywallScreen):** RevenueCat entegrasyonlu modern yükseltme sayfası.
+## 7. PLATFORM DURUMU
 
-### Faz 6: Test, Kalite Kontrol ve Tamamlama
-- [x] **6.1.** Tüm ekranlar ve işlevler için widget ve birim testlerini koşmak.
-- [x] **6.2.** Android cihaz/emülatör üzerinde Overlay, Bildirim kontrolleri ve Arka plan servislerini doğrulamak.
-- [x] **6.3.** `flutter analyze` ile 0 uyarı / 0 hata olduğunu teyit etmek.
-- [x] **6.4.** Git geçmişini ve dosyaları inceleyerek gizli verilerin repoya sızmadığını doğrulamak, son sürüm etiketini belirlemek.
+| Platform | Overlay | Bildirim | Zamanlayıcı | Reklam | Satın alma |
+|---|---|---|---|---|---|
+| Android | ✅ native | ✅ | ✅ | ✅ | ✅ Play |
+| iOS | ⚠️ sistem kısıtı — sistem çapında overlay yok; uygulama içi + Shortcuts/Focus entegrasyonu | ✅ | ✅ | ✅ | ✅ App Store |
+| Windows | 🔜 katman penceresi | — | 🔜 | ❌ | 🔜 MS Store |
+| Linux/macOS | 🔜 | — | 🔜 | ❌ | ❌ |
 
-### Faz 7: Sıfırdan Modern Proje Başlatma ve Üretim Düzeyinde Android Release Yapılandırması
-- [x] **7.1.** Mevcut projeyi yerel arşive (`migrate_working_dir/local_archive`) yedeklemek (GitHub'a gönderilmez).
-- [x] **7.2.** Kök dizinde en güncel Flutter SDK (3.47.2 / Dart 3.13.2) ile sıfırdan temiz proje oluşturmak (`--org com.crazypenguin --project-name doctorfilter`).
-- [x] **7.3.** Orijinal Google Play release anahtarını (`key.jks`, `key.properties`) ve `android/app/build.gradle.kts` release imzalama yapılandırmasını kurmak.
-- [x] **7.4.** Orijinal mağaza uygulama adını ("DoctorFilter"), uygulama ikonlarını (`ic_launcher` mipmap) ve AdMob uygulama kimliğini entegre etmek.
-- [x] **7.5.** `OverlayService`, `FilterNotificationManager`, `ScheduleReceiver` ve `MainActivity` Kotlin sınıflarını `com.crazypenguin.doctorfilter` paketi altında yapılandırmak.
-- [x] **7.6.** Windows çapraz disk Kotlin artımlı derleme istisnasını (`kotlin.incremental=false`) çözerek tam Android `assembleDebug` ve `assembleRelease` derlemelerini 0 hatayla başarıyla tamamlamak.
-- [x] **7.7.** `flutter analyze` (0 hata) ve `flutter test` (11/11 test) doğrulayarak projeyi tamamlamak.
+Desktop'ta `sqflite` yerine `sqflite_common_ffi`, reklam/satın alma modülleri
+platform kontrolüyle devre dışı bırakılır. **Uygulama hiçbir platformda çökmez.**
+
+---
+
+## 8. HUKUK, GİZLİLİK, FERAGAT
+
+* **Feragatname:** DoctorFilter tıbbi cihaz değildir, tanı koymaz, tedavi etmez.
+  Renk sıcaklığı ve karartma ayarları konfor amaçlıdır. Göz rahatsızlığı olanlar
+  hekime başvurmalıdır. Bu metin uygulama içinde (Hakkında) ve README'de bulunur.
+* **Gizlilik:** Tüm ayarlar yalnızca cihazda saklanır. Hesap yok, sunucu yok,
+  analitik yok. Ağa çıkan tek bileşen reklam SDK'sı ve mağaza satın alma akışıdır.
+* **Hakkında ekranı:** "Clean Architecture Build" gibi geliştirici jargonu
+  kullanıcıya gösterilmez. Sürüm + ne olduğu + bilimsel kaynaklar + feragat +
+  lisans + açık kaynak repo bağlantısı gösterilir.
+
+---
+
+## 9. AÇIK KAYNAK
+
+* Kaynak kod herkese açıktır; kullanıcı ne yaptığını doğrulayabilir.
+* **Lisans: GNU GPL-3.0** (proje sahibinin kararı, 2026-09-15). Herkes kodu görebilir,
+  inceleyebilir ve kendisi için derleyebilir; türev bir çalışmayı dağıtan herkes kendi
+  kaynağını da GPL-3.0 ile açmak zorundadır. Bu, kapalı ticari klonları engeller.
+  Apache-2.0 **kullanılmaz**.
+* Kullanılan tüm üçüncü taraf bileşenler ücretsiz/açık lisanslıdır ve
+  `THIRD_PARTY_LICENSES.md` içinde listelenir.
+* Repoda hiçbir anahtar, keystore, mağaza kimliği veya kişisel veri bulunmaz.
+
+---
+
+## 10. YAPILACAKLAR LİSTESİ
+
+> İşaretler: `[ ]` yapılacak · `[~]` devam ediyor · `[x]` tamam+test+commit+push.
+> Sıra bağlayıcıdır. Yeni iş **sona** eklenir.
+
+### FAZ A — Temel doğruluk ve kalıcılık
+- [ ] **A1.** `KelvinEngine`'i Planckian locus (Kim et al.) + sRGB dönüşümüne taşı;
+      McCamy ters dönüşümü koru; round-trip ve sınır testleri yaz.
+- [ ] **A2.** `FilterConfig`'i üç eksene (kelvin / density / extraDim) göre yeniden
+      modelle, güvenlik sınırlarını entity içinde zorla, siyah ekranı imkânsızlaştır.
+- [ ] **A3.** Preset RGB değerlerini elle girilmiş olmaktan çıkar; Kelvin'den türet.
+      7 varsayılan preset'in Kelvin değerlerini bilimsel olarak gözden geçir.
+- [ ] **A4.** Kalıcılık mimarisini değiştir: bellekte tek kaynak + debounce'lu tam
+      yazma; okuma-değiştir-yaz yarışını kaldır. Ayar kaybı testi yaz.
+- [ ] **A5.** `PresetNotifier` ↔ `FilterNotifier` desenkronizasyonunu gider
+      (aktif preset tek yerde tutulur).
+- [ ] **A6.** Geri Al (Undo) yığınını ekle; ana ekranda geri al düğmesi.
+- [ ] **A7.** Ekstra Karartma'yı gerçekten uygula (şu an native tarafta hiç kullanılmıyor).
+
+### FAZ B — Android native
+- [ ] **B1.** Bildirim aksiyonlarına gerçek drawable ikonlar ver; kontrollerin
+      görünmeme hatasını çöz.
+- [ ] **B2.** `RemoteViews` ile özel bildirim kokpiti: preset geçişi + 3 eksen kontrolü.
+- [ ] **B3.** Pro kilidi: ücretsizde 1 preset açık, diğerleri kilitli ve paywall'a yönlendirir.
+- [ ] **B4.** Zamanlayıcıyı sağlamlaştır: exact alarm izni, tetikleme sonrası yeniden
+      kurulum, boot restore, hedef preset ile başlatma.
+- [ ] **B5.** Overlay servisini gözden geçir: yapılandırma değişikliği, çoklu ekran,
+      çentik, servis yeniden başlatmada durum geri yükleme.
+- [ ] **B6.** Overlay izni verildikten sonra uygulamaya dönüşte banner'ın kendini
+      yenilemesi; izin yokken filtre açmayı engelleyen net akış.
+
+### FAZ C — Ödeme ve gelir
+- [ ] **C1.** `IPurchaseRepository` sözleşmesi + platform gateway'leri iskeleti.
+- [ ] **C2.** `in_app_purchase` ile Play/App Store entegrasyonu, ömür boyu ürün,
+      geri yükleme, pending/hata durumları.
+- [ ] **C3.** `proStatusProvider` ve tüm uygulamada tek noktadan Pro kontrolü.
+- [ ] **C4.** Reklam politikası motoru: ilk 3 gün / 5 oturum dokunulmazlık, oturum
+      tavanı, minimum aralık, doğal durak tetikleyicileri.
+- [ ] **C5.** Ödüllü reklam → 24 saatlik Pro geçişi (günde 2 sınırı).
+- [ ] **C6.** Yeni Paywall ekranı: Pro faydaları, tek fiyat, abonelik yok vurgusu,
+      geri yükleme düğmesi, light/dark uyumlu.
+
+### FAZ D — Arayüz ve deneyim
+- [ ] **D1.** Ana ekran yeniden düzeni: preset'ler yatay kaydırma yerine ızgara
+      (satır başına 4), güç düğmesi küçültülüp yukarı alınır, gereksiz etiketler
+      kaldırılır, yer kazanılır. Alt banner reklam yerinde kalır.
+- [ ] **D2.** Kelvin kontrolü: kaydırıcı **kendi spektrum çubuğunun üzerinde** olacak
+      şekilde tek bileşene birleştirilir.
+- [ ] **D3.** Preset kartlarında Kelvin değeri okunaklı boyutta ve kontrastta.
+- [ ] **D4.** Light/dark tema denetimi: sabit renkler temizlenir, her ekran iki temada
+      da okunur (Pro kartının altındaki beyaz yazı hatası dâhil).
+- [ ] **D5.** Özel preset oluşturma: Kelvin + Yoğunluk + **Ekstra Karartma** üçü de
+      girilebilir; isim ve ikon seçimi.
+- [ ] **D6.** Ana ekranda preset sırasını sürükleyerek değiştirme + varsayılana sıfırlama.
+- [ ] **D7.** Preset üzerinde yapılan değişikliği o preset'e sıfırlama ("bu preset'i
+      varsayılanına döndür").
+- [ ] **D8.** Bilgi Merkezi: doğru bilimsel açıklamalar, uygun ikonlar, şık görseller.
+- [ ] **D9.** Alt gezinme ve tüm ikonların iOS'ta da doğru duran set ile birleştirilmesi.
+- [ ] **D10.** Splash: light ve dark için ayrı, sade; mevcut ikon korunur, mavi+turuncu
+      kimlik, altında tek satır bilimsel açıklama.
+- [ ] **D11.** Pro rozeti: satın alındığında başlıkta "DoctorFilter^Pro" işareti.
+- [ ] **D12.** Hakkında ekranı: jargon kaldırılır, feragat + kaynaklar + lisans eklenir.
+- [ ] **D13.** "Puanla" çalışır hâle getirilir (mağaza incelemesi).
+- [ ] **D14.** "Paylaş" çalışır hâle getirilir (yerel paylaşım sayfası).
+
+### FAZ E — Yerelleştirme
+- [ ] **E1.** Tüm yeni arayüz metinleri için anahtar seti tanımlanır; kodda çıplak
+      string kalmaz (derleme zamanı denetimi/test ile doğrulanır).
+- [ ] **E2.** Türkçe ve İngilizce eksiksiz ve elle gözden geçirilmiş olarak tamamlanır.
+- [ ] **E3.** Kalan diller tamamlanır; eksik anahtar İngilizce'ye düşer, asla anahtar
+      adı görünmez.
+- [ ] **E4.** RTL (ar, fa, he, ur) düzen denetimi; sayı/saat biçimleri locale'e uyar.
+- [ ] **E5.** Saat seçicilerde 12/24 saat biçimi locale'den gelir (Türkçe'de PM yok).
+
+### FAZ F — Açık kaynak ve teslim
+- [ ] **F1.** `LICENSE` eklenir (Bölüm 9'daki tercih doğrultusunda).
+- [ ] **F2.** `README.md` yeniden yazılır: ne yaptığı, bilimsel temeli, gizlilik,
+      ekran görüntüleri, kurulum, katkı, lisans, feragat.
+- [ ] **F3.** `THIRD_PARTY_LICENSES.md` üretilir.
+- [ ] **F4.** `.env` olmadan temiz klon derlenebilir hâle getirilir (asset bağımlılığı
+      dâhil); test id'leriyle çalışması doğrulanır.
+- [ ] **F5.** Gereksiz dosyalar temizlenir; repo geçmişi sır taramasından geçirilir.
+- [ ] **F6.** `flutter analyze` 0, `flutter test` tam yeşil, release AAB derlenir.
+
+### FAZ G — Sonraki platformlar
+- [ ] **G1.** iOS: uygulama içi filtre, bildirim, zamanlayıcı, App Store satın alma.
+- [ ] **G2.** Windows: katman penceresi + MS Store satın alma.
+- [ ] **G3.** Linux/macOS: derlenebilirlik ve çekirdek özellikler.
+
+---
+
+## 11. DEĞİŞİKLİK GÜNLÜĞÜ (mimariyi etkileyen kararlar)
+
+| Tarih | Karar |
+|---|---|
+| 2026-09-15 | Doküman protokol + tam yol haritası olarak yeniden yazıldı. Ödeme `in_app_purchase` üzerinden platform-bağımsız gateway ile kurulacak (RevenueCat terk edildi). Kalıcılık modeli bellekte-tek-kaynak + debounce'a çevrilecek. Filtre modeli üç eksene (Kelvin / Yoğunluk / Ekstra Karartma) ayrıldı. Lisans GPL-3.0, Pro ürün kimliği `doctorfilter_pro_lifetime` olarak kesinleşti. |
