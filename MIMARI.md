@@ -713,17 +713,36 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       Flutter 3.47'de Android 15'te varsayılan; **cihazda kenar taşmaları kontrol edilmeli.**
 
 ## FAZ C — Ödeme ve gelir
-- [ ] **C1.** `IPurchaseRepository` sözleşmesi + platform gateway iskeletleri. (K12)
-- [ ] 🔴 **C2.** `in_app_purchase` ile Play/App Store entegrasyonu: ömür boyu ürün,
-      geri yükleme, pending/hata durumları.
-- [ ] **C3.** `proStatusProvider`; tüm uygulamada tek noktadan Pro kontrolü.
-- [ ] 🔴 **C4.** 1.x kullanıcılarının satın almasının taşınması (eski ürün kimliği sorgusu).
+- [x] **C1.** `IPurchaseRepository` sözleşmesi + `ProProduct` (ürün kimlikleri, eski 1.x
+      kimlikleri dâhil), `ProOffer` (fiyat **önceden biçimlenmiş metin**, sayı değil —
+      mağaza para birimini, vergiyi ve locale biçimini zaten biliyor), `PurchaseOutcome`.
+      `StorePurchaseRepository` (Play + App Store, tek sınıf) ve
+      `UnsupportedPurchaseRepository` (mağazasız platformda satın alma arayüzü **gizlenir**,
+      çalışmayan düğme gösterilmez). (K12)
+- [~] 🔴 **C2.** `in_app_purchase` entegre edildi: non-consumable ömür boyu ürün,
+      `restorePurchases`, `pending` (yavaş ödeme / ebeveyn onayı) ve iptal ayrımı,
+      **zorunlu `completePurchase`** (atlanırsa Play 3 gün sonra iade eder, Apple her
+      açılışta tekrar oynatır). Satın alma akışı asenkron olduğu için sonuç sayfa
+      açılır açılmaz değil, mağaza akışı bitince bildiriliyor.
+      — **cihazda doğrulanmalı** (lisanslı test hesabı gerekir)
+- [x] **C3.** `proStatusProvider` tek yetki noktası; `isProProvider` kısayolu.
+      Açılışta **önce diskten** okunuyor ki dönen Pro kullanıcı mağazaya sorulurken
+      bir anlığına reklam görmesin. `ProStatus` üç durumlu (free / lifetime / süreli pass).
+- [~] 🔴 **C4.** Eski 1.x ürün kimlikleri `ProProduct.legacyIds` içinde ve her geri
+      yüklemede sorgulanıyor; yıllar önce ödeyen kullanıcı tekrar ödemiyor. Ayrıca
+      açılışta **sessiz geri yükleme** çalışıyor (yeniden kurulum, yeni telefon, başka
+      cihazda tamamlanan satın alma). — **cihazda doğrulanmalı**
+      ⚠️ `legacyIds` şu an tahmini bir değer içeriyor; Play Console'daki gerçek eski
+      ürün kimliği ile **doğrulanmalı**.
 - [ ] **C5.** Reklam politikası motoru: 3 gün / 5 oturum dokunulmazlık, oturum tavanı,
       minimum aralık, doğal durak tetikleyicileri.
 - [ ] 🔴 **C6.** UMP/GDPR onay akışı + iOS ATT izni; onay alınmadan reklam yüklenmez.
 - [ ] 🔴 **C7.** Ödüllü reklam → 24 saatlik Pro geçişi (günde 2 sınırı).
-- [ ] **C8.** Yeni Paywall: Pro faydaları, tek fiyat, abonelik yok vurgusu, geri yükleme,
-      light/dark uyumlu.
+- [~] **C8.** Paywall yeniden yazıldı: dört gerçek fayda, mağazadan gelen fiyat,
+      "tek ödeme, abonelik yok" vurgusu, geri yükleme düğmesi, satın alınmışsa teşekkür
+      kartı, mağazasız platformda açıklama. Sayaç/sahte indirim yok — yatma saatinde
+      kullanıcıyı sıkıştıran bir ekran konfor aracının ne işe yaradığını yanlış anlamış
+      olurdu. Tema token'ları kullanıldı (sabit renk yok). — **iki temada gözle bakılmalı**
 - [ ] **C9.** Pro'da reklam kaldırılınca düzende boşluk/bozulma olmaması.
 
 ## FAZ D — Arayüz ve deneyim
@@ -850,6 +869,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **C1, C3 tamam; C2, C4, C8 kod tarafı tamam** (mağaza testi bekliyor). `in_app_purchase`
+  eklendi, Pro tek noktadan okunuyor, paywall yeniden yazıldı. `flutter test` 63/63.
 * **FAZ B kod tarafı bitti** (B1–B9 hepsi cihaz onayı bekliyor, Bölüm 12.1'de adımları var).
 * **B2, B3 kod tarafı tamam** (cihaz onayı bekliyor). `ProStatus` + `proStatusProvider`
   eklendi; C2 satın almayı buraya bağlayacak. `flutter test` 55/55.
@@ -876,6 +897,18 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 3. "Karart"a bas → ekran belirgin biçimde koyulaşmalı, bildirim metnindeki
    "Ekstra karartma %" değeri artmalı.
 4. "Sonraki"ye bas → başka bir preset'e geçmeli, uygulamayı açtığında o preset seçili olmalı.
+
+**C2/C4/C8 — Satın alma** (Play Console'da lisanslı test hesabı gerekir)
+1. Play Console'da `doctorfilter_pro_lifetime` ürününü oluştur ve etkinleştir.
+2. **Eski 1.x ürün kimliğini Play Console'dan doğrula** ve `ProProduct.legacyIds`
+   içindeki tahmini değeri gerçeğiyle değiştir.
+3. Paywall'ı aç → fiyat mağazadan gelmeli (kodda yazılı olmamalı).
+4. Satın al → Play'in kendi sayfası açılmalı, kayıtlı ödeme yöntemiyle iki dokunuşta
+   bitmeli. Uygulama **hiçbir yerde kart bilgisi sormamalı**.
+5. Satın aldıktan sonra: reklamlar kaybolmalı, bildirimdeki kilitler açılmalı.
+6. Uygulamayı sil, yeniden kur → **açılışta Pro kendiliğinden geri gelmeli**.
+7. "Satın Alımları Geri Yükle" düğmesi çalışmalı (App Store şartı).
+8. Satın almayı iptal et → hiçbir hata mesajı çıkmamalı (iptal bir seçimdir).
 
 **B2/B3 — Bildirim kokpiti**
 1. Filtreyi aç, bildirimi **aşağı doğru genişlet**.
@@ -918,7 +951,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `C1` (satın alma sözleşmesi ve gateway iskeleti). FAZ B kod tarafı bitti.
+**Sıradaki madde:** `C5` (reklam politikası motoru).
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar
