@@ -130,6 +130,9 @@ class SettingsScreen extends ConsumerWidget {
           ),
 
           const SizedBox(height: 16),
+          _UsageCard(label: loc?.translate('settings_usage') ?? 'Your week'),
+
+          const SizedBox(height: 16),
           _SectionLabel(loc?.translate('settings_backup') ?? 'Back up settings'),
           Card(
             margin: EdgeInsets.zero,
@@ -265,6 +268,162 @@ class SettingsScreen extends ConsumerWidget {
       }
     }
     return code.toUpperCase();
+  }
+}
+
+/// Seven days of filtered screen time, from the device and nowhere else.
+///
+/// Renders nothing at all until there is something to show: an empty chart on a
+/// first launch is just a reminder that the app has done nothing yet.
+class _UsageCard extends ConsumerWidget {
+  const _UsageCard({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context);
+    final usage = ref.watch(usageMinutesProvider).valueOrNull ?? const {};
+    final total = usage.values.fold(0, (sum, minutes) => sum + minutes);
+    if (total == 0) return const SizedBox.shrink();
+
+    final today = DateTime.now();
+    final days = [
+      for (var offset = 6; offset >= 0; offset--)
+        today.subtract(Duration(days: offset)),
+    ];
+    final peak = usage.values.reduce((a, b) => a > b ? a : b);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label),
+        Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _duration(loc, total),
+                  style: context.texts.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: context.colours.primary,
+                  ),
+                ),
+                Text(
+                  loc?.translate('settings_usage_desc') ??
+                      'Filtered screen time this week. Kept on this device.',
+                  style: context.texts.bodySmall
+                      ?.copyWith(color: context.colours.onSurfaceVariant),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 72,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      for (final day in days)
+                        Expanded(
+                          child: _DayBar(
+                            minutes: usage[_key(day)] ?? 0,
+                            peak: peak,
+                            weekday: day.weekday,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static String _key(DateTime day) =>
+      '${day.year.toString().padLeft(4, '0')}-'
+      '${day.month.toString().padLeft(2, '0')}-'
+      '${day.day.toString().padLeft(2, '0')}';
+
+  static String _duration(AppLocalizations? loc, int minutes) {
+    final hours = minutes ~/ 60;
+    final rest = minutes % 60;
+    final hourText = loc
+        ?.translate('duration_hours')
+        .replaceAll('{hours}', '$hours');
+    final minuteText = loc
+        ?.translate('duration_minutes')
+        .replaceAll('{minutes}', '$rest');
+    if (hours == 0) return minuteText ?? '$rest min';
+    return '${hourText ?? '$hours h'} ${minuteText ?? '$rest min'}';
+  }
+}
+
+class _DayBar extends StatelessWidget {
+  const _DayBar({
+    required this.minutes,
+    required this.peak,
+    required this.weekday,
+  });
+
+  final int minutes;
+  final int peak;
+  final int weekday;
+
+  @override
+  Widget build(BuildContext context) {
+    // A floor of 3px so a day with a few minutes still reads as "some", and an
+    // empty day still reads as a day rather than a gap in the chart.
+    final fraction = peak == 0 ? 0.0 : minutes / peak;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Expanded(
+            child: FractionallySizedBox(
+              alignment: Alignment.bottomCenter,
+              heightFactor: fraction.clamp(0.04, 1.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: minutes == 0
+                      ? context.colours.outlineVariant
+                      : context.colours.primary,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            _weekdayInitial(context, weekday),
+            style: context.texts.labelSmall
+                ?.copyWith(color: context.colours.onSurfaceVariant),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Taken from the active locale rather than hard-coded letters: the same chart
+  /// has to read correctly in 71 languages, including right-to-left ones.
+  static String _weekdayInitial(BuildContext context, int weekday) {
+    const reference = [
+      'weekday_mon',
+      'weekday_tue',
+      'weekday_wed',
+      'weekday_thu',
+      'weekday_fri',
+      'weekday_sat',
+      'weekday_sun',
+    ];
+    final loc = AppLocalizations.of(context);
+    final name = loc?.translate(reference[weekday - 1]);
+    return name ?? reference[weekday - 1].substring(8, 9).toUpperCase();
   }
 }
 

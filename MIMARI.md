@@ -921,7 +921,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       kullanıcının çektiği kaydırıcının gecikmeli gelmesi gecikme gibi hissedilirdi.
       Kapanışta da aynı süreyle söner.
 - [ ] **H3.** 20-20-20 göz molası hatırlatıcısı (ücretsizde sabit, Pro'da özelleştirilebilir).
-- [ ] **H4.** Yerel kullanım istatistiği: "bu hafta X saat korumalı ekran" (cihazda kalır).
+- [x] **H4.** Yerel kullanım istatistiği. `UsageLog` **yerel tarafta** tutar: filtre
+      ömrünün çoğunu ayakta bir Flutter motoru olmadan geçirir (zamanlayıcı başlatır,
+      bildirimden durdurulur). Gün başına dakika, son 7 gün; hiçbir tanımlayıcı yok,
+      hiçbir şey telefondan çıkmaz. Gece yarısını aşan oturum **günlere bölünür** —
+      22:00–07:00 arasını tek güne yazmak grafiği anlamsız yapardı. Ayarlar ekranında
+      haftalık toplam + 7 çubukluk mini grafik; hiç veri yokken bölüm hiç çizilmez
+      (ilk açılışta boş bir grafik, uygulamanın henüz hiçbir şey yapmadığını hatırlatmaktan
+      başka bir işe yaramaz). Gün harfleri çeviri anahtarlarından gelir (71 dil, RTL).
+      `ponytail:` 12 saatten uzun oturum, kapanışını bildiremeden ölmüş bir süreç
+      sayılır ve sayılmaz; gerekirse servisten periyodik kalp atışı eklenir.
 - [x] **H5.** AMOLED tam siyah tema seçeneği. `AppTheme.amoledTheme` (gerçek siyah;
       kenarlıklar koyulaştırılmak yerine açıldı, aksi hâlde siyah üstünde kaybolup
       düzen yapısı yok oluyor), `amoledProvider` + `darkThemeProvider`, ayarlarda
@@ -1101,7 +1110,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H3, H4, H8–H11, H13–H15. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H3, H8–H11, H13–H15. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.

@@ -93,3 +93,11 @@ final applyPresetUseCaseProvider = Provider<ApplyPresetUseCase>((ref) {
 final manageScheduleUseCaseProvider = Provider<ManageScheduleUseCase>((ref) {
   return ManageScheduleUseCase(ref.watch(scheduleRepositoryProvider));
 });
+
+/// Minutes of filtered screen per day for the last week, read from the platform.
+///
+/// Auto-disposed so it is re-read each time the screen is opened rather than
+/// showing a figure that stopped counting hours ago.
+final usageMinutesProvider = FutureProvider.autoDispose<Map<String, int>>((ref) {
+  return ref.watch(platformChannelDataSourceProvider).usageMinutes();
+});
