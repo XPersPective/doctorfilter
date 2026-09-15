@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doctorfilter/domain/entities/circadian_mode.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
+import 'package:doctorfilter/domain/entities/pro_status.dart';
 import 'package:doctorfilter/domain/entities/schedule_rule.dart';
 
 /// Key-value persistence for settings.
@@ -35,6 +36,9 @@ class PreferencesDataSource {
   static const _keyScheduleStopMinute = 'df_schedule_stop_minute';
   static const _keyScheduleMode = 'df_schedule_mode';
   static const _keySchedulePresetId = 'df_schedule_preset_id';
+
+  static const _keyProLifetime = 'df_pro_lifetime';
+  static const _keyProPassExpiry = 'df_pro_pass_expiry';
 
   static const _keyLocale = 'df_app_locale';
   static const _keyIsDarkMode = 'df_app_is_dark_mode';
@@ -94,6 +98,23 @@ class PreferencesDataSource {
       _prefs.setInt(_keyScheduleMode, rule.mode.index),
       _prefs.setInt(_keySchedulePresetId, rule.targetPresetId),
     ]);
+  }
+
+  ProStatus getProStatus() {
+    if (_prefs.getBool(_keyProLifetime) ?? false) return ProStatus.lifetime();
+    final expiryMillis = _prefs.getInt(_keyProPassExpiry);
+    if (expiryMillis == null) return ProStatus.free();
+    return ProStatus.pass(DateTime.fromMillisecondsSinceEpoch(expiryMillis));
+  }
+
+  Future<void> setProStatus(ProStatus status) async {
+    await _prefs.setBool(_keyProLifetime, status.isLifetime);
+    final expiry = status.passExpiry;
+    if (expiry == null) {
+      await _prefs.remove(_keyProPassExpiry);
+    } else {
+      await _prefs.setInt(_keyProPassExpiry, expiry.millisecondsSinceEpoch);
+    }
   }
 
   String? getLocale() => _prefs.getString(_keyLocale);

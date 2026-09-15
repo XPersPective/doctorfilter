@@ -74,6 +74,20 @@ class PlatformChannelDataSource {
         'targetPresetId': rule.targetPresetId,
       });
 
+  /// Mirrors the preset list to the native side.
+  ///
+  /// The notification is often built by a service with no Flutter engine alive,
+  /// so it cannot read the database or the translations. It gets a flattened
+  /// copy instead, refreshed whenever the list or the user's entitlement changes.
+  Future<bool> setPresetCatalog({
+    required String presetsJson,
+    required bool isPro,
+  }) =>
+      _invokeBool('setPresetCatalog', {
+        'presets': presetsJson,
+        'isPro': isPro,
+      });
+
   /// Whether the OS will honour exact alarms (Android 12+ can refuse).
   Future<bool> canScheduleExactAlarms() => _invokeBool('canScheduleExactAlarms');
 

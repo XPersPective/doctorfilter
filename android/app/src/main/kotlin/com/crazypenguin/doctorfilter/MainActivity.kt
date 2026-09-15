@@ -87,6 +87,18 @@ class MainActivity : FlutterActivity() {
 
                 "isFilterRunning" -> result.success(OverlayService.isRunning)
 
+                // Dart pushes the preset list down so the notification can show
+                // it without a database or the translations.
+                "setPresetCatalog" -> {
+                    PresetCatalog.save(
+                        context = this,
+                        json = call.argument<String>("presets") ?: "[]",
+                        isPro = call.argument<Boolean>("isPro") ?: false
+                    )
+                    refreshNotification()
+                    result.success(true)
+                }
+
                 "canScheduleExactAlarms" -> result.success(canScheduleExactAlarms())
                 "requestExactAlarmPermission" -> {
                     requestExactAlarmPermission()
@@ -145,6 +157,26 @@ class MainActivity : FlutterActivity() {
         } else {
             startService(intent)
         }
+    }
+
+    /**
+     * Redraws the notification in place.
+     *
+     * Only when the service is running: posting this notification without a
+     * foreground service behind it would leave an orphan the user cannot dismiss.
+     */
+    private fun refreshNotification() {
+        if (!OverlayService.isRunning) return
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE)
+                as android.app.NotificationManager
+        manager.notify(
+            FilterNotificationManager.NOTIFICATION_ID,
+            FilterNotificationManager.buildNotification(
+                context = this,
+                isActive = true,
+                values = OverlayService.current
+            )
+        )
     }
 
     private fun canDrawOverlays(): Boolean =
