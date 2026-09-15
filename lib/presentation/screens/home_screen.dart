@@ -54,6 +54,12 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
         actions: [
+          if (filterState.canUndo)
+            IconButton(
+              tooltip: loc?.translate('action_undo') ?? 'Undo',
+              icon: const Icon(Icons.undo_rounded),
+              onPressed: filterNotifier.undo,
+            ),
           IconButton(
             tooltip: 'Pro',
             icon: const Icon(Icons.workspace_premium_rounded, color: AppTheme.amberPrimary),
