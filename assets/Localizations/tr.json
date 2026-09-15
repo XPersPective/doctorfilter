@@ -179,5 +179,5 @@
   "melanopic_target_explainer": "Uzman görüş birliği, yatmadan önceki üç saatte ışığı 10 lx melanopik EDI ve altında tutmayı öneriyor. Hiçbir uygulama bu değeri ölçemez: panelinize, parlaklığınıza ve ekranı ne kadar uzakta tuttuğunuza bağlıdır. Halka, ayarlarınızın filtresiz bir ekrana göre ne kadar sirkadiyen ışık kaldırdığını gösterir; hedefin makul karşılığı olarak %70'lik azalma alınmıştır. Bu bir yön göstergesidir, ölçüm değil.",
   "action_ok": "Tamam",
   "schedule_bedtime": "Yatma saatime göre ayarla",
-  "schedule_bedtime_desc": "Ekran, uyumanızdan üç saat önce yavaşça inmeye başlar."
+  "schedule_bedtime_desc": "Ekran, uyumanızdan üç saat önce yavaşça inmeye başlar — saat kaç olursa olsun; gece vardiyasından sonraki gündüz uykusu dâhil."
 }

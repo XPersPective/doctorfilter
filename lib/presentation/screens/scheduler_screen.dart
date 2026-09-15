@@ -56,8 +56,13 @@ class _SchedulerScreenState extends ConsumerState<SchedulerScreen> {
                     ?.copyWith(fontWeight: FontWeight.w600),
               ),
               subtitle: Text(
+                // Explicitly mentions a daytime bedtime: the schedule handles
+                // one perfectly well, but a night-shift worker reading "before
+                // you sleep" assumes the app means night and walks away.
                 loc?.translate('schedule_bedtime_desc') ??
-                    'The screen starts winding down three hours before you sleep.',
+                    'The screen starts winding down three hours before you '
+                        'sleep — at any hour, including a daytime sleep after a '
+                        'night shift.',
               ),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _pickBedtime(context, notifier, rule),

@@ -994,7 +994,14 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       bir askıya alma, kullanıcının ayarında bir değişiklik değil — kalıcılaşmamalı ve geri
       al geçmişine girmemeli. `dispose` filtreyi geri koyar; ekran kapandı diye katmanın
       inik kalması olabilecek en kötü hata olurdu.
-- [ ] **H13.** **Vardiyalı çalışan modu:** ters uyku programı için zamanlama şablonu.
+- [x] **H13.** **Vardiyalı çalışan modu — H9 ile karşılandı, ayrı mod yazılmadı.**
+      `forBedtime` saat sarmasını zaten doğru yapıyor: yatma saati 09:00 girildiğinde
+      iniş 06:00'da başlıyor. Ayrı bir "vardiya modu" ekranı aynı hesabı ikinci kez
+      yazmak olurdu. Eksik olan tek şey **keşfedilebilirlikti**: "uyumadan önce"
+      ifadesini okuyan gece vardiyası çalışanı uygulamanın geceyi kastettiğini sanıp
+      vazgeçiyordu. Metne gündüz uykusu açıkça eklendi.
+      > Proje sahibi ayrı bir şablon ekranı isterse bu madde yeniden açılsın; gereken
+      > mekanizma zaten var, yalnızca ikinci bir giriş noktası eklenir.
 - [ ] **H14.** **OLED enerji göstergesi:** karartmanın pil kazancını göster (yalnızca OLED).
 - [ ] **H15.** **Preset paylaşımı:** preset'i kısa kodla paylaş/içe aktar (sunucusuz, kod
       içinde kodlanmış). Organik büyüme sağlar, veri toplamaz.
@@ -1140,7 +1147,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H10, H11, H13–H15. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H10, H11, H14, H15. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.
