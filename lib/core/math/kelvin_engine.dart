@@ -233,6 +233,48 @@ abstract final class KelvinEngine {
     return (1.0 - ((1.0 - a) + tintBlue * a)).clamp(0.0, 1.0);
   }
 
+  /// Melanopic weighting of the three sRGB primaries.
+  ///
+  /// Melanopsin peaks near 480 nm, so a display's blue primary dominates its
+  /// circadian effect while the red primary contributes almost nothing. These
+  /// coefficients approximate the melanopic action spectrum of CIE S 026:2018
+  /// convolved with the primaries of a typical LED display.
+  ///
+  /// They are an approximation, and a display-dependent one — which is exactly
+  /// why only a *relative* reduction is ever reported to the user. The panel's
+  /// own characteristics largely cancel in a before-and-after ratio, whereas an
+  /// absolute melanopic lux figure would need the spectrum of the specific
+  /// screen and the user's distance from it. Claiming one would be inventing a
+  /// number, which is the thing this engine exists to avoid.
+  static const _melanopicWeights = (r: 0.03, g: 0.39, b: 0.58);
+
+  /// Fraction by which the filter reduces the screen's melanopic (circadian)
+  /// output (0.0–1.0).
+  ///
+  /// This is the metric the field actually uses — melanopic equivalent daylight
+  /// illuminance, CIE S 026:2018 — rather than a blue-channel proxy. Brown et
+  /// al. (2022) recommend keeping melanopic EDI below 10 lx in the three hours
+  /// before bed; this number says how much of the way the current settings take
+  /// the user toward that.
+  ///
+  /// Note that dimming counts here just as much as warming does, which matches
+  /// the evidence: shifting colour without lowering brightness does not
+  /// meaningfully reduce melatonin suppression (Nagare et al., 2019).
+  static double melanopicReduction({
+    required int tintKelvin,
+    required double compositeAlpha,
+  }) {
+    final a = compositeAlpha.clamp(0.0, 1.0);
+    final tint = kelvinToLinearRgb(tintKelvin);
+
+    // Per channel the overlay transmits (1 - a) of the screen plus a * tint.
+    final transmitted = _melanopicWeights.r * ((1 - a) + tint.r * a) +
+        _melanopicWeights.g * ((1 - a) + tint.g * a) +
+        _melanopicWeights.b * ((1 - a) + tint.b * a);
+
+    return (1.0 - transmitted).clamp(0.0, 1.0);
+  }
+
   /// Fraction by which overall screen luminance is reduced (0.0–1.0).
   ///
   /// Same composite, weighted by the Rec. 709 luminance coefficients sRGB uses,
