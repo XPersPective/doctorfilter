@@ -20,9 +20,34 @@ final class ScheduleRule {
   /// is never consciously noticed.
   static const int defaultTransitionMinutes = 30;
 
-  /// Longest fade offered. Beyond an hour the filter spends more of the evening
-  /// arriving than doing anything.
-  static const int maxTransitionMinutes = 60;
+  /// Longest fade offered — the length of the pre-sleep window in Brown et al.
+  /// (2022), so the bedtime assistant can spread the whole descent across it.
+  static const int maxTransitionMinutes = 180;
+
+  /// How far before bedtime the wind-down starts.
+  ///
+  /// The three hours before sleep are the window the evening guidance is
+  /// written for; starting the descent at its beginning means the screen is at
+  /// the target by the time it matters rather than on the way there.
+  static const int windDownHours = 3;
+
+  /// The schedule for someone who just wants to tell the app when they sleep.
+  ///
+  /// The filter begins its descent [windDownHours] before bed and takes the
+  /// whole window to get there, which is the point: a step change at 22:00 is
+  /// something the user notices and resents, and resented settings get turned
+  /// off.
+  ScheduleRule forBedtime({required int bedHour, required int bedMinute}) {
+    final startMinutes =
+        (bedHour * 60 + bedMinute - windDownHours * 60 + 24 * 60) % (24 * 60);
+
+    return copyWith(
+      isEnabled: true,
+      startHour: startMinutes ~/ 60,
+      startMinute: startMinutes % 60,
+      transitionMinutes: windDownHours * 60,
+    );
+  }
 
   /// Unique schedule rule ID.
   final int id;
