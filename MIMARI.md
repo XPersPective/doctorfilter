@@ -1003,8 +1003,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       > Proje sahibi ayrı bir şablon ekranı isterse bu madde yeniden açılsın; gereken
       > mekanizma zaten var, yalnızca ikinci bir giriş noktası eklenir.
 - [ ] **H14.** **OLED enerji göstergesi:** karartmanın pil kazancını göster (yalnızca OLED).
-- [ ] **H15.** **Preset paylaşımı:** preset'i kısa kodla paylaş/içe aktar (sunucusuz, kod
-      içinde kodlanmış). Organik büyüme sağlar, veri toplamaz.
+- [x] **H15.** **Preset paylaşımı.** `PresetCode`: üç eksen **beş karakterlik** bir koda
+      sığar (21 bit yük + 4 bit sağlama, Crockford base32 — I/L/O/U yok, böylece sesli
+      okunan ya da fotoğraftan yazılan bir kod başka bir geçerli koda dönüşemez).
+      Sunucu yok, hesap yok, bir gün ölecek bir bağlantı yok: **preset kodun kendisi**.
+      Sağlama şart: onsuz tek harflik bir yazım hatası birkaç yüz kelvin ötede gayet
+      makul görünen bir preset üretir ve kullanıcının bunu anlamasının hiçbir yolu olmaz.
+      İsim kasıtlen kodlanmaz — kodu okunabilir olmaktan çıkarır ve gönderenin dilindeki
+      bir isim alıcı için gürültüdür; içe aktarılan preset kendi renk sıcaklığıyla
+      adlandırılır. Çözülen değerler yine de kırpılır: tavanlar gönderenin değil,
+      uygulamanın sözü.
 - [x] **H16.** Filtre açıkken uygulama teması da koyuya geçer
       (`effectiveThemeModeProvider`). Karartılmış bir ekranın üstündeki parlak beyaz
       uygulama, filtrenin yaptığı tek şeyi geri alan şeydi. Kullanıcının **kayıtlı
@@ -1147,7 +1155,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H10, H11, H14, H15. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H10, H11, H14. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.

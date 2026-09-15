@@ -179,5 +179,11 @@
   "melanopic_target_explainer": "Expert consensus puts evening light at 10 lx melanopic EDI or less in the three hours before bed. No app can measure that figure: it depends on your panel, your brightness and how far away you hold the screen. The ring shows how much circadian light your settings remove relative to an unfiltered screen, against a 70% reduction taken as a reasonable stand-in for the target. It is a direction, not a measurement.",
   "action_ok": "OK",
   "schedule_bedtime": "Set up around my bedtime",
-  "schedule_bedtime_desc": "The screen starts winding down three hours before you sleep — at any hour, including a daytime sleep after a night shift."
+  "schedule_bedtime_desc": "The screen starts winding down three hours before you sleep — at any hour, including a daytime sleep after a night shift.",
+  "preset_share": "Share as a code",
+  "preset_share_text": "Try this DoctorFilter preset — enter the code {code} in the app.",
+  "preset_import": "Enter a preset code",
+  "preset_import_hint": "Five characters",
+  "preset_import_invalid": "That code is not valid.",
+  "action_add": "Add"
 }
