@@ -172,5 +172,10 @@
   "settings_breaks": "Eye breaks",
   "settings_breaks_desc": "Every 20 minutes, look about 6 metres away for 20 seconds.",
   "settings_breaks_interval": "Remind me every",
-  "settings_breaks_locked": "20 minutes is the interval the evidence is for. Pro can change it."
+  "settings_breaks_locked": "20 minutes is the interval the evidence is for. Pro can change it.",
+  "melanopic_target_reached": "At the evening guidance",
+  "melanopic_target_progress": "Towards the evening guidance",
+  "melanopic_target_title": "The evening guidance",
+  "melanopic_target_explainer": "Expert consensus puts evening light at 10 lx melanopic EDI or less in the three hours before bed. No app can measure that figure: it depends on your panel, your brightness and how far away you hold the screen. The ring shows how much circadian light your settings remove relative to an unfiltered screen, against a 70% reduction taken as a reasonable stand-in for the target. It is a direction, not a measurement.",
+  "action_ok": "OK"
 }

@@ -961,8 +961,19 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       üzerinden geçer, yani elle düzenlenmiş bir dosya güvenlik tavanlarını aşamaz.
       Yalnızca özel preset'ler taşınır (yerleşikler her kurulumda zaten var) ve **Pro
       hakkı kasıtlen dosyada yoktur** — mağazadan gelir, düzenlenebilir bir dosyadan değil.
-- [ ] **H8.** **Melanopik hedef göstergesi:** "akşam hedefine (10 lx melanopik EDI) ne kadar
-      yakınsın" halkası; gündüz/akşam/uyku bantları. Uygulamanın bilimsel farklılaştırıcısı.
+- [x] **H8.** **Melanopik hedef göstergesi.** Ana ekrandaki düz yüzde `MelanopicRing`
+      ile değiştirildi. Çıplak sayı yanlış soruyu yanıtlıyordu: "%43 daha az sirkadiyen
+      ışık" kullanıcıya bunun *yeterli olup olmadığını* söylemiyor; sonu olan bir yay
+      söylüyor.
+      **Dürüstlük kuralı (Bölüm 5.6):** mutlak lx iddia edilmez. `MelanopicTarget`
+      hedefi **%70 göreli azalma** olarak tanımlar ve bunun bir *varsayım* olduğunu
+      kodda ve halkaya dokununca açılan açıklamada söyler: akşam parlaklığındaki
+      telefonlar okuma mesafesinde ~20–40 lx melanopik EDI bildiriliyor; ≤10 lx'e
+      inmek kabaca üçte iki–dörtte üçlük bir kesinti gerektirir, %70 bu aralığın
+      ortası. Kendi rakamını talep üzerine savunamayan bir uygulama o rakamı
+      göstermemeli.
+      Bant adı/rengi artık `bandStyle()` içinde tek yerde — iki kopya kaçınılmaz
+      olarak ayrışır (biri 3000 K'ya "akşam" derken öteki hâlâ "dengeli" der).
 - [ ] **H9.** **Yatma rutini asistanı:** kullanıcı yatma saatini girer, uygulama 3 saat
       öncesinden kademeli olarak hedefe indirir (Brown 2022 penceresi).
 - [ ] **H10.** **Ekran kalibrasyonu:** panel farkları gerçektir (OLED/LCD, üretici tonlaması).
@@ -1121,7 +1132,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H8–H11, H13–H15. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H9–H11, H13–H15. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.

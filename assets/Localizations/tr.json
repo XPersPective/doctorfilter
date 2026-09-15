@@ -172,5 +172,10 @@
   "settings_breaks": "Göz molası",
   "settings_breaks_desc": "Her 20 dakikada bir, 20 saniye boyunca yaklaşık 6 metre uzağa bak.",
   "settings_breaks_interval": "Hatırlatma aralığı",
-  "settings_breaks_locked": "Kanıtın işaret ettiği aralık 20 dakika. Pro ile değiştirilebilir."
+  "settings_breaks_locked": "Kanıtın işaret ettiği aralık 20 dakika. Pro ile değiştirilebilir.",
+  "melanopic_target_reached": "Akşam hedefinde",
+  "melanopic_target_progress": "Akşam hedefine doğru",
+  "melanopic_target_title": "Akşam hedefi",
+  "melanopic_target_explainer": "Uzman görüş birliği, yatmadan önceki üç saatte ışığı 10 lx melanopik EDI ve altında tutmayı öneriyor. Hiçbir uygulama bu değeri ölçemez: panelinize, parlaklığınıza ve ekranı ne kadar uzakta tuttuğunuza bağlıdır. Halka, ayarlarınızın filtresiz bir ekrana göre ne kadar sirkadiyen ışık kaldırdığını gösterir; hedefin makul karşılığı olarak %70'lik azalma alınmıştır. Bu bir yön göstergesidir, ölçüm değil.",
+  "action_ok": "Tamam"
 }
