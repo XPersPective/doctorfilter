@@ -119,7 +119,8 @@ class MainActivity : FlutterActivity() {
                         startMinute = call.argument<Int>("startMinute") ?: 0,
                         stopHour = call.argument<Int>("stopHour") ?: 7,
                         stopMinute = call.argument<Int>("stopMinute") ?: 0,
-                        targetPresetId = call.argument<Int>("targetPresetId") ?: 5
+                        targetPresetId = call.argument<Int>("targetPresetId") ?: 5,
+                        transitionMinutes = call.argument<Int>("transitionMinutes") ?: 0
                     )
                     result.success(true)
                 }

@@ -12,7 +12,17 @@ final class ScheduleRule {
     required this.stopMinute,
     required this.mode,
     required this.targetPresetId,
+    this.transitionMinutes = defaultTransitionMinutes,
   });
+
+  /// A filter that appears instantly at bedtime is startling, which is the
+  /// opposite of what it is for. Thirty minutes is slow enough that the change
+  /// is never consciously noticed.
+  static const int defaultTransitionMinutes = 30;
+
+  /// Longest fade offered. Beyond an hour the filter spends more of the evening
+  /// arriving than doing anything.
+  static const int maxTransitionMinutes = 60;
 
   /// Unique schedule rule ID.
   final int id;
@@ -37,6 +47,10 @@ final class ScheduleRule {
 
   /// The preset to automatically activate during this window.
   final int targetPresetId;
+
+  /// How long the filter takes to fade in at the start of the window, and out
+  /// again at the end. Zero switches instantly.
+  final int transitionMinutes;
 
   /// Formatted start time string (HH:mm).
   String get startTimeFormatted {
@@ -74,6 +88,7 @@ final class ScheduleRule {
     int? stopMinute,
     CircadianMode? mode,
     int? targetPresetId,
+    int? transitionMinutes,
   }) {
     return ScheduleRule(
       id: id ?? this.id,
@@ -84,6 +99,8 @@ final class ScheduleRule {
       stopMinute: stopMinute ?? this.stopMinute,
       mode: mode ?? this.mode,
       targetPresetId: targetPresetId ?? this.targetPresetId,
+      transitionMinutes: (transitionMinutes ?? this.transitionMinutes)
+          .clamp(0, maxTransitionMinutes),
     );
   }
 
@@ -99,7 +116,8 @@ final class ScheduleRule {
           stopHour == other.stopHour &&
           stopMinute == other.stopMinute &&
           mode == other.mode &&
-          targetPresetId == other.targetPresetId;
+          targetPresetId == other.targetPresetId &&
+          transitionMinutes == other.transitionMinutes;
 
   @override
   int get hashCode =>
@@ -110,5 +128,6 @@ final class ScheduleRule {
       stopHour.hashCode ^
       stopMinute.hashCode ^
       mode.hashCode ^
-      targetPresetId.hashCode;
+      targetPresetId.hashCode ^
+      transitionMinutes.hashCode;
 }

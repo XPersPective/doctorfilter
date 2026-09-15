@@ -7,7 +7,9 @@ import android.content.pm.ServiceInfo
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import androidx.core.app.ServiceCompat
@@ -27,6 +29,19 @@ class OverlayService : Service() {
     private var overlayView: View? = null
     private var layoutParams: WindowManager.LayoutParams? = null
 
+    private val handler = Handler(Looper.getMainLooper())
+    private var rampStep: Runnable? = null
+
+    /**
+     * What is actually painted while a transition is running, or null when the
+     * overlay shows the user's real value.
+     *
+     * Only the painted alpha is faded. [current] jumps to the target at once, so
+     * the notification, the widget and the stored state all show what the user
+     * asked for rather than a half-finished number that happens to be on screen.
+     */
+    private var rampAlpha: Int? = null
+
     companion object {
         const val ACTION_START = "com.crazypenguin.doctorfilter.action.START"
         const val ACTION_STOP = "com.crazypenguin.doctorfilter.action.STOP"
@@ -40,6 +55,15 @@ class OverlayService : Service() {
         const val EXTRA_DENSITY = "extra_density"
         const val EXTRA_EXTRA_DIM = "extra_extra_dim"
         const val EXTRA_PRESET_ID = "extra_preset_id"
+
+        /**
+         * Fade the filter in (or out, on stop) over this many milliseconds.
+         *
+         * A bedtime filter appearing instantly is startling, and startling is the
+         * opposite of what it is for; a slow fade is not consciously noticed at
+         * all. Absent or zero means the old instant behaviour.
+         */
+        const val EXTRA_RAMP_MILLIS = "extra_ramp_millis"
 
         @Volatile
         var isRunning = false
@@ -70,17 +94,38 @@ class OverlayService : Service() {
 
         return when (intent.action) {
             ACTION_STOP -> {
-                stopOverlay()
-                stopSelf()
-                START_NOT_STICKY
+                val fadeMillis = intent.getLongExtra(EXTRA_RAMP_MILLIS, 0L)
+                if (fadeMillis > 0 && overlayView != null) {
+                    ramp(from = rampAlpha ?: current.alpha, to = 0, durationMillis = fadeMillis) {
+                        stopOverlay()
+                        stopSelf()
+                    }
+                    START_STICKY
+                } else {
+                    stopOverlay()
+                    stopSelf()
+                    START_NOT_STICKY
+                }
             }
 
             ACTION_START, ACTION_UPDATE -> {
+                val wasShowing = overlayView != null
                 current = readValues(intent)
                 FilterState.write(this, current)
                 FilterState.setWasRunning(this, true)
                 startOrUpdateForeground()
-                applyOverlay()
+
+                val fadeMillis = intent.getLongExtra(EXTRA_RAMP_MILLIS, 0L)
+                // Only when the filter is coming on. Fading an adjustment the user
+                // is making by hand would just feel like lag.
+                if (fadeMillis > 0 && !wasShowing) {
+                    rampAlpha = 0
+                    applyOverlay()
+                    ramp(from = 0, to = current.alpha, durationMillis = fadeMillis, onDone = null)
+                } else {
+                    cancelRamp()
+                    applyOverlay()
+                }
                 START_STICKY
             }
 
@@ -128,9 +173,48 @@ class OverlayService : Service() {
         FilterWidgetProvider.refreshAll(this)
     }
 
+    /**
+     * Steps the painted alpha from [from] to [to] over [durationMillis].
+     *
+     * A step every two seconds: slow enough to cost nothing (a `setBackgroundColor`
+     * on an already-attached view), fine enough that a 30-minute fade moves in
+     * increments no eye can pick out.
+     */
+    private fun ramp(from: Int, to: Int, durationMillis: Long, onDone: (() -> Unit)?) {
+        cancelRamp()
+
+        val startedAt = System.currentTimeMillis()
+        val step = object : Runnable {
+            override fun run() {
+                val elapsed = System.currentTimeMillis() - startedAt
+                val progress = (elapsed.toFloat() / durationMillis).coerceIn(0f, 1f)
+                rampAlpha = (from + (to - from) * progress).toInt()
+                applyOverlay()
+
+                if (progress >= 1f) {
+                    rampStep = null
+                    rampAlpha = null
+                    applyOverlay()
+                    onDone?.invoke()
+                } else {
+                    handler.postDelayed(this, STEP_MILLIS)
+                }
+            }
+        }
+        rampStep = step
+        handler.postDelayed(step, STEP_MILLIS)
+    }
+
+    private fun cancelRamp() {
+        rampStep?.let { handler.removeCallbacks(it) }
+        rampStep = null
+        rampAlpha = null
+    }
+
     private fun applyOverlay() {
         val wm = windowManager ?: return
-        val filterColor = Color.argb(current.alpha, current.red, current.green, current.blue)
+        val alpha = rampAlpha ?: current.alpha
+        val filterColor = Color.argb(alpha, current.red, current.green, current.blue)
 
         val view = overlayView
         if (view != null) {
@@ -182,6 +266,7 @@ class OverlayService : Service() {
     }
 
     private fun stopOverlay() {
+        cancelRamp()
         overlayView?.let { view ->
             try {
                 windowManager?.removeView(view)
@@ -224,3 +309,6 @@ class OverlayService : Service() {
  * black.
  */
 private const val MAX_ALPHA = 235
+
+/** How often a transition repaints. See [OverlayService.ramp]. */
+private const val STEP_MILLIS = 2_000L
