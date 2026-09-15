@@ -224,6 +224,7 @@ class OverlayService : Service() {
 
         overlayView = View(this).apply { setBackgroundColor(filterColor) }
         layoutParams = buildLayoutParams()
+        UsageLog.started(this)
 
         try {
             wm.addView(overlayView, layoutParams)
@@ -276,6 +277,7 @@ class OverlayService : Service() {
             overlayView = null
         }
         isRunning = false
+        UsageLog.stopped(this)
         FilterState.setWasRunning(this, false)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         FilterWidgetProvider.refreshAll(this)

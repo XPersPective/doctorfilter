@@ -89,6 +89,21 @@ class PlatformChannelDataSource {
         'isPro': isPro,
       });
 
+  /// Minutes the filter was on, per `yyyy-MM-dd`, for the last week.
+  ///
+  /// Recorded natively, because the filter spends most of its life with no
+  /// Flutter engine alive. Empty where the platform does not keep it.
+  Future<Map<String, int>> usageMinutes() async {
+    try {
+      final result = await _channel.invokeMapMethod<String, int>('getUsageMinutes');
+      return result ?? const {};
+    } on PlatformException {
+      return const {};
+    } on MissingPluginException {
+      return const {};
+    }
+  }
+
   /// Whether the OS may still doze this app, killing the filter overnight.
   Future<bool> isBatteryOptimised() => _invokeBool('isBatteryOptimised');
 

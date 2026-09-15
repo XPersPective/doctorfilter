@@ -158,5 +158,15 @@
   "schedule_transition_off": "Instant",
   "duration_minutes": "{minutes} min",
   "settings_theme_follows": "Go dark with the filter",
-  "settings_theme_follows_desc": "A bright app on a dimmed screen undoes the filter."
+  "settings_theme_follows_desc": "A bright app on a dimmed screen undoes the filter.",
+  "settings_usage": "Your week",
+  "settings_usage_desc": "Filtered screen time this week. Kept on this device.",
+  "duration_hours": "{hours} h",
+  "weekday_mon": "M",
+  "weekday_tue": "T",
+  "weekday_wed": "W",
+  "weekday_thu": "T",
+  "weekday_fri": "F",
+  "weekday_sat": "S",
+  "weekday_sun": "S"
 }

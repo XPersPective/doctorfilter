@@ -158,5 +158,15 @@
   "schedule_transition_off": "Anında",
   "duration_minutes": "{minutes} dk",
   "settings_theme_follows": "Filtreyle birlikte koyulaş",
-  "settings_theme_follows_desc": "Karartılmış ekranda parlak bir uygulama filtrenin yaptığını bozar."
+  "settings_theme_follows_desc": "Karartılmış ekranda parlak bir uygulama filtrenin yaptığını bozar.",
+  "settings_usage": "Bu haftan",
+  "settings_usage_desc": "Bu hafta filtreli geçen ekran süresi. Bu cihazda kalır.",
+  "duration_hours": "{hours} sa",
+  "weekday_mon": "Pt",
+  "weekday_tue": "Sa",
+  "weekday_wed": "Ça",
+  "weekday_thu": "Pe",
+  "weekday_fri": "Cu",
+  "weekday_sat": "Ct",
+  "weekday_sun": "Pa"
 }

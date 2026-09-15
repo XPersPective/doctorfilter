@@ -100,6 +100,8 @@ class MainActivity : FlutterActivity() {
                     result.success(true)
                 }
 
+                "getUsageMinutes" -> result.success(UsageLog.read(this))
+
                 "isBatteryOptimised" -> result.success(isBatteryOptimised())
                 "openBatterySettings" -> {
                     openBatterySettings()
