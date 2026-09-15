@@ -104,6 +104,10 @@ class PlatformChannelDataSource {
     }
   }
 
+  /// Turns ambient-light adaptation on or off on the native side.
+  Future<bool> setAmbientAdaptation({required bool isEnabled}) =>
+      _invokeBool('setAmbientAdaptation', {'isEnabled': isEnabled});
+
   /// Arms or disarms the 20-20-20 break reminder.
   Future<bool> setBreakReminder({
     required bool isEnabled,

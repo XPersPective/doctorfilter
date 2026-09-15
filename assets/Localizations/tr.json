@@ -193,5 +193,8 @@
   "calibration_cooler": "Daha soğuk",
   "calibration_none": "Düzeltme yok",
   "calibration_filter_off": "Düzeltmeyi yalnızca bu kartta değil gerçek ekranda görmek için filtreyi açın.",
-  "oled_energy": "Ekranınız yaklaşık %{percent} daha az ışık yayıyor. OLED panelde güç tüketimi de bununla birlikte düşer, ancak birebir değil."
+  "oled_energy": "Ekranınız yaklaşık %{percent} daha az ışık yayıyor. OLED panelde güç tüketimi de bununla birlikte düşer, ancak birebir değil.",
+  "settings_ambient": "Ortama uyum sağla",
+  "settings_ambient_desc": "Karanlıkta biraz daha karartır, gün ışığında geri çekilir.",
+  "settings_ambient_locked": "Pro ile birlikte gelir."
 }

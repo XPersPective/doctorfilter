@@ -102,6 +102,23 @@ class MainActivity : FlutterActivity() {
 
                 "getUsageMinutes" -> result.success(UsageLog.read(this))
 
+                "setAmbientAdaptation" -> {
+                    OverlayService.setAmbientEnabled(
+                        this,
+                        call.argument<Boolean>("isEnabled") ?: false
+                    )
+                    // Takes effect on the next paint; nudging the service is
+                    // what makes the switch feel immediate.
+                    if (OverlayService.isRunning) {
+                        startService(
+                            Intent(this, OverlayService::class.java).apply {
+                                action = OverlayService.ACTION_UPDATE
+                            }
+                        )
+                    }
+                    result.success(true)
+                }
+
                 "setBreakReminder" -> {
                     BreakReminderReceiver.update(
                         context = this,

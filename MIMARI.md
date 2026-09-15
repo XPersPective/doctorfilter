@@ -994,7 +994,19 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       ekranı düzeltmek, ayarı değiştirmekle aynı şey değildir.
       Kendi sayılarını ekrana basan bir uygulama için bu, *kesin* olmakla *dürüst*
       olmak arasındaki fark.
-- [ ] **H11.** **Ortam ışığına uyum:** ışık sensörüne göre yoğunluğu otomatik ayarla (Pro).
+- [x] **H11.** **Ortam ışığına uyum (Pro).** `AmbientLightSensor` — doğru karartma
+      miktarı ayarların değil **odanın** bir özelliğidir: %45 aydınlık bir mutfakta
+      yumuşaktır, karanlık bir yatak odasında neredeyse opaktır ve aynı kullanıcı
+      kaydırıcıya dokunmadan ikisini de ister.
+      **Boyanan alfaya bir düzeltme** üretir, kayıtlı yapılandırmaya asla dokunmaz —
+      `rampAlpha` ile aynı gerekçe: anlık bir koşul, kullanıcının seçimi değil.
+      Sınırlar kasıtlen küçük (−45…+30 puan): fark edilecek kadar büyük bir otomatik
+      ayar, kullanıcının kavga ettiği bir otomatik ayardır; amaç oda değiştirmeyi
+      yumuşatmak, kaydırıcıları devralmak değil. EMA yumuşatması var (ışık sensörü
+      gürültülüdür ve önünden geçen el tetikler; yumuşatmasız ekran nabız gibi atardı),
+      ≥2 puanlık değişimde yeniden boyanır. Geçiş (ramp) sürerken ramp kazanır.
+      Sensör **yalnızca overlay ayaktayken** dinler. Işık sensörü olmayan cihazda
+      sessizce devre dışı kalır. Kapatılınca sıfır gönderir: geriye hiçbir şey kalmaz.
 - [x] **H12.** **Geçici atlama:** `BypassNotifier`, varsayılan 15 sn (10 sn bir fotoğrafa
       doğru dürüst bakmaya yetmiyor). Üst çubuktaki düğme duraklatır, geri sayıma dönüşür,
       dokununca erken geri getirir. Yapılandırma **doğrudan platforma** yazılır: bu geçici
@@ -1170,7 +1182,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H11. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1 (uygulama bazlı istisna). Sonra `E3.3`
+(kalan 31 dil) → FAZ G (iOS/Windows). Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.

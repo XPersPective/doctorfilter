@@ -5,6 +5,7 @@ import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
+import 'package:doctorfilter/presentation/providers/ambient_provider.dart';
 import 'package:doctorfilter/presentation/providers/break_reminder_provider.dart';
 import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
@@ -29,6 +30,7 @@ class SettingsScreen extends ConsumerWidget {
     final isAmoled = ref.watch(amoledProvider);
     final themeFollowsFilter = ref.watch(themeFollowsFilterProvider);
     final breaks = ref.watch(breakReminderProvider);
+    final ambient = ref.watch(ambientProvider);
     final config = ref.watch(filterConfigProvider);
 
     return Scaffold(
@@ -92,6 +94,29 @@ class SettingsScreen extends ConsumerWidget {
                     onChanged: (_) => ref.read(amoledProvider.notifier).toggle(),
                   ),
                 ],
+                const Divider(height: 1, indent: 56),
+                SwitchListTile(
+                  secondary: Icon(
+                    ambient
+                        ? Icons.brightness_auto_rounded
+                        : Icons.brightness_auto_outlined,
+                    color: context.colours.primary,
+                  ),
+                  title: Text(
+                    loc?.translate('settings_ambient') ?? 'Adapt to the room',
+                  ),
+                  subtitle: Text(
+                    isPro
+                        ? loc?.translate('settings_ambient_desc') ??
+                            'Dims a little more in the dark, backs off in daylight.'
+                        : loc?.translate('settings_ambient_locked') ??
+                            'Included with Pro.',
+                  ),
+                  value: ambient,
+                  onChanged: isPro
+                      ? ref.read(ambientProvider.notifier).setEnabled
+                      : null,
+                ),
                 const Divider(height: 1, indent: 56),
                 ListTile(
                   leading: const Icon(Icons.tune_rounded),
