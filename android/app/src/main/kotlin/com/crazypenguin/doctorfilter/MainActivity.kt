@@ -1,135 +1,107 @@
 package com.crazypenguin.doctorfilter
 
+import android.app.AlarmManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
+/**
+ * The Flutter ↔ Android bridge.
+ *
+ * Dart owns what the filter *means*; this class owns what the OS is asked to do
+ * about it. The channel therefore carries an already-composited colour and alpha
+ * downwards, and raw user intent — "the notification's dim button was pressed" —
+ * upwards.
+ */
 class MainActivity : FlutterActivity() {
 
     companion object {
         const val CHANNEL_NAME = "com.crazypenguin.doctorfilter"
-        private var activeMethodChannel: MethodChannel? = null
 
-        fun notifyFlutterFilterStateChanged(isEnabled: Boolean) {
-            activeMethodChannel?.invokeMethod(
-                "onFilterStateChanged",
-                mapOf("isEnabled" to isEnabled)
-            )
+        private var channel: MethodChannel? = null
+
+        /**
+         * Calls from native to Dart are best-effort. The notification outlives
+         * the UI process, so there is frequently nothing on the other end — and
+         * that is fine, because native state is already persisted.
+         */
+        private fun send(method: String, arguments: Map<String, Any?>) {
+            channel?.invokeMethod(method, arguments)
         }
 
-        fun notifyFlutterDensityChanged(alpha: Int) {
-            activeMethodChannel?.invokeMethod(
-                "onDensityChanged",
-                mapOf("alpha" to alpha)
+        fun notifyFilterToggled(isEnabled: Boolean) =
+            send("onFilterStateChanged", mapOf("isEnabled" to isEnabled))
+
+        fun notifyPresetSelected(presetId: Int) =
+            send("onPresetSelected", mapOf("presetId" to presetId))
+
+        fun notifyNextPresetRequested() =
+            send("onPresetSelected", mapOf("presetId" to -2))
+
+        fun notifyAxisChanged(
+            kelvin: Int? = null,
+            densityPercent: Int? = null,
+            extraDimPercent: Int? = null
+        ) = send(
+            "onAxisChanged",
+            mapOf(
+                "kelvin" to kelvin,
+                "densityPercent" to densityPercent,
+                "extraDimPercent" to extraDimPercent
             )
-        }
+        )
     }
 
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        val channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL_NAME)
-        activeMethodChannel = channel
+        val methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL_NAME)
+        channel = methodChannel
 
-        channel.setMethodCallHandler { call, result ->
+        methodChannel.setMethodCallHandler { call, result ->
             when (call.method) {
-                "checkOverlayPermission" -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        result.success(Settings.canDrawOverlays(this))
-                    } else {
-                        result.success(true)
-                    }
-                }
-
+                "checkOverlayPermission" -> result.success(canDrawOverlays())
                 "requestOverlayPermission" -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        val intent = Intent(
-                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:$packageName")
-                        )
-                        startActivity(intent)
-                    }
-                    result.success(null)
-                }
-
-                "startOverlay" -> {
-                    val red = call.argument<Int>("red") ?: 255
-                    val green = call.argument<Int>("green") ?: 219
-                    val blue = call.argument<Int>("blue") ?: 186
-                    val alpha = call.argument<Int>("alpha") ?: 25
-                    val brightness = call.argument<Int>("brightness") ?: 195
-                    val kelvin = call.argument<Int>("kelvin") ?: 5500
-
-                    val intent = Intent(this, OverlayService::class.java).apply {
-                        action = OverlayService.ACTION_START
-                        putExtra(OverlayService.EXTRA_RED, red)
-                        putExtra(OverlayService.EXTRA_GREEN, green)
-                        putExtra(OverlayService.EXTRA_BLUE, blue)
-                        putExtra(OverlayService.EXTRA_ALPHA, alpha)
-                        putExtra(OverlayService.EXTRA_BRIGHTNESS, brightness)
-                        putExtra(OverlayService.EXTRA_KELVIN, kelvin)
-                    }
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForegroundService(intent)
-                    } else {
-                        startService(intent)
-                    }
+                    requestOverlayPermission()
                     result.success(true)
                 }
 
-                "updateOverlay" -> {
-                    val red = call.argument<Int>("red") ?: OverlayService.currentRed
-                    val green = call.argument<Int>("green") ?: OverlayService.currentGreen
-                    val blue = call.argument<Int>("blue") ?: OverlayService.currentBlue
-                    val alpha = call.argument<Int>("alpha") ?: OverlayService.currentAlpha
-                    val brightness = call.argument<Int>("brightness") ?: OverlayService.currentBrightness
-                    val kelvin = call.argument<Int>("kelvin") ?: OverlayService.currentKelvin
-
-                    val intent = Intent(this, OverlayService::class.java).apply {
-                        action = OverlayService.ACTION_UPDATE
-                        putExtra(OverlayService.EXTRA_RED, red)
-                        putExtra(OverlayService.EXTRA_GREEN, green)
-                        putExtra(OverlayService.EXTRA_BLUE, blue)
-                        putExtra(OverlayService.EXTRA_ALPHA, alpha)
-                        putExtra(OverlayService.EXTRA_BRIGHTNESS, brightness)
-                        putExtra(OverlayService.EXTRA_KELVIN, kelvin)
-                    }
-                    startService(intent)
+                "startOverlay", "updateOverlay" -> {
+                    startOverlay(call.toValues())
                     result.success(true)
                 }
 
                 "stopOverlay" -> {
-                    val intent = Intent(this, OverlayService::class.java).apply {
-                        action = OverlayService.ACTION_STOP
-                    }
-                    startService(intent)
+                    startService(
+                        Intent(this, OverlayService::class.java).apply {
+                            action = OverlayService.ACTION_STOP
+                        }
+                    )
                     result.success(true)
                 }
 
-                "isFilterRunning" -> {
-                    result.success(OverlayService.isRunning)
+                "isFilterRunning" -> result.success(OverlayService.isRunning)
+
+                "canScheduleExactAlarms" -> result.success(canScheduleExactAlarms())
+                "requestExactAlarmPermission" -> {
+                    requestExactAlarmPermission()
+                    result.success(true)
                 }
 
                 "setSchedule" -> {
-                    val isEnabled = call.argument<Boolean>("isEnabled") ?: false
-                    val startHour = call.argument<Int>("startHour") ?: 22
-                    val startMinute = call.argument<Int>("startMinute") ?: 0
-                    val stopHour = call.argument<Int>("stopHour") ?: 7
-                    val stopMinute = call.argument<Int>("stopMinute") ?: 0
-
                     ScheduleReceiver.updateSchedule(
                         context = this,
-                        isEnabled = isEnabled,
-                        startHour = startHour,
-                        startMinute = startMinute,
-                        stopHour = stopHour,
-                        stopMinute = stopMinute
+                        isEnabled = call.argument<Boolean>("isEnabled") ?: false,
+                        startHour = call.argument<Int>("startHour") ?: 22,
+                        startMinute = call.argument<Int>("startMinute") ?: 0,
+                        stopHour = call.argument<Int>("stopHour") ?: 7,
+                        stopMinute = call.argument<Int>("stopMinute") ?: 0,
+                        targetPresetId = call.argument<Int>("targetPresetId") ?: 5
                     )
                     result.success(true)
                 }
@@ -139,8 +111,78 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    private fun io.flutter.plugin.common.MethodCall.toValues(): FilterState.Values {
+        val stored = FilterState.read(this@MainActivity)
+        return FilterState.Values(
+            red = argument<Int>("red") ?: stored.red,
+            green = argument<Int>("green") ?: stored.green,
+            blue = argument<Int>("blue") ?: stored.blue,
+            alpha = argument<Int>("alpha") ?: stored.alpha,
+            kelvin = argument<Int>("kelvin") ?: stored.kelvin,
+            densityPercent = argument<Int>("densityPercent") ?: stored.densityPercent,
+            extraDimPercent = argument<Int>("extraDimPercent") ?: stored.extraDimPercent,
+            presetId = argument<Int>("activePresetId") ?: stored.presetId,
+            notificationEnabled = argument<Boolean>("isNotificationEnabled")
+                ?: stored.notificationEnabled
+        )
+    }
+
+    private fun startOverlay(values: FilterState.Values) {
+        val intent = Intent(this, OverlayService::class.java).apply {
+            action = OverlayService.ACTION_START
+            putExtra(OverlayService.EXTRA_RED, values.red)
+            putExtra(OverlayService.EXTRA_GREEN, values.green)
+            putExtra(OverlayService.EXTRA_BLUE, values.blue)
+            putExtra(OverlayService.EXTRA_ALPHA, values.alpha)
+            putExtra(OverlayService.EXTRA_KELVIN, values.kelvin)
+            putExtra(OverlayService.EXTRA_DENSITY, values.densityPercent)
+            putExtra(OverlayService.EXTRA_EXTRA_DIM, values.extraDimPercent)
+            putExtra(OverlayService.EXTRA_PRESET_ID, values.presetId)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+    }
+
+    private fun canDrawOverlays(): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this)
+
+    private fun requestOverlayPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        startActivity(
+            Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+        )
+    }
+
+    /**
+     * Android 12 stopped granting exact alarms automatically. Without this the
+     * schedule silently drifts by minutes, which for a bedtime filter is the
+     * difference between working and not.
+     */
+    private fun canScheduleExactAlarms(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        return alarmManager.canScheduleExactAlarms()
+    }
+
+    private fun requestExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        startActivity(
+            Intent(
+                Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                Uri.parse("package:$packageName")
+            )
+        )
+    }
+
     override fun onDestroy() {
-        activeMethodChannel = null
+        channel = null
         super.onDestroy()
     }
 }

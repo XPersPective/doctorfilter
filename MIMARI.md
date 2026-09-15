@@ -650,7 +650,10 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       hareketi **tek** geri al adımına iniyor (600 ms birleştirme penceresi) — yoksa
       kullanıcı başladığı yere dönmek için onlarca kez dokunurdu. Geri al yalnızca üç
       ekseni ve aktif preset'i geri alır; filtreyi kapatmaz. (K17)
-- [ ] 🔴 **A7.** Ekstra Karartma'yı native tarafta gerçekten uygula. (K4)
+- [x] **A7.** Ekstra Karartma artık gerçekten uygulanıyor. Kullanılmayan `brightness`
+      alanı Kotlin'den **kaldırıldı**; Dart kompozit renk + alfa gönderiyor, servis
+      yalnızca çiziyor. Üç ekseni birleştirme ve sınırlar tek yerde (domain), böylece
+      "saklanan ama hiç uygulanmayan alan" durumu tekrarlanamaz. (K4)
 - [ ] **A8.** "% mavi ışık engellendi" uydurma formülünü kaldır; yerine filtrenin kendi
       denkleminden çıkan **göreli melanopik azalma** göstergesi koy (bkz. 5.6). Mutlak lx
       iddia etme. Testle doğrula.
@@ -658,14 +661,25 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       veya `StateNotifier`'da kal); doküman ile kodu aynı hizaya getir. (K18)
 
 ## FAZ B — Android native
-- [ ] 🔴 **B1.** Bildirim aksiyonlarına gerçek drawable ikonlar; kontrollerin görünmeme
-      hatasını çöz. (K3)
+- [~] 🔴 **B1.** Bildirim aksiyonlarına gerçek drawable ikonlar verildi
+      (`ic_power`, `ic_dimmer`, `ic_brighter`, `ic_next_preset`, `ic_notification`);
+      broadcast intent'leri artık `setPackage` ile açık. Aksiyonlar: Aç/Kapat, Karart,
+      Aydınlat, Sonraki preset. Native metinler `values/strings.xml`'e taşındı (servis
+      Flutter motoru olmadan da çalışabilmeli). (K3) — **cihazda doğrulanmalı**
 - [ ] 🔴 **B2.** `RemoteViews` ile özel bildirim kokpiti: preset geçişi + üç eksen kontrolü.
 - [ ] 🔴 **B3.** Bildirimde Pro kilidi: ücretsizde 1 preset açık, diğerleri kilitli → paywall.
-- [ ] 🔴 **B4.** Zamanlayıcıyı sağlamlaştır: exact alarm izni, tetikleme sonrası yeniden
-      kurulum, boot restore, hedef preset ile başlatma. (K13)
-- [ ] 🔴 **B5.** Overlay servisini gözden geçir: yapılandırma değişikliği, çoklu ekran,
-      çentik, servis yeniden başlatmada durum geri yükleme.
+- [~] 🔴 **B4.** Zamanlayıcı sağlamlaştırıldı: alarm **tetiklendikten sonra ertesi güne
+      yeniden kuruluyor** (eskiden tek gece çalışıp susuyordu), Android 12+
+      `canScheduleExactAlarms` kontrolü ve `SecurityException` yakalaması ile inexact'e
+      düşüş, zamanlama native tarafta da saklanıyor (boot'ta Flutter motoru yok),
+      `MY_PACKAGE_REPLACED` ile güncelleme sonrası da geri kuruluyor, hedef preset ile
+      başlatılıyor. (K13) — **cihazda doğrulanmalı**
+- [~] 🔴 **B5.** Overlay servisi sağlamlaştırıldı: `FilterState` ile native kalıcı durum
+      (sistem servisi öldürüp `null` intent ile yeniden başlattığında kullanıcının
+      değerleriyle geri geliyor, derleme varsayılanlarıyla değil), çentik modu `ALWAYS`,
+      `onConfigurationChanged`'da pencere yeniden ölçülüyor, `addView` hatasında
+      (izin geri alınmış) temiz duruş, ikinci savunma hattı olarak alfa tavanı.
+      — **cihazda doğrulanmalı**
 - [~] 🔴 **B6.** Overlay izni verilip dönüldüğünde banner'ın kendini yenilemesi; izin yokken
       net ve zorunlu akış. (K6)
       *`FilterNotifier` artık `WidgetsBindingObserver`; `resumed` olayında izin yeniden
@@ -808,8 +822,11 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   türetiliyor; kalıcılık bellekte-tek-kaynak + debounce'lu tam yazmaya geçti; aktif preset
   tek yerde. `UpdateFilterParamsUseCase` silindi. SharedPreferences ve SQLite göçleri yazıldı.
   `flutter analyze` 0, `flutter test` 32/32.
-* **A6 tamamlandı** (13 test). `flutter test` 45/45.
-* **Sırada A7 var: ekstra karartmanın native tarafta uygulanması.**
+* **A6, A7 tamamlandı.** Native katman baştan yazıldı: `FilterState` (kalıcı native durum),
+  `OverlayService` (kompozit çizim, restart/rotasyon dayanıklılığı), `FilterNotificationManager`
+  (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
+  yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
+  `flutter analyze` 0, `flutter test` 45/45, `flutter build apk --debug` başarılı.
   A7 yapılana kadar Ekstra Karartma ekseni Dart tarafında doğru hesaplanıyor ama Kotlin
   `OverlayService` hâlâ yalnızca alfa tint çiziyor.
 * Çalışma ağacında bu oturumdan önce gelen, commit edilmemiş değişiklikler var:
@@ -825,9 +842,35 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 > Ajan buraya, tamamladığı ama cihazda test edilmesi gereken işleri **test adımlarıyla**
 > yazar. Proje sahibi onaylayınca ilgili madde `[x]` olur ve satır buradan silinir.
 
-*(şu an boş)*
+**B1 — Bildirim kontrolleri görünüyor mu**
+1. Filtreyi aç. Bildirim gölgesini indir.
+2. Bildirimde **dört düğme** görünmeli: Aç/Kapat · Karart · Aydınlat · Sonraki.
+3. "Karart"a bas → ekran belirgin biçimde koyulaşmalı, bildirim metnindeki
+   "Ekstra karartma %" değeri artmalı.
+4. "Sonraki"ye bas → başka bir preset'e geçmeli, uygulamayı açtığında o preset seçili olmalı.
 
-**Sıradaki madde:** `A7` (native ekstra karartma).
+**B4 — Zamanlayıcı**
+1. Başlangıcı 2 dakika sonraya kur, kaydet. Uygulamayı kapat.
+2. Saat geldiğinde filtre kendiliğinden açılmalı.
+3. **Ertesi gün aynı saatte tekrar açılmalı** (eski sürümdeki asıl hata buydu).
+4. Android 12+ cihazda "Alarmlar ve hatırlatıcılar" iznini kapat → uygulama çökmemeli,
+   zamanlayıcı yaklaşık zamanla çalışmaya devam etmeli.
+5. Telefonu yeniden başlat → zamanlama korunmalı; kapanışta filtre açıksa geri gelmeli.
+
+**B5 — Overlay dayanıklılığı**
+1. Filtre açıkken telefonu yan çevir → filtresiz şerit oluşmamalı.
+2. Çentikli cihazda üst bantta filtresiz alan kalmamalı.
+3. Geliştirici seçenekleri → "Arka plan işlem limiti: hiç" ile servisi öldür; sistem geri
+   başlattığında **aynı renk ve koyulukta** dönmeli, varsayılana düşmemeli.
+4. Filtre açıkken Ayarlar'dan overlay iznini geri al → uygulama çökmemeli, filtre
+   temiz şekilde durmalı.
+
+**B6 — İzin banner'ı**
+1. Overlay izni kapalıyken uygulamayı aç → uyarı banner'ı görünmeli.
+2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
+   yeniden başlatmadan).
+
+**Sıradaki madde:** `A8` (melanopik metrik) → sonra `B2` (bildirim kokpiti RemoteViews).
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar

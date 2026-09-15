@@ -12,6 +12,15 @@ import android.view.View
 import android.view.WindowManager
 import androidx.core.app.ServiceCompat
 
+/**
+ * Draws the filter as a full-screen overlay window.
+ *
+ * The service is deliberately dumb: it is handed a composite colour and alpha
+ * and paints them. Combining the three axes, and enforcing the caps that keep
+ * the screen readable, happens in the Dart domain layer where it is unit tested.
+ * Splitting that logic across the language boundary is how the previous version
+ * ended up storing a brightness value that nothing ever applied.
+ */
 class OverlayService : Service() {
 
     private var windowManager: WindowManager? = null
@@ -27,66 +36,76 @@ class OverlayService : Service() {
         const val EXTRA_GREEN = "extra_green"
         const val EXTRA_BLUE = "extra_blue"
         const val EXTRA_ALPHA = "extra_alpha"
-        const val EXTRA_BRIGHTNESS = "extra_brightness"
         const val EXTRA_KELVIN = "extra_kelvin"
+        const val EXTRA_DENSITY = "extra_density"
+        const val EXTRA_EXTRA_DIM = "extra_extra_dim"
+        const val EXTRA_PRESET_ID = "extra_preset_id"
 
+        @Volatile
         var isRunning = false
             private set
 
-        var currentRed = 255
-            private set
-        var currentGreen = 219
-            private set
-        var currentBlue = 186
-            private set
-        var currentAlpha = 25
-            private set
-        var currentBrightness = 195
-            private set
-        var currentKelvin = 5500
+        @Volatile
+        var current: FilterState.Values = FilterState.DEFAULT
             private set
     }
 
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        // Restored rather than defaulted: this may be a restart after the system
+        // killed us, in which case the user's settings are on disk and the
+        // in-memory companion object is back to its defaults.
+        current = FilterState.read(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // A null intent means the system restarted us after reclaiming memory.
+        // Redraw what the user had rather than dying quietly.
         if (intent == null) {
-            return START_NOT_STICKY
+            startOrUpdateForeground()
+            applyOverlay()
+            return START_STICKY
         }
 
-        when (intent.action) {
+        return when (intent.action) {
             ACTION_STOP -> {
                 stopOverlay()
                 stopSelf()
-                return START_NOT_STICKY
+                START_NOT_STICKY
             }
-            ACTION_START, ACTION_UPDATE -> {
-                currentRed = intent.getIntExtra(EXTRA_RED, currentRed)
-                currentGreen = intent.getIntExtra(EXTRA_GREEN, currentGreen)
-                currentBlue = intent.getIntExtra(EXTRA_BLUE, currentBlue)
-                currentAlpha = intent.getIntExtra(EXTRA_ALPHA, currentAlpha)
-                currentBrightness = intent.getIntExtra(EXTRA_BRIGHTNESS, currentBrightness)
-                currentKelvin = intent.getIntExtra(EXTRA_KELVIN, currentKelvin)
 
+            ACTION_START, ACTION_UPDATE -> {
+                current = readValues(intent)
+                FilterState.write(this, current)
+                FilterState.setWasRunning(this, true)
                 startOrUpdateForeground()
                 applyOverlay()
-                return START_STICKY
+                START_STICKY
             }
-        }
 
-        return START_STICKY
+            else -> START_STICKY
+        }
     }
+
+    /** Extras are optional so callers can nudge one axis without restating the rest. */
+    private fun readValues(intent: Intent): FilterState.Values = FilterState.Values(
+        red = intent.getIntExtra(EXTRA_RED, current.red),
+        green = intent.getIntExtra(EXTRA_GREEN, current.green),
+        blue = intent.getIntExtra(EXTRA_BLUE, current.blue),
+        alpha = intent.getIntExtra(EXTRA_ALPHA, current.alpha).coerceIn(0, MAX_ALPHA),
+        kelvin = intent.getIntExtra(EXTRA_KELVIN, current.kelvin),
+        densityPercent = intent.getIntExtra(EXTRA_DENSITY, current.densityPercent),
+        extraDimPercent = intent.getIntExtra(EXTRA_EXTRA_DIM, current.extraDimPercent),
+        presetId = intent.getIntExtra(EXTRA_PRESET_ID, current.presetId),
+        notificationEnabled = current.notificationEnabled
+    )
 
     private fun startOrUpdateForeground() {
         val notification = FilterNotificationManager.buildNotification(
             context = this,
             isActive = true,
-            kelvin = currentKelvin,
-            brightness = currentBrightness,
-            alpha = currentAlpha
+            values = current
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -102,6 +121,7 @@ class OverlayService : Service() {
                 serviceType
             )
         } else {
+            @Suppress("DEPRECATION")
             startForeground(FilterNotificationManager.NOTIFICATION_ID, notification)
         }
         isRunning = true
@@ -109,60 +129,53 @@ class OverlayService : Service() {
 
     private fun applyOverlay() {
         val wm = windowManager ?: return
+        val filterColor = Color.argb(current.alpha, current.red, current.green, current.blue)
 
-        // Compute composite alpha combining tint alpha and extra dimming
-        val effectiveAlpha = currentAlpha.coerceIn(0, 255)
-        val filterColor = Color.argb(effectiveAlpha, currentRed, currentGreen, currentBlue)
+        val view = overlayView
+        if (view != null) {
+            view.setBackgroundColor(filterColor)
+            return
+        }
 
-        if (overlayView == null) {
-            overlayView = View(this).apply {
-                setBackgroundColor(filterColor)
-            }
+        overlayView = View(this).apply { setBackgroundColor(filterColor) }
+        layoutParams = buildLayoutParams()
 
-            val overlayType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-            } else {
-                @Suppress("DEPRECATION")
-                WindowManager.LayoutParams.TYPE_PHONE
-            }
+        try {
+            wm.addView(overlayView, layoutParams)
+        } catch (e: Exception) {
+            // Almost always a revoked overlay permission. Nothing can be drawn,
+            // so stop cleanly instead of running as a service that does nothing.
+            overlayView = null
+            stopOverlay()
+            stopSelf()
+        }
+    }
 
-            val windowFlags = WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                layoutParams = WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    overlayType,
-                    windowFlags,
-                    PixelFormat.TRANSLUCENT
-                ).apply {
-                    layoutInDisplayCutoutMode =
-                        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
-                }
-            } else {
-                layoutParams = WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    overlayType,
-                    windowFlags,
-                    PixelFormat.TRANSLUCENT
-                )
-            }
-
-            try {
-                wm.addView(overlayView, layoutParams)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+    private fun buildLayoutParams(): WindowManager.LayoutParams {
+        val overlayType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
         } else {
-            overlayView?.setBackgroundColor(filterColor)
-            try {
-                wm.updateViewLayout(overlayView, layoutParams)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            @Suppress("DEPRECATION")
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+
+        val windowFlags = WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+
+        return WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            overlayType,
+            windowFlags,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                // Without this the tint stops at the notch, leaving a bright
+                // unfiltered band across the top of the screen.
+                layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
             }
         }
     }
@@ -171,13 +184,28 @@ class OverlayService : Service() {
         overlayView?.let { view ->
             try {
                 windowManager?.removeView(view)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } catch (e: IllegalArgumentException) {
+                // Already detached — the window was torn down beneath us.
             }
             overlayView = null
         }
         isRunning = false
+        FilterState.setWasRunning(this, false)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+    }
+
+    /**
+     * Rotation and window-size changes leave the overlay attached but sized for
+     * the old geometry, which shows as an unfiltered strip down one edge.
+     */
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val view = overlayView ?: return
+        try {
+            windowManager?.updateViewLayout(view, layoutParams)
+        } catch (e: IllegalArgumentException) {
+            // View is gone; the next start will recreate it.
+        }
     }
 
     override fun onDestroy() {
@@ -187,3 +215,10 @@ class OverlayService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 }
+
+/**
+ * Mirrors `FilterConfig.maxCompositeAlpha` (0.92). A second line of defence:
+ * if a future caller ever sends an uncapped value, the screen still does not go
+ * black.
+ */
+private const val MAX_ALPHA = 235
