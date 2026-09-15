@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/math/kelvin_engine.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
+import 'band_style.dart';
 
 /// Colour temperature control.
 ///
@@ -37,26 +38,9 @@ class SpectrumSlider extends StatelessWidget {
     final loc = AppLocalizations.of(context);
     final rgb = KelvinEngine.kelvinToRgb(kelvin);
     final tint = Color.fromARGB(255, rgb.r, rgb.g, rgb.b);
-    final band = KelvinEngine.safetyLevel(kelvin);
-
-    final (bandLabel, bandColour) = switch (band) {
-      MelatoninSafetyLevel.sleepFriendly => (
-          loc?.translate('band_sleep_friendly') ?? 'Sleep friendly',
-          context.bands.sleepFriendly,
-        ),
-      MelatoninSafetyLevel.evening => (
-          loc?.translate('band_evening') ?? 'Evening',
-          context.bands.evening,
-        ),
-      MelatoninSafetyLevel.balanced => (
-          loc?.translate('band_balanced') ?? 'Balanced',
-          context.bands.balanced,
-        ),
-      MelatoninSafetyLevel.blueLightRisk => (
-          loc?.translate('band_blue_risk') ?? 'Bright, daytime only',
-          context.bands.blueRisk,
-        ),
-    };
+    final band = bandStyle(context, kelvin);
+    final bandLabel = band.label;
+    final bandColour = band.colour;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

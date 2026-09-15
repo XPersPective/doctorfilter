@@ -12,6 +12,8 @@ import 'package:doctorfilter/presentation/providers/notification_sync_provider.d
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/widgets/axis_slider.dart';
+import 'package:doctorfilter/presentation/widgets/band_style.dart';
+import 'package:doctorfilter/presentation/widgets/melanopic_ring.dart';
 import 'package:doctorfilter/presentation/widgets/overlay_permission_banner.dart';
 import 'package:doctorfilter/presentation/widgets/power_button.dart';
 import 'package:doctorfilter/presentation/widgets/preset_grid.dart';
@@ -91,9 +93,20 @@ class HomeScreen extends ConsumerWidget {
                     onTap: () => _toggle(context, ref),
                   ),
                   const SizedBox(width: 12),
-                  // Flexible, not Spacer: the caption is a full sentence and in
+                  // Expanded, not Spacer: the caption is a full sentence and in
                   // a longer language it will not fit beside the button.
-                  Expanded(child: _MelanopicBadge(config: config)),
+                  Expanded(
+                    child: Builder(
+                      builder: (context) {
+                        final band = bandStyle(context, config.kelvin);
+                        return MelanopicRing(
+                          melanopicReduction: config.melanopicReduction,
+                          bandColour: band.colour,
+                          bandLabel: band.label,
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -281,43 +294,6 @@ class _Title extends StatelessWidget {
             ),
           ),
         ],
-      ],
-    );
-  }
-}
-
-/// The headline number: how much circadian light the current settings remove.
-class _MelanopicBadge extends StatelessWidget {
-  const _MelanopicBadge({required this.config});
-
-  final FilterConfig config;
-
-  @override
-  Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context);
-    final percent = (config.melanopicReduction * 100).round();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          '$percent%',
-          style: context.texts.headlineSmall?.copyWith(
-            fontFamily: 'Orbitron',
-            fontWeight: FontWeight.bold,
-            color: context.colours.primary,
-          ),
-        ),
-        Text(
-          loc?.translate('melanopic_reduction', args: {'percent': '$percent'}) ??
-              '$percent% less circadian light',
-          textAlign: TextAlign.end,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: context.texts.bodySmall?.copyWith(
-            color: context.colours.onSurfaceVariant,
-          ),
-        ),
       ],
     );
   }
