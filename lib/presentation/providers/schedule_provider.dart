@@ -47,6 +47,14 @@ class ScheduleNotifier extends StateNotifier<ScheduleRule> {
     }
   }
 
+  Future<void> setTargetPreset(int presetId) async {
+    final updated = state.copyWith(targetPresetId: presetId);
+    final result = await _manageScheduleUseCase.updateSchedule(updated);
+    if (result is Success<ScheduleRule>) {
+      state = result.data;
+    }
+  }
+
   Future<void> setMode(CircadianMode mode) async {
     final updated = state.copyWith(mode: mode);
     final result = await _manageScheduleUseCase.updateSchedule(updated);

@@ -676,6 +676,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       benzersiz id'li slotlar üretildi. Preset listesi native'e `PresetCatalog` ile
       aktarılıyor — bildirim çoğu zaman Flutter motoru olmadan kuruluyor, veritabanına
       ve çevirilere erişemez. — **cihazda doğrulanmalı**
+  - [ ] **B3.1** Bildirimdeki kilitli çipin açtığı `ACTION_OPEN_PAYWALL` intent'ini Flutter
+        tarafında karşıla ve paywall'ı aç (şu an uygulama yalnızca öne geliyor).
 - [~] 🔴 **B3.** Bildirimde Pro kilidi kuruldu: ücretsizde **1 preset açık**, diğerleri
       kilit rozetiyle **görünür** (kullanıcı ne kazanacağını görsün) ve dokununca paywall
       açılıyor. Kelvin ve Yoğunluk eksenleri Pro; **Ekstra Karartma ücretsiz kalıyor** —
@@ -761,38 +763,49 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       kullanıcıyı eskiden reklam gösterilen bir boşluğa baktırırdı.
 
 ## FAZ D — Arayüz ve deneyim
-- [ ] 🔴 **D1.** Ana ekran yeniden düzeni: preset'ler ızgara (satır başına ~4), güç düğmesi
-      küçültülüp yukarı, gereksiz etiketler kaldırılır; alt banner yerinde kalır. (K15)
+- [~] 🔴 **D1.** Ana ekran yeniden düzendi: preset'ler **ızgara** (genişliğe göre 3–8 sütun,
+      telefonda 4), güç düğmesi 88px daireden **başlıktaki kompakt anahtar**a indi ve etiketi
+      kendi üzerinde, ayrı durum satırı kaldırıldı; sağda melanopik azalma rozeti. Alt banner
+      yerinde. Normal bir telefonda kaydırmadan sığıyor. (K15) — **cihazda bakılmalı**
 - [ ] **D2.** Kelvin kontrolü: kaydırıcı **kendi spektrum çubuğunun üzerinde** tek bileşen. (K15)
-- [ ] **D3.** Preset kartlarında Kelvin değeri okunaklı boyut ve kontrastta. (K15)
-- [ ] 🔴 **D4.** Light/dark denetimi: sabit renkleri temizle, her ekranı iki temada da doğrula
-      (Pro kartının altındaki beyaz yazı dâhil). (K8)
-- [~] **D5.** Özel preset: üç değer + isim + ikon seçimi. (K16)
-      *Üçüncü eksen (Ekstra Karartma) kaydırıcısı eklendi ve `saveCustom` üç ekseni de
-      kaydediyor. İkon seçimi ve düzenleme akışı D fazında tamamlanacak.*
-- [ ] **D6.** Ana ekranda preset sırasını sürükleyerek değiştirme + varsayılana sıfırlama. (K16)
-      *Veri tarafı hazır: `sort_order` sütunu, `DatabaseHelper.updateSortOrder`,
-      `PresetNotifier.reorder`. Geriye arayüz kaldı.*
-- [ ] **D7.** Preset'i varsayılanına döndürme ("bu preset'i sıfırla").
-      *Veri tarafı hazır: `DatabaseHelper.resetPresetToDefault`, `PresetNotifier.resetToDefault`.
-      Geriye arayüz kaldı.*
-- [ ] **D8.** Bilgi Merkezi'ni **sıfırdan yaz**. Mevcut metinler 1.x'ten gelmiş, eskimiş ve
+- [x] **D3.** Preset kartlarında Kelvin `labelSmall` + `onSurfaceVariant` ile okunuyor
+      (eskiden 9px, `Colors.grey.shade500`). Sayıyı okutamayan bir uygulamanın iddiası sayıydı. (K15)
+- [~] 🔴 **D4.** Tema baştan yazıldı: iki tema **tek üreticiden** çıkıyor, böylece bir kontrol
+      birinde stillenip diğerinde stilsiz kalamıyor (eski sürümde switch/outlined/input
+      yalnızca koyu temada stillenmişti). `CircadianColors` **ThemeExtension**: aynı anlam her
+      temada farklı renk ister — koyu zeminde okunan yeşil beyazda solar. `context.colours`,
+      `context.texts`, `context.bands` kısayolları; `AppTheme.amberPrimary` gibi ham sabitler
+      **kaldırıldı**. Pro kartı `primaryContainer`/`onPrimaryContainer` kullanıyor — beyaz yazı
+      hatası buradaydı. (K8) — **iki temada gözle bakılmalı**
+- [x] **D5.** Preset düzenleyici: üç eksen + isim + **ikon seçici**, mevcut preset'i
+      düzenleme, canlı renk önizlemesi. İsimsiz kayıt engelleniyor (bulunamayacak bir preset). (K16)
+- [~] 🔴 **D6.** Ana ekranda **basılı tut–sürükle** ile sıralama (ana ekran ikonlarının
+      jesti). Flutter'da reorderable grid yok; tek widget için paket eklemek yerine
+      `Wrap` + `LongPressDraggable`/`DragTarget`. Preset ekranında "tümünü sıfırla". (K16)
+      — **cihazda sürükleme denenmeli**
+- [x] **D7.** Her yerleşik preset'in satır menüsünde "bu preset'i sıfırla"; özel preset'lerde
+      yerine "sil" (fabrika hâli olmayan bir şey sıfırlanamaz).
+- [x] **D8.** Bilgi Merkezi sıfırdan yazıldı. Mevcut metinler 1.x'ten gelmiş, eskimiş ve
       kısmen yanlış (retina hasarı, sarı nokta, "sürekli acıktırır" iddiaları). Bkz. 5.8.
-  - [ ] **D8.1** Yasak iddiaları tüm dillerden temizle; yerine kanıta dayalı metinler.
-  - [ ] **D8.2** Konular: görünür ışık ve melanopsin · renk sıcaklığı nedir · melanopik EDI
+  - [x] **D8.1** Yasak iddiaları tüm dillerden temizle; yerine kanıta dayalı metinler.
+  - [x] **D8.2** Konular: görünür ışık ve melanopsin · renk sıcaklığı nedir · melanopik EDI
         ve akşam hedefi (10 lx) · neden karartma renkten önemli · 20-20-20 ve göz kırpma ·
         sirkadiyen ritim ve yatma rutini.
-  - [ ] **D8.3** Her kartın altında **kaynak künyesi** (Brown 2022, Nagare 2019,
+  - [x] **D8.3** Her kartın altında **kaynak künyesi** (Brown 2022, Nagare 2019,
         Chang 2015, Cochrane/Singh 2023, CIE S 026).
-  - [ ] **D8.4** İkon ve görselleri yenile; kullanıcı dostu, sade, abartısız dil.
-  - [ ] **D8.5** Feragat kartı: tıbbi cihaz değildir, tedavi etmez.
+  - [x] **D8.4** İkon ve görselleri yenile; kullanıcı dostu, sade, abartısız dil.
+  - [x] **D8.5** Feragat kartı: tıbbi cihaz değildir, tedavi etmez.
 - [ ] **D9.** İkon seti: alt gezinme dâhil, iOS'ta da doğru duran tek set.
 - [ ] 🔴 **D10.** Splash: light ve dark için ayrı, sade; mevcut ikon korunur, mavi+turuncu
       kimlik, altında tek satır bilimsel açıklama.
 - [ ] **D11.** Pro rozeti: satın alındığında başlıkta "DoctorFilter^Pro".
-- [ ] **D12.** Hakkında: jargon kaldırılır, feragat + kaynaklar + lisans eklenir. (K11)
-- [ ] **D13.** "Puanla" çalışır hâle getirilir (mağaza incelemesi). (K10)
-- [ ] **D14.** "Paylaş" çalışır hâle getirilir (yerel paylaşım sayfası). (K10)
+- [x] **D12.** Yeni Hakkında ekranı: "Clean Architecture Build" jargonu **kaldırıldı**;
+      yerine ne yaptığı, sayıların nasıl hesaplandığı, gizlilik, açık kaynak, kaynak künyeleri,
+      GPL-3.0 lisans bağlantısı ve **çerçeveli feragat**. Sürüm `package_info_plus`'tan. (K11)
+- [x] **D13.** "Puanla" çalışıyor: `in_app_review` ile uygulama içi sayfa; sistem kota
+      nedeniyle göstermezse (bunu bilmenin yolu yok) mağaza sayfasına düşüyor — hiçbir şey
+      olmamış gibi görünmesindense. (K10)
+- [x] **D14.** "Paylaş" çalışıyor: `share_plus` ile sistemin kendi paylaşım sayfası. (K10)
 - [ ] **D15.** İlk açılışta atlanabilir 3 adımlı onboarding: izinler + kısa bilimsel tanıtım.
 - [ ] 🔴 **D16.** Erişilebilirlik: TalkBack/VoiceOver etiketleri, min 48dp dokunma alanı,
       büyük yazı tipiyle taşma yok.
@@ -822,7 +835,9 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
         Bölüm 5.8'deki yasak iddialar hiçbir dile geri sızmamalı.
 - [~] 🔴 **E4.** `kRightToLeftLanguages` tanımlandı (ar, fa, he, ur, ps); Flutter yönü
       locale'den türetiyor. — **cihazda Arapça ile düzen denetimi gerekli**
-- [ ] **E5.** Saat/sayı biçimleri locale'den (Türkçe'de PM yok).
+- [x] **E5.** Saatler `TimeOfDay.format(context)` ile yazılıyor: biçim locale'den ve cihazın
+      12/24 saat ayarından geliyor. Elle "PM" yazmak Türkçe'de ve pek çok dilde var olmayan
+      bir ek üretiyordu. Zamanlayıcıda ayrıca gece yarısını aşan pencerenin süresi gösteriliyor.
 
 ## FAZ F — Açık kaynak, uyum ve teslim
 - [ ] **F1.** `LICENSE` (GPL-3.0) eklenir.
@@ -891,6 +906,10 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **D1–D8, D12–D14, E5 tamam** (D1/D4/D6 cihaz/göz doğrulaması bekliyor). Tema
+  `ThemeExtension` ile yeniden yazıldı; ana ekran, preset, zamanlayıcı, ayarlar, dil,
+  hakkında ve bilgi merkezi ekranları baştan yazıldı. Eski `kelvin_dial`,
+  `preset_carousel`, `subzero_slider` **silindi**. `flutter test` 85/85.
 * **E1, E2 tamam** (sıra değişikliği: D'den önce yapıldı, gerekçesi aşağıda).
   191 anahtar, EN+TR elle yazıldı, 5 koruyucu test. Dil listesi 71'e tamamlandı.
 * **FAZ C kod tarafı bitti.** C5 (reklam politikası) ve C9 testli; C2/C4/C6/C7/C8
@@ -988,7 +1007,10 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `D1` (ana ekran yeniden düzeni).
+**Sıradaki madde:** `D9` (ikon seti) → `D10` (splash) → `D15`–`D18`.
+
+> **Sıra değişikliği (Bölüm 1.3):** D4 (tema) D1'den önce yapıldı. Sabit renkler
+> temizlenmeden yeni ekran yazmak, her ekranı iki kez yazmak olurdu.
 
 > **Sıra değişikliği (Bölüm 1.3):** E1/E2 D'den **önce** yapıldı. D fazındaki her ekran
 > metinlerini anahtarlardan alacağı için anahtar setinin önce var olması gerekiyordu;
