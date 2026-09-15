@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:doctorfilter/core/errors/failure.dart';
 import 'package:doctorfilter/core/errors/result.dart';
 import 'package:doctorfilter/data/datasources/local/preferences_datasource.dart';
@@ -11,92 +12,67 @@ class FilterRepositoryImpl implements IFilterRepository {
     required PreferencesDataSource preferencesDataSource,
     required PlatformChannelDataSource platformChannelDataSource,
   })  : _prefs = preferencesDataSource,
-        _native = platformChannelDataSource {
-    _initNativeListeners();
-  }
+        _native = platformChannelDataSource;
+
+  /// Long enough that a slider drag collapses into one write, short enough that
+  /// a user who taps and immediately switches apps still has it saved.
+  static const _writeDelay = Duration(milliseconds: 150);
 
   final PreferencesDataSource _prefs;
   final PlatformChannelDataSource _native;
-  final StreamController<FilterConfig> _streamController =
-      StreamController<FilterConfig>.broadcast();
 
-  void _initNativeListeners() {
-    _native.onFilterStateChanged.listen((isEnabled) {
-      final current = _prefs.getFilterConfig();
-      final updated = current.copyWith(isEnabled: isEnabled);
-      _prefs.saveFilterConfig(updated);
-      _streamController.add(updated);
-    });
-
-    _native.onDensityChanged.listen((alpha) {
-      final current = _prefs.getFilterConfig();
-      final updated = current.copyWith(alpha: alpha);
-      _prefs.saveFilterConfig(updated);
-      _streamController.add(updated);
-    });
-  }
+  Timer? _writeTimer;
+  FilterConfig? _pending;
 
   @override
-  Future<Result<FilterConfig>> getFilterConfig() async {
+  Future<Result<FilterConfig>> loadConfig() async {
     try {
-      final config = _prefs.getFilterConfig();
-      return Result.success(config);
+      return Result.success(_prefs.getFilterConfig());
     } catch (e) {
-      return Result.failure(DatabaseFailure('Failed to read filter config', cause: e));
+      return Result.failure(DatabaseFailure('Could not read saved settings', cause: e));
     }
   }
 
   @override
-  Future<Result<void>> updateFilterConfig(FilterConfig config) async {
-    try {
-      await _prefs.saveFilterConfig(config);
-      if (config.isEnabled) {
-        await _native.updateOverlay(config);
-      }
-      _streamController.add(config);
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(PlatformFailure('Failed to update filter config', cause: e));
-    }
+  void persist(FilterConfig config) {
+    _pending = config;
+    _writeTimer?.cancel();
+    _writeTimer = Timer(_writeDelay, flush);
   }
 
   @override
-  Future<Result<void>> setOverlayActive(bool isActive) async {
-    try {
-      final config = _prefs.getFilterConfig().copyWith(isEnabled: isActive);
-      await _prefs.saveFilterConfig(config);
+  Future<void> flush() async {
+    _writeTimer?.cancel();
+    _writeTimer = null;
+    final config = _pending;
+    if (config == null) return;
+    _pending = null;
+    await _prefs.saveFilterConfig(config);
+  }
 
-      if (isActive) {
-        await _native.startOverlay(config);
-      } else {
+  @override
+  Future<Result<void>> applyToPlatform(FilterConfig config) async {
+    try {
+      if (!config.isEnabled) {
         await _native.stopOverlay();
+        return const Result.success(null);
       }
-      _streamController.add(config);
+      // startOverlay is idempotent on the native side: it starts the service if
+      // it is not running and repaints if it is, so there is no state to track
+      // here that could drift out of sync with the service's real state.
+      await _native.startOverlay(config);
       return const Result.success(null);
     } catch (e) {
-      return Result.failure(PlatformFailure('Failed to toggle overlay', cause: e));
-    }
-  }
-
-  @override
-  Future<Result<void>> setNotificationActive(bool isActive) async {
-    try {
-      final config = _prefs.getFilterConfig().copyWith(isNotificationEnabled: isActive);
-      await _prefs.saveFilterConfig(config);
-      _streamController.add(config);
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(PlatformFailure('Failed to update notification setting', cause: e));
+      return Result.failure(PlatformFailure('Could not apply the filter', cause: e));
     }
   }
 
   @override
   Future<Result<bool>> checkOverlayPermission() async {
     try {
-      final isGranted = await _native.checkOverlayPermission();
-      return Result.success(isGranted);
+      return Result.success(await _native.checkOverlayPermission());
     } catch (e) {
-      return Result.failure(PermissionFailure('Failed to check overlay permission', cause: e));
+      return Result.failure(PermissionFailure('Could not check overlay permission', cause: e));
     }
   }
 
@@ -106,14 +82,14 @@ class FilterRepositoryImpl implements IFilterRepository {
       await _native.requestOverlayPermission();
       return const Result.success(null);
     } catch (e) {
-      return Result.failure(PermissionFailure('Failed to request overlay permission', cause: e));
+      return Result.failure(PermissionFailure('Could not open overlay settings', cause: e));
     }
   }
 
   @override
-  Stream<FilterConfig> watchFilterConfig() => _streamController.stream;
+  Stream<NativeFilterEvent> get nativeEvents => _native.events;
 
-  void dispose() {
-    _streamController.close();
-  }
+  /// Flushes rather than dropping: a pending write at teardown is exactly the
+  /// change the user made last.
+  Future<void> dispose() => flush();
 }

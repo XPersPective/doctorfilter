@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
+import 'package:doctorfilter/domain/entities/filter_config.dart';
+import 'package:doctorfilter/presentation/ads/banner_ad_widget.dart';
+import 'package:doctorfilter/presentation/providers/ad_providers.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 import 'package:doctorfilter/presentation/widgets/kelvin_dial.dart';
@@ -82,7 +85,6 @@ class HomeScreen extends ConsumerWidget {
               OverlayPermissionBanner(
                 onGrantPressed: () async {
                   await filterNotifier.requestPermission();
-                  await filterNotifier.checkPermission();
                 },
               ),
 
@@ -92,8 +94,18 @@ class HomeScreen extends ConsumerWidget {
             Center(
               child: PowerButton(
                 isActive: filterState.config.isEnabled,
-                isLoading: filterState.isLoading,
-                onTap: () => filterNotifier.toggleFilter(),
+                isLoading: filterState.isBusy,
+                onTap: () async {
+                  final wasEnabled = filterState.config.isEnabled;
+                  await filterNotifier.toggle();
+                  // Natural pause point for an occasional interstitial ad
+                  if (wasEnabled &&
+                      !ref.read(filterProvider).config.isEnabled) {
+                    ref
+                        .read(interstitialAdManagerProvider)
+                        .maybeShowOnFilterDisabled();
+                  }
+                },
               ),
             ),
 
@@ -146,7 +158,7 @@ class HomeScreen extends ConsumerWidget {
             PresetCarousel(
               presets: presetState.presets,
               activePresetId: filterState.config.activePresetId,
-              onPresetSelected: (id) => presetNotifier.selectPreset(id),
+              onPresetSelected: presetNotifier.select,
             ),
 
             const SizedBox(height: 20),
@@ -156,8 +168,9 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: KelvinDial(
                 kelvin: filterState.config.kelvin,
-                opacityPercent: filterState.config.alphaPercent,
-                onChanged: (val) => filterNotifier.updateKelvin(val),
+                opacityPercent:
+                    (filterState.config.compositeAlpha * 100).round(),
+                onChanged: filterNotifier.setKelvin,
               ),
             ),
 
@@ -167,13 +180,11 @@ class HomeScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SubzeroSlider(
-                title: loc?.translate('subzero_brightness') ?? 'Extra Dim / Sub-Zero',
-                value: filterState.config.brightnessPercent,
+                title: loc?.translate('extra_dim_label') ?? 'Extra Dim',
+                value: filterState.config.extraDimPercent,
+                max: FilterConfig.maxExtraDimPercent,
                 icon: Icons.brightness_medium_rounded,
-                onChanged: (percent) {
-                  final rawBrightness = ((percent / 100.0) * 255).round();
-                  filterNotifier.updateBrightness(rawBrightness);
-                },
+                onChanged: filterNotifier.setExtraDim,
               ),
             ),
 
@@ -184,12 +195,10 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SubzeroSlider(
                 title: loc?.translate('density_label') ?? 'Filter Density',
-                value: filterState.config.alphaPercent,
+                value: filterState.config.densityPercent,
+                max: FilterConfig.maxDensityPercent,
                 icon: Icons.opacity_rounded,
-                onChanged: (percent) {
-                  final rawAlpha = ((percent / 100.0) * 255).round();
-                  filterNotifier.updateAlpha(rawAlpha);
-                },
+                onChanged: filterNotifier.setDensity,
               ),
             ),
 
@@ -197,7 +206,11 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const BannerAdWidget(),
+          NavigationBar(
         selectedIndex: 0,
         destinations: [
           NavigationDestination(
@@ -230,6 +243,8 @@ class HomeScreen extends ConsumerWidget {
             Navigator.push(context, MaterialPageRoute(builder: (_) => const EducationScreen()));
           }
         },
+          ),
+        ],
       ),
     );
   }

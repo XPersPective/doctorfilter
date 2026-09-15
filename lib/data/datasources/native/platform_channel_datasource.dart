@@ -3,114 +3,132 @@ import 'package:flutter/services.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/domain/entities/schedule_rule.dart';
 
+/// Bridge to the native overlay service, notification and scheduler.
+///
+/// The native side is told the *composite* colour and alpha rather than the
+/// three axes, because drawing is all it does — the meaning of the axes stays in
+/// the domain layer where it can be tested without a device.
 class PlatformChannelDataSource {
   static const MethodChannel _channel = MethodChannel('com.crazypenguin.doctorfilter');
 
-  final StreamController<bool> _filterStateController = StreamController<bool>.broadcast();
-  final StreamController<int> _densityController = StreamController<int>.broadcast();
+  final StreamController<NativeFilterEvent> _events =
+      StreamController<NativeFilterEvent>.broadcast();
 
   PlatformChannelDataSource() {
     _channel.setMethodCallHandler(_handleNativeCall);
   }
 
-  Stream<bool> get onFilterStateChanged => _filterStateController.stream;
-  Stream<int> get onDensityChanged => _densityController.stream;
+  /// Changes originating on the native side: notification buttons, the
+  /// scheduler firing, the service being killed.
+  Stream<NativeFilterEvent> get events => _events.stream;
 
   Future<dynamic> _handleNativeCall(MethodCall call) async {
+    final args = call.arguments;
     switch (call.method) {
       case 'onFilterStateChanged':
-        final isEnabled = call.arguments['isEnabled'] as bool? ?? false;
-        _filterStateController.add(isEnabled);
-        break;
-      case 'onDensityChanged':
-        final alpha = call.arguments['alpha'] as int? ?? 25;
-        _densityController.add(alpha);
-        break;
+        _events.add(NativeFilterToggled(_boolArg(args, 'isEnabled')));
+      case 'onPresetSelected':
+        _events.add(NativePresetSelected(_intArg(args, 'presetId', 0)));
+      case 'onAxisChanged':
+        _events.add(NativeAxisChanged(
+          kelvin: _nullableIntArg(args, 'kelvin'),
+          densityPercent: _nullableIntArg(args, 'densityPercent'),
+          extraDimPercent: _nullableIntArg(args, 'extraDimPercent'),
+        ));
     }
+    return null;
   }
 
-  Future<bool> checkOverlayPermission() async {
-    try {
-      final isGranted = await _channel.invokeMethod<bool>('checkOverlayPermission');
-      return isGranted ?? false;
-    } catch (_) {
-      return false;
-    }
-  }
+  static bool _boolArg(dynamic args, String key) =>
+      args is Map && args[key] is bool ? args[key] as bool : false;
+
+  static int _intArg(dynamic args, String key, int fallback) =>
+      args is Map && args[key] is int ? args[key] as int : fallback;
+
+  static int? _nullableIntArg(dynamic args, String key) =>
+      args is Map && args[key] is int ? args[key] as int : null;
+
+  Future<bool> checkOverlayPermission() =>
+      _invokeBool('checkOverlayPermission');
 
   Future<void> requestOverlayPermission() async {
-    try {
-      await _channel.invokeMethod<void>('requestOverlayPermission');
-    } catch (_) {}
+    await _invokeBool('requestOverlayPermission');
   }
 
-  Future<bool> startOverlay(FilterConfig config) async {
-    try {
-      final result = await _channel.invokeMethod<bool>('startOverlay', {
-        'red': config.red,
-        'green': config.green,
-        'blue': config.blue,
-        'alpha': config.alpha,
-        'brightness': config.brightness,
-        'kelvin': config.kelvin,
-      });
-      return result ?? false;
-    } catch (_) {
-      return false;
-    }
-  }
+  Future<bool> startOverlay(FilterConfig config) =>
+      _invokeBool('startOverlay', _payload(config));
 
-  Future<bool> updateOverlay(FilterConfig config) async {
-    try {
-      final result = await _channel.invokeMethod<bool>('updateOverlay', {
-        'red': config.red,
-        'green': config.green,
-        'blue': config.blue,
-        'alpha': config.alpha,
-        'brightness': config.brightness,
-        'kelvin': config.kelvin,
-      });
-      return result ?? false;
-    } catch (_) {
-      return false;
-    }
-  }
+  Future<bool> updateOverlay(FilterConfig config) =>
+      _invokeBool('updateOverlay', _payload(config));
 
-  Future<bool> stopOverlay() async {
-    try {
-      final result = await _channel.invokeMethod<bool>('stopOverlay');
-      return result ?? false;
-    } catch (_) {
-      return false;
-    }
-  }
+  Future<bool> stopOverlay() => _invokeBool('stopOverlay');
 
-  Future<bool> isFilterRunning() async {
-    try {
-      final result = await _channel.invokeMethod<bool>('isFilterRunning');
-      return result ?? false;
-    } catch (_) {
-      return false;
-    }
-  }
+  Future<bool> isFilterRunning() => _invokeBool('isFilterRunning');
 
-  Future<bool> setSchedule(ScheduleRule rule) async {
-    try {
-      final result = await _channel.invokeMethod<bool>('setSchedule', {
+  Future<bool> setSchedule(ScheduleRule rule) => _invokeBool('setSchedule', {
         'isEnabled': rule.isEnabled,
         'startHour': rule.startHour,
         'startMinute': rule.startMinute,
         'stopHour': rule.stopHour,
         'stopMinute': rule.stopMinute,
+        'targetPresetId': rule.targetPresetId,
       });
-      return result ?? false;
-    } catch (_) {
+
+  /// Whether the OS will honour exact alarms (Android 12+ can refuse).
+  Future<bool> canScheduleExactAlarms() => _invokeBool('canScheduleExactAlarms');
+
+  Future<void> requestExactAlarmPermission() async {
+    await _invokeBool('requestExactAlarmPermission');
+  }
+
+  static Map<String, dynamic> _payload(FilterConfig config) {
+    final colour = config.overlayColor;
+    return {
+      'red': colour.r,
+      'green': colour.g,
+      'blue': colour.b,
+      'alpha': config.overlayAlpha,
+      'kelvin': config.kelvin,
+      'densityPercent': config.densityPercent,
+      'extraDimPercent': config.extraDimPercent,
+      'activePresetId': config.activePresetId,
+      'isNotificationEnabled': config.isNotificationEnabled,
+    };
+  }
+
+  /// Platform calls fail on desktop and in tests, where there is no host
+  /// implementation. That is expected, not an error worth surfacing.
+  Future<bool> _invokeBool(String method, [Map<String, dynamic>? arguments]) async {
+    try {
+      return await _channel.invokeMethod<bool>(method, arguments) ?? false;
+    } on MissingPluginException {
+      return false;
+    } on PlatformException {
       return false;
     }
   }
 
-  void dispose() {
-    _filterStateController.close();
-    _densityController.close();
-  }
+  void dispose() => _events.close();
+}
+
+/// A change that originated on the native side.
+sealed class NativeFilterEvent {
+  const NativeFilterEvent();
+}
+
+final class NativeFilterToggled extends NativeFilterEvent {
+  const NativeFilterToggled(this.isEnabled);
+  final bool isEnabled;
+}
+
+final class NativePresetSelected extends NativeFilterEvent {
+  const NativePresetSelected(this.presetId);
+  final int presetId;
+}
+
+final class NativeAxisChanged extends NativeFilterEvent {
+  const NativeAxisChanged({this.kelvin, this.densityPercent, this.extraDimPercent});
+  final int? kelvin;
+  final int? densityPercent;
+  final int? extraDimPercent;
 }

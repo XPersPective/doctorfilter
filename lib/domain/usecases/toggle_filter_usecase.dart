@@ -3,54 +3,42 @@ import 'package:doctorfilter/core/errors/result.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/domain/repositories/i_filter_repository.dart';
 
+/// Turns the filter on or off.
+///
+/// Exists as a use case because turning it *on* is not a simple state flip: it
+/// is gated on a permission the user may not have granted, and without that
+/// permission the overlay silently does nothing at all. Getting that wrong
+/// leaves the app claiming to protect a screen it cannot draw on.
 final class ToggleFilterUseCase {
   const ToggleFilterUseCase(this._repository);
 
   final IFilterRepository _repository;
 
-  Future<Result<FilterConfig>> call({bool? forceState}) async {
-    final configResult = await _repository.getFilterConfig();
-    if (configResult is FailureResult<FilterConfig>) {
-      return configResult;
-    }
+  /// Returns the configuration that is now in effect.
+  Future<Result<FilterConfig>> call(FilterConfig current, {bool? forceState}) async {
+    final shouldEnable = forceState ?? !current.isEnabled;
 
-    final currentConfig = (configResult as Success<FilterConfig>).data;
-    final newState = forceState ?? !currentConfig.isEnabled;
-
-    if (newState) {
-      // 1. Check overlay permission first
-      final permResult = await _repository.checkOverlayPermission();
-      if (permResult is FailureResult<bool>) {
-        return FailureResult(permResult.failure);
+    if (shouldEnable) {
+      final permission = await _repository.checkOverlayPermission();
+      if (permission case FailureResult(:final failure)) {
+        return FailureResult(failure);
       }
-      final isPermitted = (permResult as Success<bool>).data;
-      if (!isPermitted) {
+      if (permission.dataOrNull != true) {
         await _repository.requestOverlayPermission();
         return const FailureResult(
-          PermissionFailure('Overlay permission is required to display screen filter.'),
+          PermissionFailure('overlay_permission_required'),
         );
       }
     }
 
-    final updatedConfig = currentConfig.copyWith(isEnabled: newState);
+    final updated = current.copyWith(isEnabled: shouldEnable);
 
-    // 2. Persist updated configuration
-    final saveResult = await _repository.updateFilterConfig(updatedConfig);
-    if (saveResult is FailureResult<void>) {
-      return FailureResult(saveResult.failure);
+    final applied = await _repository.applyToPlatform(updated);
+    if (applied case FailureResult(:final failure)) {
+      return FailureResult(failure);
     }
 
-    // 3. Command native overlay
-    final overlayResult = await _repository.setOverlayActive(newState);
-    if (overlayResult is FailureResult<void>) {
-      return FailureResult(overlayResult.failure);
-    }
-
-    // 4. Command native notification if enabled
-    if (updatedConfig.isNotificationEnabled) {
-      await _repository.setNotificationActive(newState);
-    }
-
-    return Result.success(updatedConfig);
+    _repository.persist(updated);
+    return Result.success(updated);
   }
 }

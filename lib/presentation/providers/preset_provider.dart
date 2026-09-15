@@ -7,141 +7,133 @@ import 'filter_provider.dart';
 final class PresetState {
   const PresetState({
     required this.presets,
-    required this.activePresetId,
     this.isLoading = false,
-    this.errorMessage,
+    this.errorKey,
   });
 
   final List<FilterPreset> presets;
-  final int activePresetId;
   final bool isLoading;
-  final String? errorMessage;
-
-  FilterPreset? get activePreset {
-    try {
-      return presets.firstWhere((p) => p.id == activePresetId);
-    } catch (_) {
-      return presets.isNotEmpty ? presets.first : null;
-    }
-  }
+  final String? errorKey;
 
   PresetState copyWith({
     List<FilterPreset>? presets,
-    int? activePresetId,
     bool? isLoading,
-    String? errorMessage,
+    String? errorKey,
+    bool clearError = false,
   }) {
     return PresetState(
       presets: presets ?? this.presets,
-      activePresetId: activePresetId ?? this.activePresetId,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage,
+      errorKey: clearError ? null : (errorKey ?? this.errorKey),
     );
   }
 }
 
+/// Owns the stored presets — but deliberately *not* which one is active.
+///
+/// The active preset lives in `FilterConfig.activePresetId` and nowhere else. It
+/// used to be tracked here as well, and the two copies drifted: the carousel
+/// highlighted one preset while the sliders showed another's values.
 class PresetNotifier extends StateNotifier<PresetState> {
-  PresetNotifier(
-    this._applyPresetUseCase,
-    this._ref,
-  ) : super(const PresetState(
-          presets: [],
-          activePresetId: 0,
-          isLoading: true,
-        )) {
-    loadPresets();
+  PresetNotifier(this._applyPreset, this._ref)
+      : super(const PresetState(presets: [], isLoading: true)) {
+    load();
   }
 
-  final ApplyPresetUseCase _applyPresetUseCase;
+  final ApplyPresetUseCase _applyPreset;
   final Ref _ref;
 
-  Future<void> loadPresets() async {
-    state = state.copyWith(isLoading: true);
-    final presetRepo = _ref.read(presetRepositoryProvider);
-    final filterRepo = _ref.read(filterRepositoryProvider);
-
-    final presetsResult = await presetRepo.getAllPresets();
-    final configResult = await filterRepo.getFilterConfig();
-
-    final presets = presetsResult.dataOrNull ?? [];
-    final activeId = configResult.dataOrNull?.activePresetId ?? 0;
-
+  Future<void> load() async {
+    final result = await _ref.read(presetRepositoryProvider).getAllPresets();
+    if (!mounted) return;
     state = state.copyWith(
-      presets: presets,
-      activePresetId: activeId,
+      presets: result.dataOrNull ?? const [],
       isLoading: false,
+      errorKey: result.isFailure ? 'error_presets_load' : null,
+      clearError: result.isSuccess,
     );
   }
 
-  Future<void> selectPreset(int presetId) async {
-    state = state.copyWith(isLoading: true, errorMessage: null);
+  Future<void> select(int presetId) async {
+    final filter = _ref.read(filterProvider.notifier);
+    final result = await _applyPreset(_ref.read(filterProvider).config, presetId);
+    if (!mounted) return;
 
-    final result = await _applyPresetUseCase(presetId);
     result.fold(
-      (failure) {
-        state = state.copyWith(isLoading: false, errorMessage: failure.message);
-      },
-      (newConfig) {
-        state = state.copyWith(
-          activePresetId: presetId,
-          isLoading: false,
-        );
-        // Sync filterProvider state
-        _ref.read(filterProvider.notifier).updateKelvin(newConfig.kelvin);
-        _ref.read(filterProvider.notifier).updateAlpha(newConfig.alpha);
-        _ref.read(filterProvider.notifier).updateBrightness(newConfig.brightness);
+      (_) => state = state.copyWith(errorKey: 'error_preset_apply'),
+      (config) {
+        filter.adopt(config);
+        state = state.copyWith(clearError: true);
       },
     );
   }
 
-  Future<void> saveCustomPreset({
+  Future<void> saveCustom({
     required String name,
     required int kelvin,
-    required int red,
-    required int green,
-    required int blue,
-    required int alpha,
-    required int brightness,
+    required int densityPercent,
+    required int extraDimPercent,
+    String iconIdentifier = 'custom',
+    int? replacingId,
   }) async {
-    final presetRepo = _ref.read(presetRepositoryProvider);
-    final newId = DateTime.now().millisecondsSinceEpoch % 100000;
-    final newPreset = FilterPreset(
-      id: newId,
+    final db = _ref.read(databaseHelperProvider);
+    final id = replacingId ?? await db.nextCustomPresetId();
+    final preset = FilterPreset(
+      id: id,
       nameKey: name,
       kelvin: kelvin,
-      red: red,
-      green: green,
-      blue: blue,
-      alpha: alpha,
-      brightness: brightness,
-      iconIdentifier: 'custom',
+      densityPercent: densityPercent,
+      extraDimPercent: extraDimPercent,
+      iconIdentifier: iconIdentifier,
       isCustom: true,
-      isProOnly: false,
+      sortOrder: state.presets.length,
     );
 
-    await presetRepo.savePreset(newPreset);
-    await loadPresets();
-    await selectPreset(newId);
+    await _ref.read(presetRepositoryProvider).savePreset(preset);
+    await load();
+    await select(id);
   }
 
-  Future<void> deletePreset(int presetId) async {
-    final presetRepo = _ref.read(presetRepositoryProvider);
-    await presetRepo.deletePreset(presetId);
-    await loadPresets();
+  Future<void> delete(int presetId) async {
+    await _ref.read(presetRepositoryProvider).deletePreset(presetId);
+    await load();
   }
 
-  Future<void> resetToDefaults() async {
-    final presetRepo = _ref.read(presetRepositoryProvider);
-    await presetRepo.resetToDefaultPresets();
-    await loadPresets();
-    await selectPreset(0);
+  /// Persists a new home-screen ordering.
+  Future<void> reorder(List<int> presetIdsInOrder) async {
+    await _ref.read(databaseHelperProvider).updateSortOrder(presetIdsInOrder);
+    await load();
+  }
+
+  /// Returns a built-in preset to its shipped values.
+  Future<void> resetToDefault(int presetId) async {
+    final reset =
+        await _ref.read(databaseHelperProvider).resetPresetToDefault(presetId);
+    if (!reset) return;
+    await load();
+    if (_ref.read(filterProvider).config.activePresetId == presetId) {
+      await select(presetId);
+    }
+  }
+
+  Future<void> resetAllToDefaults() async {
+    await _ref.read(presetRepositoryProvider).resetToDefaultPresets();
+    await load();
+    await select(0);
   }
 }
 
 final presetProvider = StateNotifierProvider<PresetNotifier, PresetState>((ref) {
-  final applyUseCase = ref.watch(applyPresetUseCaseProvider);
-  return PresetNotifier(
-    applyUseCase,
-    ref,
-  );
+  return PresetNotifier(ref.watch(applyPresetUseCaseProvider), ref);
+});
+
+/// The preset matching the live configuration, or null when the user has
+/// adjusted the axes away from every stored preset.
+final activePresetProvider = Provider<FilterPreset?>((ref) {
+  final activeId = ref.watch(filterConfigProvider).activePresetId;
+  final presets = ref.watch(presetProvider).presets;
+  for (final preset in presets) {
+    if (preset.id == activeId) return preset;
+  }
+  return null;
 });
