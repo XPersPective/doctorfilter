@@ -1,49 +1,119 @@
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show MethodChannel, rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doctorfilter/main.dart';
 import 'package:doctorfilter/presentation/providers/core_providers.dart';
+import 'package:doctorfilter/presentation/screens/home_screen.dart';
+import 'package:doctorfilter/presentation/screens/onboarding_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  const channel = MethodChannel('com.crazypenguin.doctorfilter');
+
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
-      const MethodChannel('com.crazypenguin.doctorfilter'),
-      (MethodCall methodCall) async {
-        if (methodCall.method == 'checkOverlayPermission') return true;
-        if (methodCall.method == 'isFilterRunning') return false;
-        return true;
-      },
-    );
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'checkOverlayPermission') return true;
+      if (call.method == 'isFilterRunning') return false;
+      return true;
+    });
   });
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
-      const MethodChannel('com.crazypenguin.doctorfilter'),
-      null,
-    );
+        .setMockMethodCallHandler(channel, null);
   });
 
-  testWidgets('DoctorFilterApp basic smoke test', (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
+  Future<void> pumpApp(
+    WidgetTester tester, {
+    Map<String, Object> prefs = const {},
+  }) async {
+    // rootBundle caches the *future* for each asset, and a future created inside
+    // a finished test's fake-async zone never completes. Without this clear, the
+    // localisation delegate in every test after the first waits forever and
+    // Localizations renders an empty tree.
+    rootBundle.clear();
+
+    // getInstance() caches its result for the whole process, so without this a
+    // later test silently gets the previous test's preferences.
+    SharedPreferences.resetStatic();
+    SharedPreferences.setMockInitialValues(prefs);
+    final preferences = await SharedPreferences.getInstance();
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-        ],
-        child: const DoctorFilterApp(),
+        overrides: [sharedPreferencesProvider.overrideWithValue(preferences)],
+        // A fresh key forces a new State: without it Flutter reuses the previous
+        // test's DoctorFilterApp state and initState never re-reads preferences.
+        child: DoctorFilterApp(key: UniqueKey()),
       ),
     );
 
     await tester.pumpAndSettle();
+  }
 
-    // DoctorFilter app bar title
-    expect(find.text('DoctorFilter'), findsOneWidget);
+  testWidgets('a first-time user lands on onboarding', (tester) async {
+    await pumpApp(tester);
+    expect(find.byType(OnboardingScreen), findsOneWidget);
+    expect(find.byType(HomeScreen), findsNothing);
+  });
+
+  testWidgets('a returning user goes straight to the app', (tester) async {
+    await pumpApp(tester, prefs: {'flutter.df_onboarding_done': true});
+
+    expect(find.byType(OnboardingScreen), findsNothing);
+    expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('finishing onboarding is remembered within the session',
+      (tester) async {
+    await pumpApp(tester);
+
+    await tester.tap(find.byType(TextButton).first);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('the home screen renders in both themes', (tester) async {
+    // Catches the class of bug where a widget is styled for one brightness and
+    // throws or vanishes in the other.
+    for (final isDark in [true, false]) {
+      await pumpApp(tester, prefs: {
+        'flutter.df_onboarding_done': true,
+        'flutter.df_app_is_dark_mode': isDark,
+      });
+
+      expect(find.byType(HomeScreen), findsOneWidget,
+          reason: isDark ? 'dark theme' : 'light theme');
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('the home screen fits a small phone without overflowing',
+      (tester) async {
+    tester.view.physicalSize = const Size(360 * 3, 640 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await pumpApp(tester, prefs: {'flutter.df_onboarding_done': true});
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the home screen survives a right-to-left locale',
+      (tester) async {
+    await pumpApp(tester, prefs: {
+      'flutter.df_onboarding_done': true,
+      'flutter.df_app_locale': 'ar',
+    });
+
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(Directionality.of(tester.element(find.byType(HomeScreen))),
+        TextDirection.rtl);
   });
 }

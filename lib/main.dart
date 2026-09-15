@@ -14,6 +14,7 @@ import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
 import 'package:doctorfilter/presentation/screens/home_screen.dart';
+import 'package:doctorfilter/presentation/screens/onboarding_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,10 +45,19 @@ class DoctorFilterApp extends ConsumerStatefulWidget {
 }
 
 class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp> {
+  late bool _showOnboarding;
+
   @override
   void initState() {
     super.initState();
+    _showOnboarding =
+        !ref.read(preferencesDataSourceProvider).isOnboardingDone();
     _initialiseAds();
+  }
+
+  Future<void> _finishOnboarding() async {
+    await ref.read(preferencesDataSourceProvider).setOnboardingDone();
+    if (mounted) setState(() => _showOnboarding = false);
   }
 
   /// Starts the ad stack, in the one order that is allowed.
@@ -86,7 +96,9 @@ class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const HomeScreen(),
+      home: _showOnboarding
+          ? OnboardingScreen(onFinished: _finishOnboarding)
+          : const HomeScreen(),
     );
   }
 }

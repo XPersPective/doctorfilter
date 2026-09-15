@@ -47,6 +47,8 @@ class PreferencesDataSource {
   static const _keyAdRewardedViews = 'df_ad_rewarded_views';
   static const _keyAdRewardedDay = 'df_ad_rewarded_day';
 
+  static const _keyOnboardingDone = 'df_onboarding_done';
+
   static const _keyLocale = 'df_app_locale';
   static const _keyIsDarkMode = 'df_app_is_dark_mode';
 
@@ -162,6 +164,9 @@ class PreferencesDataSource {
         _prefs.setInt(_keyAdRewardedDay, state.rewardedDay!.millisecondsSinceEpoch),
     ]);
   }
+
+  bool isOnboardingDone() => _prefs.getBool(_keyOnboardingDone) ?? false;
+  Future<void> setOnboardingDone() => _prefs.setBool(_keyOnboardingDone, true);
 
   String? getLocale() => _prefs.getString(_keyLocale);
   Future<void> setLocale(String languageCode) => _prefs.setString(_keyLocale, languageCode);
