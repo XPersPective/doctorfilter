@@ -877,7 +877,12 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       taraf (AdMob yalnızca ücretsiz sürümde, mağaza yalnızca satın alırken), izinler ve
       gerekçeleri, doğrulama bağlantısı. Sonunda Play Data Safety / App Privacy formları
       için **beyan notları** — sürümler arasında tutarlı kalsın diye.
-- [ ] **F6.** Gereksiz dosyalar temizlenir; repo geçmişi sır taramasından geçirilir.
+- [x] **F6.** Geçmiş tarandı: **hiçbir commit'te** `.env`, `key.properties`, `*.jks`,
+      `*.keystore` veya `google-services.json` yok. Kullanılmayan varlıklar silindi:
+      `assets/images/` tamamı (yeni ekranların hiçbiri referans vermiyordu) ve 1.x
+      tasarımından kalan **4 font** (Audiowide, Tomorrow, Turret Road, Kodchasan) —
+      kimsenin kullanmadığı bir font her indirmede bayt ve takip edilecek bir lisans daha
+      demek. Orbitron kaldı (sayısal göstergeler).
 - [x] **F7.** `.github/workflows/ci.yml`: `analyze --fatal-infos --fatal-warnings`,
       `test`, `build apk --debug` (release keystore kasıtlı olarak repoda yok) ve ayrı bir
       **sır sızıntısı işi** — `.env`, `key.properties`, `*.jks`, `google-services.json`
@@ -885,7 +890,10 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       kontrol etmek ucuz, bir kez kaçırmak felakettir.
 - [x] **F8.** `CHANGELOG.md` yazıldı (düzeltilenler / eklenenler / değişenler / kaldırılanlar,
       her biri gerekçesiyle). Sürüm `2.0.0+2000`; versionCode eski Play tavanı 1015'in üstünde.
-- [ ] **F9.** `flutter analyze` 0, `flutter test` tam yeşil, release AAB derlenir.
+- [x] **F9.** `flutter analyze --fatal-infos --fatal-warnings` temiz, `flutter test` 90/90,
+      **release AAB derlendi** (`app-release.aab`, gerçek anahtarla imzalı).
+      Not: AAB 57 MB çünkü tüm ABI'ları içerir; Play indirmeyi böler, kullanıcının
+      indireceği boyut bunun çok altında olacak.
 
 ## FAZ G — Sonraki platformlar
 - [ ] **G1.** iOS temel: uygulama içi Kelvin filtresi, `UIScreen.brightness` ile doğrudan
@@ -946,6 +954,9 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   en+tr ile birlikte **14 dil tam**. Kalan 57 dil İngilizce'ye düşüyor.
   Yer tutucu doğrulaması artık **her dilde**, ve yasak sağlık iddiası testi eklendi.
 * **D8.1 tamam:** 3288 ölü 1.x dizesi 71 dosyadan silindi; yasaklı iddialar hiçbir dilde kalmadı.
+* **FAZ F bitti.** `F6`: geçmişte sır yok; kullanılmayan `assets/images/` ve 4 font silindi.
+  `F9`: analyze/test temiz, **release AAB derlendi**.
+* **E3.2 sürüyor:** pl, uk, cs, sv, id, vi, th, el, ro, hu eklendi → **24 dil tam**.
 * **F1–F5, F7, F8 tamam.** `LICENSE` (GPL-3.0), `README.md`, `THIRD_PARTY_LICENSES.md`,
   `PRIVACY.md`, GitHub Actions CI (sır sızıntısı kontrolü dâhil), `CHANGELOG.md`.
   `.env` ve `flutter_dotenv` **kaldırıldı** — temiz klon artık sırsız derleniyor.
@@ -1057,7 +1068,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `E3.2`/`E3.3` (kalan 57 dil) → `F6`, `F9` → FAZ H.
+**Sıradaki madde:** `E3.2`/`E3.3` (kalan 47 dil) → FAZ H (büyüme özellikleri) → FAZ G (iOS/Windows).
 
 > **Sıra değişikliği (Bölüm 1.3):** F1–F5, F7, F8 E3'ün önüne alındı. Bunlar dokuz küçük
 > madde ve depoyu **yayınlanabilir** hâle getiriyorlar; kalan diller ise tamamen toplamsal

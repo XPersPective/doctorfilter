@@ -56,28 +56,15 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/
-    - assets/images/app_nameThemeWhite/
-    - assets/images/app_nameThemeBlue/
-    - assets/images/intro/
     - assets/Localizations/
 
+  # Orbitron only, for numeric readouts. The other four families shipped with
+  # the 1.x design and nothing referenced them; a font nobody uses is bytes in
+  # every download and one more licence to account for.
   fonts:
     - family: Orbitron
       fonts:
         - asset: assets/fonts/Orbitron-VariableFont_wght.ttf
-    - family: Audiowide
-      fonts:
-        - asset: assets/fonts/Audiowide-Regular.ttf
-    - family: Tomorrow
-      fonts:
-        - asset: assets/fonts/Tomorrow-Medium.ttf
-    - family: TurretRoad
-      fonts:
-        - asset: assets/fonts/TurretRoad-Medium.ttf
-    - family: Kodchasan
-      fonts:
-        - asset: assets/fonts/Kodchasan-Medium.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
