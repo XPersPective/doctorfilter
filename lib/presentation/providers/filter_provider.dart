@@ -14,12 +14,16 @@ final class FilterState {
     required this.config,
     required this.hasOverlayPermission,
     this.isBusy = false,
+    this.canUndo = false,
     this.errorKey,
   });
 
   final FilterConfig config;
   final bool hasOverlayPermission;
   final bool isBusy;
+
+  /// Whether there is a previous configuration to step back to.
+  final bool canUndo;
 
   /// Localization key of the last failure, or null. A key rather than a message:
   /// the domain layer does not know what language the user reads.
@@ -29,6 +33,7 @@ final class FilterState {
     FilterConfig? config,
     bool? hasOverlayPermission,
     bool? isBusy,
+    bool? canUndo,
     String? errorKey,
     bool clearError = false,
   }) {
@@ -36,6 +41,7 @@ final class FilterState {
       config: config ?? this.config,
       hasOverlayPermission: hasOverlayPermission ?? this.hasOverlayPermission,
       isBusy: isBusy ?? this.isBusy,
+      canUndo: canUndo ?? this.canUndo,
       errorKey: clearError ? null : (errorKey ?? this.errorKey),
     );
   }
@@ -65,6 +71,23 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
   final IFilterRepository _repository;
   final ToggleFilterUseCase _toggleFilter;
   StreamSubscription<NativeFilterEvent>? _nativeSubscription;
+
+  /// Configurations the user can step back through.
+  ///
+  /// Deep enough to undo a bad session of fiddling, shallow enough that it is
+  /// never worth persisting. Undo history is a within-session convenience; on a
+  /// fresh launch the saved configuration is what the user expects to see.
+  static const int _historyLimit = 20;
+  final List<FilterConfig> _history = [];
+
+  /// Coalescing window for slider drags.
+  ///
+  /// A drag emits dozens of configurations; pushing each one would mean the user
+  /// has to tap undo dozens of times to get back where they started. One entry
+  /// per gesture is what "undo" means to a person.
+  static const _historyCoalesce = Duration(milliseconds: 600);
+  DateTime? _lastHistoryPush;
+
 
   Future<void> _init() async {
     final loaded = await _repository.loadConfig();
@@ -154,14 +177,57 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
   void setExtraDim(int percent) =>
       _apply(state.config.copyWith(extraDimPercent: percent));
 
-  /// Adopts a configuration produced elsewhere (applying a preset, undo).
+  /// Adopts a configuration produced elsewhere (applying a preset).
   void adopt(FilterConfig config) {
     if (!mounted || config == state.config) return;
-    state = state.copyWith(config: config);
+    _pushHistory(state.config, force: true);
+    state = state.copyWith(config: config, canUndo: _history.isNotEmpty);
   }
 
-  Future<void> setNotificationEnabled(bool isEnabled) async {
-    _apply(state.config.copyWith(isNotificationEnabled: isEnabled));
+  /// Steps back to the configuration before the last change.
+  ///
+  /// Only the three axes and the active preset are restored. Whether the filter
+  /// is running, and whether the notification is showing, are not "edits" — a
+  /// user reaching for undo after a bad slider drag does not expect the filter
+  /// to switch itself off.
+  void undo() {
+    if (_history.isEmpty) return;
+    final previous = _history.removeLast();
+    final restored = state.config.copyWith(
+      activePresetId: previous.activePresetId,
+      kelvin: previous.kelvin,
+      densityPercent: previous.densityPercent,
+      extraDimPercent: previous.extraDimPercent,
+    );
+
+    state = state.copyWith(config: restored, canUndo: _history.isNotEmpty);
+    if (restored.isEnabled) {
+      _repository.applyToPlatform(restored);
+    }
+    _repository.persist(restored);
+  }
+
+  void _pushHistory(FilterConfig config, {bool force = false}) {
+    final now = DateTime.now();
+    final withinGesture = !force &&
+        _lastHistoryPush != null &&
+        now.difference(_lastHistoryPush!) < _historyCoalesce;
+    _lastHistoryPush = now;
+    if (withinGesture) return;
+
+    if (_history.isNotEmpty && _history.last == config) return;
+    _history.add(config);
+    if (_history.length > _historyLimit) _history.removeAt(0);
+  }
+
+  /// The notification toggle is a setting, not an edit to the filter: it does
+  /// not clear the active preset and is not something undo should step through.
+  void setNotificationEnabled(bool isEnabled) {
+    final next = state.config.copyWith(isNotificationEnabled: isEnabled);
+    if (next == state.config) return;
+    state = state.copyWith(config: next);
+    if (next.isEnabled) _repository.applyToPlatform(next);
+    _repository.persist(next);
   }
 
   /// Memory first, screen second, disk last.
@@ -171,8 +237,9 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
   /// highlighted while showing values that are not its own.
   void _apply(FilterConfig config, {bool keepPreset = false}) {
     if (config == state.config) return;
+    _pushHistory(state.config);
     final next = keepPreset ? config : config.copyWith(activePresetId: _noPreset);
-    state = state.copyWith(config: next);
+    state = state.copyWith(config: next, canUndo: _history.isNotEmpty);
     if (next.isEnabled) {
       _repository.applyToPlatform(next);
     }

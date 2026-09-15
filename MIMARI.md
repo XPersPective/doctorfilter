@@ -645,7 +645,11 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       `UpdateFilterParamsUseCase` **silindi**. (K1)
 - [ ] **A5.** `PresetNotifier` ↔ `FilterNotifier` desenkronizasyonunu gider; aktif preset
       tek yerde tutulsun. (K2)
-- [ ] **A6.** Geri Al (undo) yığını + ana ekranda geri al düğmesi. (K17)
+- [x] **A6.** Geri Al: `FilterNotifier` son 20 yapılandırmayı tutuyor, ana ekranda
+      (yalnızca geri alınacak bir şey varken görünen) geri al düğmesi var. Bir kaydırma
+      hareketi **tek** geri al adımına iniyor (600 ms birleştirme penceresi) — yoksa
+      kullanıcı başladığı yere dönmek için onlarca kez dokunurdu. Geri al yalnızca üç
+      ekseni ve aktif preset'i geri alır; filtreyi kapatmaz. (K17)
 - [ ] 🔴 **A7.** Ekstra Karartma'yı native tarafta gerçekten uygula. (K4)
 - [ ] **A8.** "% mavi ışık engellendi" uydurma formülünü kaldır; yerine filtrenin kendi
       denkleminden çıkan **göreli melanopik azalma** göstergesi koy (bkz. 5.6). Mutlak lx
@@ -804,7 +808,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   türetiliyor; kalıcılık bellekte-tek-kaynak + debounce'lu tam yazmaya geçti; aktif preset
   tek yerde. `UpdateFilterParamsUseCase` silindi. SharedPreferences ve SQLite göçleri yazıldı.
   `flutter analyze` 0, `flutter test` 32/32.
-* **Sırada A6 (geri al) ve A7 (ekstra karartmanın native tarafta uygulanması) var.**
+* **A6 tamamlandı** (13 test). `flutter test` 45/45.
+* **Sırada A7 var: ekstra karartmanın native tarafta uygulanması.**
   A7 yapılana kadar Ekstra Karartma ekseni Dart tarafında doğru hesaplanıyor ama Kotlin
   `OverlayService` hâlâ yalnızca alfa tint çiziyor.
 * Çalışma ağacında bu oturumdan önce gelen, commit edilmemiş değişiklikler var:
@@ -822,7 +827,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 
 *(şu an boş)*
 
-**Sıradaki madde:** `A6` (geri al yığını).
+**Sıradaki madde:** `A7` (native ekstra karartma).
 
 **Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
 içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar
