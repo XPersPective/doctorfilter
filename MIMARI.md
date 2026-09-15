@@ -984,9 +984,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       `maxTransitionMinutes` 60 → **180**'e çıkarıldı: Brown 2022'nin uyku öncesi
       penceresi bu. 22:00'de basamak şeklinde bir değişim kullanıcının fark ettiği ve
       rahatsız olduğu şeydir; rahatsız eden ayar kapatılır.
-- [ ] **H10.** **Ekran kalibrasyonu:** panel farkları gerçektir (OLED/LCD, üretici tonlaması).
-      Tek seferlik "beyaz kağıt gibi görünene kadar ayarla" ince ayarı; hesaplar bu
-      düzeltme katsayısıyla çalışır.
+- [x] **H10.** **Ekran kalibrasyonu.** −400…+400 K tek seferlik düzeltme
+      (`calibrationOffsetK`). Kullanıcı ekranın yanına beyaz kâğıt tutar, referans kart
+      kâğıda benzeyene kadar kaydırır; filtre açıksa düzeltme **canlı** uygulanır —
+      ancak ekrandan çıktıktan sonra görülebilen bir düzeltmeyi kimse doğru ayarlayamaz.
+      **Nerede uygulanır:** yalnızca `applyToPlatform` içinde. Düzeltme *panelin*
+      yaptığını düzeltir, kullanıcının seçtiği değeri değil; bu yüzden melanopik ve mavi
+      ışık rakamları nominal değer üzerinden hesaplanmaya devam eder. Soğuk çalışan bir
+      ekranı düzeltmek, ayarı değiştirmekle aynı şey değildir.
+      Kendi sayılarını ekrana basan bir uygulama için bu, *kesin* olmakla *dürüst*
+      olmak arasındaki fark.
 - [ ] **H11.** **Ortam ışığına uyum:** ışık sensörüne göre yoğunluğu otomatik ayarla (Pro).
 - [x] **H12.** **Geçici atlama:** `BypassNotifier`, varsayılan 15 sn (10 sn bir fotoğrafa
       doğru dürüst bakmaya yetmiyor). Üst çubuktaki düğme duraklatır, geri sayıma dönüşür,
@@ -1155,7 +1162,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H10, H11, H14. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H11, H14. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.

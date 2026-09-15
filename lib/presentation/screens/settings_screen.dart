@@ -13,6 +13,7 @@ import 'package:doctorfilter/presentation/services/settings_backup.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'about_screen.dart';
+import 'calibration_screen.dart';
 import 'language_screen.dart';
 import 'paywall_screen.dart';
 
@@ -91,6 +92,19 @@ class SettingsScreen extends ConsumerWidget {
                     onChanged: (_) => ref.read(amoledProvider.notifier).toggle(),
                   ),
                 ],
+                const Divider(height: 1, indent: 56),
+                ListTile(
+                  leading: const Icon(Icons.tune_rounded),
+                  title: Text(
+                    loc?.translate('calibration_title') ?? 'Calibrate screen',
+                  ),
+                  subtitle: Text(
+                    loc?.translate('calibration_desc') ??
+                        'Match the app to what your panel actually shows.',
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => _open(context, const CalibrationScreen()),
+                ),
                 const Divider(height: 1, indent: 56),
                 SwitchListTile(
                   secondary: Icon(

@@ -60,7 +60,14 @@ class FilterRepositoryImpl implements IFilterRepository {
       // startOverlay is idempotent on the native side: it starts the service if
       // it is not running and repaints if it is, so there is no state to track
       // here that could drift out of sync with the service's real state.
-      await _native.startOverlay(config);
+      // Calibration is applied here and nowhere else: it corrects what the
+      // *panel* does, so the reported melanopic and blue-light figures stay
+      // based on the nominal value the user chose. Correcting a screen that
+      // runs cool is not the same as changing the setting.
+      final offset = _prefs.calibrationOffsetK();
+      await _native.startOverlay(
+        offset == 0 ? config : config.copyWith(kelvin: config.kelvin + offset),
+      );
       return const Result.success(null);
     } catch (e) {
       return Result.failure(PlatformFailure('Could not apply the filter', cause: e));

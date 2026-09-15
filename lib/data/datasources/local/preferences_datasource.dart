@@ -56,6 +56,7 @@ class PreferencesDataSource {
   static const _keyThemeFollowsFilter = 'df_theme_follows_filter';
   static const _keyBreakEnabled = 'df_break_enabled';
   static const _keyBreakInterval = 'df_break_interval_minutes';
+  static const _keyCalibration = 'df_calibration_offset_k';
 
   // v1 keys, read once by the migration and then removed.
   static const _legacyKeyAlpha = 'df_filter_alpha';
@@ -192,6 +193,15 @@ class PreferencesDataSource {
   bool breakReminderEnabled() => _prefs.getBool(_keyBreakEnabled) ?? false;
   Future<void> setBreakReminderEnabled(bool isEnabled) =>
       _prefs.setBool(_keyBreakEnabled, isEnabled);
+
+  /// Panel white-point correction, in kelvin.
+  ///
+  /// Real panels are not their nominal white point: OLED and LCD differ, and
+  /// manufacturers tune their own tint on top. Without a correction the app's
+  /// "2700 K" is 2700 K in the maths and something else on the glass.
+  int calibrationOffsetK() => _prefs.getInt(_keyCalibration) ?? 0;
+  Future<void> setCalibrationOffsetK(int offset) =>
+      _prefs.setInt(_keyCalibration, offset.clamp(-400, 400));
 
   int breakIntervalMinutes() => _prefs.getInt(_keyBreakInterval) ?? 20;
   Future<void> setBreakIntervalMinutes(int minutes) =>

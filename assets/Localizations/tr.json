@@ -185,5 +185,12 @@
   "preset_import": "Preset kodu gir",
   "preset_import_hint": "Beş karakter",
   "preset_import_invalid": "Bu kod geçerli değil.",
-  "action_add": "Ekle"
+  "action_add": "Ekle",
+  "calibration_title": "Ekran kalibrasyonu",
+  "calibration_desc": "Uygulamayı panelinizin gerçekte gösterdiğine göre ayarlayın.",
+  "calibration_intro": "Her zaman kullandığınız ışıkta, ekranınızın yanına beyaz bir kâğıt tutun. Aşağıdaki alan kâğıda benzeyene kadar ayarlayın.",
+  "calibration_warmer": "Daha sıcak",
+  "calibration_cooler": "Daha soğuk",
+  "calibration_none": "Düzeltme yok",
+  "calibration_filter_off": "Düzeltmeyi yalnızca bu kartta değil gerçek ekranda görmek için filtreyi açın."
 }
