@@ -1,0 +1,58 @@
+name: CI
+
+# Runs on every push and pull request. The point is that a clone with no
+# secrets, no keystore and no .env still analyses, tests and builds — if that
+# ever stops being true, the project is no longer meaningfully open source.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        # Warnings are failures here. The codebase is at zero and staying there
+        # is far cheaper than clearing a backlog later.
+        run: flutter analyze --fatal-infos --fatal-warnings
+
+      - name: Test
+        run: flutter test
+
+      - name: Build debug APK
+        # Debug, not release: release needs a keystore that is deliberately not
+        # in this repository. This still proves the Android side compiles,
+        # including the Kotlin service and the notification layouts.
+        run: flutter build apk --debug
+
+  secrets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check no secrets are tracked
+        # A committed keystore or .env cannot be un-published. Cheap to check on
+        # every push, catastrophic to miss once.
+        run: |
+          set -e
+          leaked=$(git ls-files | grep -E '(^|/)(\.env|key\.properties|.*\.jks|.*\.keystore|google-services\.json|GoogleService-Info\.plist)$' || true)
+          if [ -n "$leaked" ]; then
+            echo "Secret files are tracked by git:"
+            echo "$leaked"
+            exit 1
+          fi
+          echo "No secret files tracked."

@@ -859,15 +859,32 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       bir ek üretiyordu. Zamanlayıcıda ayrıca gece yarısını aşan pencerenin süresi gösteriliyor.
 
 ## FAZ F — Açık kaynak, uyum ve teslim
-- [ ] **F1.** `LICENSE` (GPL-3.0) eklenir.
-- [ ] **F2.** `README.md` yeniden yazılır: ne yaptığı, bilimsel temeli, gizlilik,
-      ekran görüntüleri, kurulum, katkı, lisans, feragat.
-- [ ] **F3.** `THIRD_PARTY_LICENSES.md` (paketler + fontlar) üretilir.
-- [ ] **F4.** `.env` olmadan temiz klon derlensin; test id'leriyle çalıştığı doğrulansın. (K14)
-- [ ] **F5.** Gizlilik politikası metni + Play Data Safety / App Privacy beyan notları.
+- [x] **F1.** `LICENSE` — GNU GPL-3.0 resmî tam metni.
+- [~] **F2.** `README.md` baştan yazıldı: ne yaptığı ve **neden farklı olduğu**, üç eksen,
+      reklam kurallarının kod dosyasına bağlantısı, Pro'nun cihaz üstü doğrulaması
+      (gizlemek yerine açıkça yazıldı), bilimsel özet, **iddia edilmeyenler**, feragat,
+      sırsız derleme talimatı, katkı kuralları, lisans.
+  - [ ] **F2.1** Ekran görüntüleri eklenecek (cihaz doğrulaması sonrası).
+- [x] **F3.** `THIRD_PARTY_LICENSES.md`: 13 Dart paketi, Android kütüphaneleri,
+      5 font (hepsi OFL), bilimsel kaynaklar ve **bilinçli olarak bulunmayanlar**
+      (analitik/crash SDK yok, abonelik SDK'sı yok, ticari kullanımı yasaklayan varlık yok).
+- [x] **F4.** `.env` **tamamen kaldırıldı** ve `flutter_dotenv` bağımlılığı silindi.
+      `.env` bir derleme varlığıydı ve sırlar (doğru şekilde) gitignore'da olduğu için
+      temiz klon eksik varlıktan derlenemiyordu — klonlanıp çalıştırılamayan bir depo
+      gerçekten açık kaynak değildir. Yapılandırma artık yalnızca `--dart-define`;
+      fallback Google'ın resmî **test** reklam id'leri. (K14)
+- [x] **F5.** `PRIVACY.md`: ne saklandığı (hepsi cihazda), ne yapılmadığı, iki üçüncü
+      taraf (AdMob yalnızca ücretsiz sürümde, mağaza yalnızca satın alırken), izinler ve
+      gerekçeleri, doğrulama bağlantısı. Sonunda Play Data Safety / App Privacy formları
+      için **beyan notları** — sürümler arasında tutarlı kalsın diye.
 - [ ] **F6.** Gereksiz dosyalar temizlenir; repo geçmişi sır taramasından geçirilir.
-- [ ] **F7.** GitHub Actions CI: `flutter analyze` + `flutter test`.
-- [ ] **F8.** `CHANGELOG.md`, semantic versiyon; versionCode 1015'in üstünde kalır.
+- [x] **F7.** `.github/workflows/ci.yml`: `analyze --fatal-infos --fatal-warnings`,
+      `test`, `build apk --debug` (release keystore kasıtlı olarak repoda yok) ve ayrı bir
+      **sır sızıntısı işi** — `.env`, `key.properties`, `*.jks`, `google-services.json`
+      takip ediliyorsa derleme kırılır. Yayımlanmış bir anahtar geri alınamaz; her push'ta
+      kontrol etmek ucuz, bir kez kaçırmak felakettir.
+- [x] **F8.** `CHANGELOG.md` yazıldı (düzeltilenler / eklenenler / değişenler / kaldırılanlar,
+      her biri gerekçesiyle). Sürüm `2.0.0+2000`; versionCode eski Play tavanı 1015'in üstünde.
 - [ ] **F9.** `flutter analyze` 0, `flutter test` tam yeşil, release AAB derlenir.
 
 ## FAZ G — Sonraki platformlar
@@ -925,6 +942,13 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   (gerçek ikonlu aksiyonlar), `NotificationActionReceiver`, `ScheduleReceiver` (kendini
   yeniden kuran alarmlar), `MainActivity` (exact alarm izni köprüsü).
   `flutter analyze` 0, `flutter test` 50/50, `flutter build apk --debug` başarılı.
+* **E3.1 tamam:** 12 büyük dil elle çevrildi (de, fr, es, it, pt, nl, ru, ar, ja, ko, zh, hi);
+  en+tr ile birlikte **14 dil tam**. Kalan 57 dil İngilizce'ye düşüyor.
+  Yer tutucu doğrulaması artık **her dilde**, ve yasak sağlık iddiası testi eklendi.
+* **D8.1 tamam:** 3288 ölü 1.x dizesi 71 dosyadan silindi; yasaklı iddialar hiçbir dilde kalmadı.
+* **F1–F5, F7, F8 tamam.** `LICENSE` (GPL-3.0), `README.md`, `THIRD_PARTY_LICENSES.md`,
+  `PRIVACY.md`, GitHub Actions CI (sır sızıntısı kontrolü dâhil), `CHANGELOG.md`.
+  `.env` ve `flutter_dotenv` **kaldırıldı** — temiz klon artık sırsız derleniyor.
 * **FAZ D kod tarafı bitti** (D1/D4/D6/D10/D16/D17 göz/cihaz onayı bekliyor). Onboarding,
   splash, Pro rozeti, ikon seti, erişilebilirlik ve performans geçişi yapıldı.
   6 widget testi eklendi (onboarding yönlendirmesi, iki tema, 360dp taşma, RTL).
@@ -1033,7 +1057,11 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** `E3` (kalan 69 dil) → `F1`–`F9` (lisans, README, CI, teslim).
+**Sıradaki madde:** `E3.2`/`E3.3` (kalan 57 dil) → `F6`, `F9` → FAZ H.
+
+> **Sıra değişikliği (Bölüm 1.3):** F1–F5, F7, F8 E3'ün önüne alındı. Bunlar dokuz küçük
+> madde ve depoyu **yayınlanabilir** hâle getiriyorlar; kalan diller ise tamamen toplamsal
+> içerik. Depo önce yayınlanabilir olsun, dil kapsamı sonra genişlesin.
 
 > **Sıra değişikliği (Bölüm 1.3):** D4 (tema) D1'den önce yapıldı. Sabit renkler
 > temizlenmeden yeni ekran yazmak, her ekranı iki kez yazmak olurdu.
