@@ -909,8 +909,25 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **G3.** Linux/macOS: derlenebilirlik ve çekirdek özellikler.
 
 ## FAZ H — Büyüme özellikleri (kullanıcıyı tutan, sıkmayan)
-- [ ] **H1.** Uygulama bazlı istisna listesi: kamera, galeri, video oynatıcıda filtre
-      otomatik duraklasın (bu tür uygulamalarda en çok istenen özellik).
+- [x] **H1.** Uygulama bazlı istisna listesi. Sıcak ve karartılmış bir ekran, tam da
+      rengin asıl mesele olduğu işler için yanlıştır: fotoğraf çekmek, düzenlemek, film
+      izlemek. Bu olmadan kullanıcı bakmak için filtreyi kapatıyor ve geri açmayı
+      unutuyor — uygulamanın yaptığı tek işte sessizce başarısız olması.
+      **Neden `UsageStatsManager`, neden erişilebilirlik servisi değil:** ikisi de öndeki
+      uygulamanın adını verir; yalnızca biri, erişilebilirlik olmayan bir iş için
+      kullanılan bir erişilebilirlik API'sidir. Play politikası açısından risk oradadır.
+      Buradaki izin açıktır, kullanıcı sistem ayarlarından verir ve geri alabilir; izin
+      yokken özellik **hiç kurulmaz** (yerel taraf görmesine izin verilmeyen bir şeyi
+      yoklamaz). İzin ekranı ne okunduğunu ve ne okunmadığını açıkça söyler.
+      **Yoklama** erişilebilirlik servisi kullanmamanın bedeli: yalnızca overlay ayaktayken
+      ve özellik açıkken, 1,5 sn'de bir — kamera açarken fark edilmeyecek kadar hızlı, bir
+      akşam boyu çalışacak kadar ucuz. Overlay **sökülmez**, saydam boyanır: her uygulama
+      değişiminde pencere ekleyip kaldırmak titrer ve kullanıcı uygulama değiştirmeyi
+      filtre değiştirmekten çok daha sık yapar.
+      Manifest'te `QUERY_ALL_PACKAGES` **yok**; yalnızca başlatıcı girdisi olan
+      uygulamalar için `<queries>` var — seçicinin listelediği tam olarak bu.
+      Simgeler 96 px PNG olarak gelir; simgesiz bir seçici kimsenin gözle tarayamayacağı
+      bir metin duvarıdır.
 - [x] **H2.** Yumuşak geçiş. Varsayılan 30 dk, 0–60 dk arası ayarlanabilir
       (`ScheduleRule.transitionMinutes`). Geçiş **yalnızca boyanan alfayı** süzer;
       `current` hedefe anında atlar, böylece bildirim, widget ve diskteki durum
@@ -1113,6 +1130,46 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 > Ajan buraya, tamamladığı ama cihazda test edilmesi gereken işleri **test adımlarıyla**
 > yazar. Proje sahibi onaylayınca ilgili madde `[x]` olur ve satır buradan silinir.
 
+**H1 — Uygulama istisnaları**
+1. Ayarlar → "Şu uygulamalarda duraklat" → izin kartı çıkmalı.
+2. "Ayarları aç" → kullanım erişimi ver → geri dön. **Kart kendiliğinden kaybolmalı**
+   (ekranı yeniden açmadan).
+3. Kamerayı listeden seç, filtreyi aç, kamerayı aç → filtre ~1,5 sn içinde kalkmalı.
+4. Kameradan çık → filtre geri gelmeli.
+5. Ayarlardan kullanım erişimini geri al → özellik kendiliğinden durmalı, izin kartı
+   geri gelmeli.
+6. **Pil:** bir akşam boyunca açık bırak; belirgin bir tüketim farkı olmamalı.
+
+**H3 — Göz molası**
+1. Molaları aç, filtreyi aç, 20 dk bekle → sessiz bir bildirim gelmeli, 2 dk sonra
+   kendiliğinden kaybolmalı.
+2. Filtreyi kapat → hatırlatma **gelmemeli**.
+3. Cihazı yeniden başlat → hatırlatma çalışmaya devam etmeli.
+
+**H11 — Ortam ışığı (Pro)**
+1. Pro ile aç. Aydınlık odadan karanlık odaya geç → filtre birkaç saniyede biraz
+   koyulaşmalı (sıçrama değil, kayma).
+2. Dışarı çık → filtre geri çekilmeli, ekran okunabilir kalmalı.
+3. Kapat → değerler kullanıcının ayarladığı yere **tam olarak** dönmeli.
+
+**H2 — Kademeli geçiş**
+1. Zamanlayıcıyı 2 dk sonrasına, geçişi 5 dk'ya ayarla.
+2. Başlangıç saatinde filtre **yavaşça** gelmeli; bildirimdeki değerler ise
+   **hemen** hedefi göstermeli.
+3. Bitiş saatinde aynı şekilde sönmeli.
+
+**H6 — Kısayollar**
+1. Başlatıcıda uygulama simgesine uzun bas → preset kısayolları görünmeli, her biri
+   kendi renginde.
+2. Birine dokun → uygulama **açılmadan** filtre o preset'le başlamalı.
+
+**H10 — Kalibrasyon**
+1. Filtre açıkken kalibrasyon ekranını aç, kaydır → gerçek ekran tonu **canlı**
+   değişmeli.
+2. Ekrandan çık → filtre kaydedilen düzeltmeyle kalmalı.
+3. Ana ekrandaki melanopik yüzde **değişmemeli** (kalibrasyon paneli düzeltir, ayarı
+   değil).
+
 **B1 — Bildirim kontrolleri görünüyor mu**
 1. Filtreyi aç. Bildirim gölgesini indir.
 2. Bildirimde **dört düğme** görünmeli: Aç/Kapat · Karart · Aydınlat · Sonraki.
@@ -1182,8 +1239,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1 (uygulama bazlı istisna). Sonra `E3.3`
-(kalan 31 dil) → FAZ G (iOS/Windows). Sonra `E3.3` (kalan 31
+**FAZ H bitti.** **Sıradaki madde:** `E3.3` (kalan 31 dil) → FAZ G (iOS/Windows). Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.

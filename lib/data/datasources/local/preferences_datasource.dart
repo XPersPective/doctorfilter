@@ -58,6 +58,8 @@ class PreferencesDataSource {
   static const _keyBreakInterval = 'df_break_interval_minutes';
   static const _keyCalibration = 'df_calibration_offset_k';
   static const _keyAmbient = 'df_ambient_adaptation';
+  static const _keyExclusionsEnabled = 'df_exclusions_enabled';
+  static const _keyExcludedPackages = 'df_excluded_packages';
 
   // v1 keys, read once by the migration and then removed.
   static const _legacyKeyAlpha = 'df_filter_alpha';
@@ -194,6 +196,15 @@ class PreferencesDataSource {
   bool breakReminderEnabled() => _prefs.getBool(_keyBreakEnabled) ?? false;
   Future<void> setBreakReminderEnabled(bool isEnabled) =>
       _prefs.setBool(_keyBreakEnabled, isEnabled);
+
+  bool appExclusionsEnabled() => _prefs.getBool(_keyExclusionsEnabled) ?? false;
+  Future<void> setAppExclusionsEnabled(bool isEnabled) =>
+      _prefs.setBool(_keyExclusionsEnabled, isEnabled);
+
+  List<String> excludedPackages() =>
+      _prefs.getStringList(_keyExcludedPackages) ?? const [];
+  Future<void> setExcludedPackages(List<String> packages) =>
+      _prefs.setStringList(_keyExcludedPackages, packages);
 
   bool ambientAdaptation() => _prefs.getBool(_keyAmbient) ?? false;
   Future<void> setAmbientAdaptation(bool isEnabled) =>

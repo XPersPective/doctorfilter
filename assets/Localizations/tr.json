@@ -196,5 +196,14 @@
   "oled_energy": "Ekranınız yaklaşık %{percent} daha az ışık yayıyor. OLED panelde güç tüketimi de bununla birlikte düşer, ancak birebir değil.",
   "settings_ambient": "Ortama uyum sağla",
   "settings_ambient_desc": "Karanlıkta biraz daha karartır, gün ışığında geri çekilir.",
-  "settings_ambient_locked": "Pro ile birlikte gelir."
+  "settings_ambient_locked": "Pro ile birlikte gelir.",
+  "exclusions_title": "Şu uygulamalarda duraklat",
+  "exclusions_desc": "Kamera, galeri, video oynatıcı için kenara çekilsin.",
+  "exclusions_intro": "Bu uygulamalardan biri öndeyken filtre kendini kaldırır, çıktığınızda geri gelir.",
+  "exclusions_enable": "Otomatik duraklat",
+  "exclusions_search": "Uygulama ara",
+  "exclusions_list_failed": "Uygulama listesi okunamadı.",
+  "exclusions_permission_title": "Önce bir izin",
+  "exclusions_permission_body": "Kameranız için kenara çekilebilmesi için uygulamanın hangi uygulamanın önde olduğunu bilmesi gerekir. Android buna kullanım erişimi diyor ve sistem ayarlarından veriyorsunuz. DoctorFilter yalnızca o an açık olan uygulamanın adını okur; geçmişinizi asla okumaz ve hiçbir şey telefonunuzdan çıkmaz.",
+  "exclusions_permission_action": "Ayarları aç"
 }

@@ -53,6 +53,17 @@ class OverlayService : Service() {
      */
     private var ambientAdjustment = 0
 
+    private var exclusionPoll: Runnable? = null
+
+    /**
+     * True while an excluded app is in front.
+     *
+     * The overlay is left attached and painted transparent rather than torn
+     * down: adding and removing a window on every app switch flickers, and the
+     * user switches apps far more often than they switch the filter.
+     */
+    private var suspendedForApp = false
+
     companion object {
         const val ACTION_START = "com.crazypenguin.doctorfilter.action.START"
         const val ACTION_STOP = "com.crazypenguin.doctorfilter.action.STOP"
@@ -152,6 +163,7 @@ class OverlayService : Service() {
                     applyOverlay()
                 }
                 syncAmbientSensor()
+                syncExclusionWatch()
                 START_STICKY
             }
 
@@ -271,7 +283,9 @@ class OverlayService : Service() {
         // somewhere specific, and a second adjuster pulling at it would make the
         // transition visibly uneven.
         val base = rampAlpha ?: (current.alpha + ambientAdjustment)
-        val alpha = base.coerceIn(0, MAX_ALPHA)
+        // An excluded app wins over everything: the whole point is that the
+        // screen shows true colour while the camera or the gallery is open.
+        val alpha = if (suspendedForApp) 0 else base.coerceIn(0, MAX_ALPHA)
         val filterColor = Color.argb(alpha, current.red, current.green, current.blue)
 
         val view = overlayView
@@ -324,8 +338,54 @@ class OverlayService : Service() {
         }
     }
 
+    /**
+     * Polls for the app in front while exclusions are switched on.
+     *
+     * Polling is the price of not using an accessibility service. It runs only
+     * while the overlay is up and the feature is on, and at a rate matched to
+     * how fast a person actually switches apps — a second and a half is
+     * imperceptible when opening a camera and cheap enough to run for an
+     * evening.
+     */
+    private fun syncExclusionWatch() {
+        val wanted = AppExclusions.isEnabled(this) &&
+                overlayView != null &&
+                AppExclusions.hasUsageAccess(this)
+
+        if (!wanted) {
+            stopExclusionWatch()
+            return
+        }
+        if (exclusionPoll != null) return
+
+        val poll = object : Runnable {
+            override fun run() {
+                val front = AppExclusions.foregroundPackage(this@OverlayService)
+                val shouldSuspend = front != null && front in AppExclusions.excluded(this@OverlayService)
+
+                if (shouldSuspend != suspendedForApp) {
+                    suspendedForApp = shouldSuspend
+                    applyOverlay()
+                }
+                handler.postDelayed(this, EXCLUSION_POLL_MILLIS)
+            }
+        }
+        exclusionPoll = poll
+        handler.post(poll)
+    }
+
+    private fun stopExclusionWatch() {
+        exclusionPoll?.let { handler.removeCallbacks(it) }
+        exclusionPoll = null
+        if (suspendedForApp) {
+            suspendedForApp = false
+            applyOverlay()
+        }
+    }
+
     private fun stopOverlay() {
         cancelRamp()
+        stopExclusionWatch()
         ambientSensor?.stop()
         ambientSensor = null
         ambientAdjustment = 0
@@ -375,3 +435,6 @@ private const val MAX_ALPHA = 235
 
 /** How often a transition repaints. See [OverlayService.ramp]. */
 private const val STEP_MILLIS = 2_000L
+
+/** How often the foreground app is checked. See `syncExclusionWatch`. */
+private const val EXCLUSION_POLL_MILLIS = 1_500L
