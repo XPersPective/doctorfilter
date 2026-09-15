@@ -11,6 +11,7 @@ import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/notification_sync_provider.dart';
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
+import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
 import 'package:doctorfilter/presentation/widgets/axis_slider.dart';
 import 'package:doctorfilter/presentation/widgets/band_style.dart';
 import 'package:doctorfilter/presentation/widgets/melanopic_ring.dart';
@@ -163,6 +164,13 @@ class HomeScreen extends ConsumerWidget {
                 onChanged: filter.setExtraDim,
               ),
             ),
+
+            // Shown only to users who turned on true black, because that is the
+            // only signal the app has that the panel is OLED — Android exposes
+            // no panel type, and claiming a battery saving on an LCD would be
+            // simply false.
+            if (ref.watch(amoledProvider) && config.extraDimPercent > 0)
+              _OledEnergyNote(config: config),
           ],
         ),
       ),
@@ -295,6 +303,49 @@ class _Title extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// What the dimming is doing to the panel's power draw, stated carefully.
+///
+/// On an OLED panel each pixel emits its own light, so darker pixels draw less
+/// current — the overlay is composited into the frame, so the pixels really do
+/// end up darker. The relationship is not one-for-one (driver and controller
+/// power do not scale with brightness), which is why this says "roughly" and
+/// gives no figure it cannot stand behind.
+class _OledEnergyNote extends StatelessWidget {
+  const _OledEnergyNote({required this.config});
+
+  final FilterConfig config;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final percent = (config.luminanceReduction * 100).round();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+      child: Row(
+        children: [
+          Icon(
+            Icons.battery_saver_outlined,
+            size: 16,
+            color: context.colours.onSurfaceVariant,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              loc?.translate('oled_energy', args: {'percent': '$percent'}) ??
+                  'Your screen is emitting about $percent% less light. On an '
+                      'OLED panel its power draw falls with it, though not '
+                      'exactly one-for-one.',
+              style: context.texts.bodySmall
+                  ?.copyWith(color: context.colours.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

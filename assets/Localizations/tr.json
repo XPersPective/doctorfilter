@@ -192,5 +192,6 @@
   "calibration_warmer": "Daha sıcak",
   "calibration_cooler": "Daha soğuk",
   "calibration_none": "Düzeltme yok",
-  "calibration_filter_off": "Düzeltmeyi yalnızca bu kartta değil gerçek ekranda görmek için filtreyi açın."
+  "calibration_filter_off": "Düzeltmeyi yalnızca bu kartta değil gerçek ekranda görmek için filtreyi açın.",
+  "oled_energy": "Ekranınız yaklaşık %{percent} daha az ışık yayıyor. OLED panelde güç tüketimi de bununla birlikte düşer, ancak birebir değil."
 }
