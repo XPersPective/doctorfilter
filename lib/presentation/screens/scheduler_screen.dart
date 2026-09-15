@@ -130,10 +130,56 @@ class _SchedulerScreenState extends ConsumerState<SchedulerScreen> {
             activePresetId: rule.targetPresetId,
             onSelected: notifier.setTargetPreset,
           ),
+
+          const SizedBox(height: 20),
+          Text(
+            loc?.translate('schedule_transition') ?? 'Fade in and out over',
+            style: context.texts.labelLarge
+                ?.copyWith(color: context.colours.onSurfaceVariant),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            loc?.translate('schedule_transition_desc') ??
+                'The filter arrives gradually instead of all at once.',
+            style: context.texts.bodySmall
+                ?.copyWith(color: context.colours.onSurfaceVariant),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Slider(
+                  value: rule.transitionMinutes.toDouble(),
+                  max: ScheduleRule.maxTransitionMinutes.toDouble(),
+                  // Five-minute steps: nobody has an opinion about 23 minutes,
+                  // and the divisions make the slider land on round numbers.
+                  divisions: ScheduleRule.maxTransitionMinutes ~/ 5,
+                  label: _transitionLabel(loc, rule.transitionMinutes),
+                  onChanged: (value) =>
+                      notifier.setTransition(value.round()),
+                ),
+              ),
+              SizedBox(
+                width: 72,
+                child: Text(
+                  _transitionLabel(loc, rule.transitionMinutes),
+                  textAlign: TextAlign.end,
+                  style: context.texts.bodyMedium,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
+}
+
+String _transitionLabel(AppLocalizations? loc, int minutes) {
+  if (minutes == 0) return loc?.translate('schedule_transition_off') ?? 'Instant';
+  final template = loc?.translate('duration_minutes');
+  return template == null
+      ? '$minutes min'
+      : template.replaceAll('{minutes}', '$minutes');
 }
 
 class _TimeCard extends StatelessWidget {

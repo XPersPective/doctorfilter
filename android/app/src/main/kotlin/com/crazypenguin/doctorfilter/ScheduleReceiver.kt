@@ -33,6 +33,7 @@ class ScheduleReceiver : BroadcastReceiver() {
         private const val KEY_STOP_HOUR = "stop_hour"
         private const val KEY_STOP_MINUTE = "stop_minute"
         private const val KEY_PRESET_ID = "preset_id"
+        private const val KEY_TRANSITION = "transition_minutes"
 
         fun updateSchedule(
             context: Context,
@@ -41,7 +42,8 @@ class ScheduleReceiver : BroadcastReceiver() {
             startMinute: Int,
             stopHour: Int,
             stopMinute: Int,
-            targetPresetId: Int
+            targetPresetId: Int,
+            transitionMinutes: Int
         ) {
             // Persisted natively as well as in Flutter's preferences: after a
             // reboot this receiver runs long before any Flutter engine exists.
@@ -52,6 +54,7 @@ class ScheduleReceiver : BroadcastReceiver() {
                 .putInt(KEY_STOP_HOUR, stopHour)
                 .putInt(KEY_STOP_MINUTE, stopMinute)
                 .putInt(KEY_PRESET_ID, targetPresetId)
+                .putInt(KEY_TRANSITION, transitionMinutes)
                 .apply()
 
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -128,7 +131,8 @@ class ScheduleReceiver : BroadcastReceiver() {
                 startMinute = prefs.getInt(KEY_START_MINUTE, 0),
                 stopHour = prefs.getInt(KEY_STOP_HOUR, 7),
                 stopMinute = prefs.getInt(KEY_STOP_MINUTE, 0),
-                targetPresetId = prefs.getInt(KEY_PRESET_ID, 5)
+                targetPresetId = prefs.getInt(KEY_PRESET_ID, 5),
+                transitionMinutes = prefs.getInt(KEY_TRANSITION, 0)
             )
         }
     }
@@ -144,7 +148,7 @@ class ScheduleReceiver : BroadcastReceiver() {
             }
 
             ACTION_SCHEDULE_START -> {
-                startFilter(context)
+                startFilter(context, rampMillis = transitionMillis(context))
                 MainActivity.notifyFilterToggled(true)
                 reArm(context)
             }
@@ -153,6 +157,7 @@ class ScheduleReceiver : BroadcastReceiver() {
                 context.startService(
                     Intent(context, OverlayService::class.java).apply {
                         action = OverlayService.ACTION_STOP
+                        putExtra(OverlayService.EXTRA_RAMP_MILLIS, transitionMillis(context))
                     }
                 )
                 MainActivity.notifyFilterToggled(false)
@@ -161,13 +166,23 @@ class ScheduleReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun startFilter(context: Context) {
+    /**
+     * Only scheduled transitions fade. A reboot restore has nothing to fade in
+     * from — the user last saw the filter already on.
+     */
+    private fun transitionMillis(context: Context): Long =
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .getInt(KEY_TRANSITION, 0)
+            .coerceIn(0, 60) * 60_000L
+
+    private fun startFilter(context: Context, rampMillis: Long = 0L) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val presetId = prefs.getInt(KEY_PRESET_ID, -1)
 
         val intent = Intent(context, OverlayService::class.java).apply {
             action = OverlayService.ACTION_START
             if (presetId >= 0) putExtra(OverlayService.EXTRA_PRESET_ID, presetId)
+            if (rampMillis > 0) putExtra(OverlayService.EXTRA_RAMP_MILLIS, rampMillis)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

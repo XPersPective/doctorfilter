@@ -37,6 +37,7 @@ class PreferencesDataSource {
   static const _keyScheduleStopMinute = 'df_schedule_stop_minute';
   static const _keyScheduleMode = 'df_schedule_mode';
   static const _keySchedulePresetId = 'df_schedule_preset_id';
+  static const _keyScheduleTransition = 'df_schedule_transition_minutes';
 
   static const _keyProLifetime = 'df_pro_lifetime';
   static const _keyProPassExpiry = 'df_pro_pass_expiry';
@@ -95,6 +96,8 @@ class PreferencesDataSource {
       stopMinute: _prefs.getInt(_keyScheduleStopMinute) ?? 0,
       mode: CircadianMode.values[modeIndex.clamp(0, CircadianMode.values.length - 1)],
       targetPresetId: _prefs.getInt(_keySchedulePresetId) ?? 5,
+      transitionMinutes: _prefs.getInt(_keyScheduleTransition) ??
+          ScheduleRule.defaultTransitionMinutes,
     );
   }
 
@@ -107,6 +110,7 @@ class PreferencesDataSource {
       _prefs.setInt(_keyScheduleStopMinute, rule.stopMinute),
       _prefs.setInt(_keyScheduleMode, rule.mode.index),
       _prefs.setInt(_keySchedulePresetId, rule.targetPresetId),
+      _prefs.setInt(_keyScheduleTransition, rule.transitionMinutes),
     ]);
   }
 

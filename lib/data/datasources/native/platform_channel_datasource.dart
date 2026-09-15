@@ -72,6 +72,7 @@ class PlatformChannelDataSource {
         'stopHour': rule.stopHour,
         'stopMinute': rule.stopMinute,
         'targetPresetId': rule.targetPresetId,
+        'transitionMinutes': rule.transitionMinutes,
       });
 
   /// Mirrors the preset list to the native side.

@@ -152,5 +152,9 @@
   "bypass_action": "Kısa süre duraklat",
   "bypass_active": "Filtre duraklatıldı · {seconds} sn",
   "bypass_resume": "Şimdi devam et",
-  "bypass_hint": "Filtreyi bir anlığına kaldırır, sonra geri koyar."
+  "bypass_hint": "Filtreyi bir anlığına kaldırır, sonra geri koyar.",
+  "schedule_transition": "Geçiş süresi",
+  "schedule_transition_desc": "Filtre bir anda değil, yavaşça gelir.",
+  "schedule_transition_off": "Anında",
+  "duration_minutes": "{minutes} dk"
 }

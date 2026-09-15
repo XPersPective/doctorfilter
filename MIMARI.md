@@ -911,7 +911,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 ## FAZ H — Büyüme özellikleri (kullanıcıyı tutan, sıkmayan)
 - [ ] **H1.** Uygulama bazlı istisna listesi: kamera, galeri, video oynatıcıda filtre
       otomatik duraklasın (bu tür uygulamalarda en çok istenen özellik).
-- [ ] **H2.** Yumuşak geçiş: zamanlayıcı devreye girerken ani değil, kademeli (ör. 30 dk) geçiş.
+- [x] **H2.** Yumuşak geçiş. Varsayılan 30 dk, 0–60 dk arası ayarlanabilir
+      (`ScheduleRule.transitionMinutes`). Geçiş **yalnızca boyanan alfayı** süzer;
+      `current` hedefe anında atlar, böylece bildirim, widget ve diskteki durum
+      kullanıcının istediği değeri gösterir, o an ekranda olan yarım değeri değil.
+      `OverlayService` iki saniyede bir yeniden boyar (bağlı bir görünüme tek
+      `setBackgroundColor`; 30 dakikalık geçiş gözün seçemeyeceği adımlarla ilerler).
+      Ek alarm yok: ön plan servisi zaten ayakta. Elle yapılan ayarlar süzülmez —
+      kullanıcının çektiği kaydırıcının gecikmeli gelmesi gecikme gibi hissedilirdi.
+      Kapanışta da aynı süreyle söner.
 - [ ] **H3.** 20-20-20 göz molası hatırlatıcısı (ücretsizde sabit, Pro'da özelleştirilebilir).
 - [ ] **H4.** Yerel kullanım istatistiği: "bu hafta X saat korumalı ekran" (cihazda kalır).
 - [x] **H5.** AMOLED tam siyah tema seçeneği. `AppTheme.amoledTheme` (gerçek siyah;
@@ -1081,7 +1089,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1–H4, H6, H8–H11, H13–H16. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H3, H4, H6, H8–H11, H13–H16. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.
