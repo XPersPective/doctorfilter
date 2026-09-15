@@ -5,6 +5,8 @@ import 'package:doctorfilter/core/math/kelvin_engine.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/domain/entities/filter_preset.dart';
+import 'package:doctorfilter/domain/entities/preset_code.dart';
+import 'package:doctorfilter/presentation/services/app_links.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 import 'package:doctorfilter/presentation/widgets/axis_slider.dart';
@@ -27,6 +29,11 @@ class PresetsScreen extends ConsumerWidget {
         title: Text(loc?.translate('nav_presets') ?? 'Presets'),
         actions: [
           IconButton(
+            tooltip: loc?.translate('preset_import') ?? 'Enter a preset code',
+            icon: const Icon(Icons.keyboard_alt_outlined),
+            onPressed: () => _importCode(context, notifier),
+          ),
+          IconButton(
             tooltip: loc?.translate('preset_reset_all') ?? 'Reset all presets',
             icon: const Icon(Icons.restart_alt_rounded),
             onPressed: () => _confirmResetAll(context, notifier),
@@ -42,6 +49,7 @@ class PresetsScreen extends ConsumerWidget {
               isActive: preset.id == activeId,
               onApply: () => notifier.select(preset.id),
               onEdit: () => _editPreset(context, preset),
+              onShare: () => _shareCode(context, preset),
               onReset:
                   preset.isCustom ? null : () => notifier.resetToDefault(preset.id),
               onDelete: preset.isCustom
@@ -55,6 +63,81 @@ class PresetsScreen extends ConsumerWidget {
         icon: const Icon(Icons.add_rounded),
         label: Text(loc?.translate('preset_new') ?? 'New preset'),
       ),
+    );
+  }
+
+  /// Hands the five-character code to the share sheet.
+  ///
+  /// No server, no account, no link that stops working: the preset *is* the
+  /// code, and it fits in any message the user was already sending.
+  static Future<void> _shareCode(BuildContext context, FilterPreset preset) {
+    final loc = AppLocalizations.of(context);
+    final code = PresetCode.ofPreset(preset);
+    final template = loc?.translate('preset_share_text');
+
+    return AppLinks.share(
+      template == null
+          ? 'DoctorFilter preset: $code'
+          : template.replaceAll('{code}', code),
+    );
+  }
+
+  Future<void> _importCode(BuildContext context, PresetNotifier notifier) async {
+    final loc = AppLocalizations.of(context);
+    final controller = TextEditingController();
+
+    final code = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(loc?.translate('preset_import') ?? 'Enter a preset code'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          textCapitalization: TextCapitalization.characters,
+          maxLength: 5,
+          decoration: InputDecoration(
+            hintText: loc?.translate('preset_import_hint') ?? 'Five characters',
+          ),
+          onSubmitted: (value) => Navigator.pop(dialogContext, value),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(loc?.translate('action_cancel') ?? 'Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text),
+            child: Text(loc?.translate('action_add') ?? 'Add'),
+          ),
+        ],
+      ),
+    );
+
+    if (code == null) return;
+    final decoded = PresetCode.decode(code);
+
+    if (!context.mounted) return;
+    if (decoded == null) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              loc?.translate('preset_import_invalid') ??
+                  'That code is not valid.',
+            ),
+          ),
+        );
+      return;
+    }
+
+    // Named after its own colour temperature: a name in the sender's language
+    // would be noise to whoever received it, so the code carries no name.
+    await notifier.saveCustom(
+      name: '${decoded.kelvin} K',
+      kelvin: decoded.kelvin,
+      densityPercent: decoded.densityPercent,
+      extraDimPercent: decoded.extraDimPercent,
     );
   }
 
@@ -129,6 +212,7 @@ class _PresetRow extends StatelessWidget {
     required this.isActive,
     required this.onApply,
     required this.onEdit,
+    required this.onShare,
     this.onReset,
     this.onDelete,
   });
@@ -137,6 +221,7 @@ class _PresetRow extends StatelessWidget {
   final bool isActive;
   final VoidCallback onApply;
   final VoidCallback onEdit;
+  final VoidCallback onShare;
   final VoidCallback? onReset;
   final VoidCallback? onDelete;
 
@@ -195,6 +280,7 @@ class _PresetRow extends StatelessWidget {
           icon: const Icon(Icons.more_vert_rounded),
           onSelected: (action) => switch (action) {
             'edit' => onEdit(),
+            'share' => onShare(),
             'reset' => onReset?.call(),
             'delete' => onDelete?.call(),
             _ => null,
@@ -203,6 +289,10 @@ class _PresetRow extends StatelessWidget {
             PopupMenuItem(
               value: 'edit',
               child: Text(loc?.translate('action_manage') ?? 'Edit'),
+            ),
+            PopupMenuItem(
+              value: 'share',
+              child: Text(loc?.translate('preset_share') ?? 'Share as a code'),
             ),
             if (onReset != null)
               PopupMenuItem(
