@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:doctorfilter/data/datasources/native/platform_channel_datasource.dart';
 import 'package:doctorfilter/domain/entities/filter_preset.dart';
 import 'package:doctorfilter/domain/usecases/apply_preset_usecase.dart';
 import 'core_providers.dart';
@@ -38,10 +41,43 @@ class PresetNotifier extends StateNotifier<PresetState> {
   PresetNotifier(this._applyPreset, this._ref)
       : super(const PresetState(presets: [], isLoading: true)) {
     load();
+    _nativeSubscription =
+        _ref.read(filterRepositoryProvider).nativeEvents.listen(_onNativeEvent);
   }
+
+  /// The notification's "next" button sends this instead of a real id: the
+  /// native side has no preset list to cycle through.
+  static const int _nextPresetRequest = -2;
 
   final ApplyPresetUseCase _applyPreset;
   final Ref _ref;
+  StreamSubscription<NativeFilterEvent>? _nativeSubscription;
+
+  void _onNativeEvent(NativeFilterEvent event) {
+    if (event is! NativePresetSelected) return;
+    if (event.presetId == _nextPresetRequest) {
+      selectNext();
+    } else {
+      select(event.presetId);
+    }
+  }
+
+  /// Advances to the next preset in the user's own ordering, wrapping around.
+  Future<void> selectNext() async {
+    if (state.presets.isEmpty) return;
+    final activeId = _ref.read(filterProvider).config.activePresetId;
+    final index = state.presets.indexWhere((p) => p.id == activeId);
+    // -1 (the axes were adjusted by hand) lands on the first preset, which is
+    // the least surprising place for "next" to go.
+    final next = state.presets[(index + 1) % state.presets.length];
+    await select(next.id);
+  }
+
+  @override
+  void dispose() {
+    _nativeSubscription?.cancel();
+    super.dispose();
+  }
 
   Future<void> load() async {
     final result = await _ref.read(presetRepositoryProvider).getAllPresets();

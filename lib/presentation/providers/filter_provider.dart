@@ -127,16 +127,22 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
     final updated = switch (event) {
       NativeFilterToggled(:final isEnabled) =>
         state.config.copyWith(isEnabled: isEnabled),
-      NativePresetSelected(:final presetId) =>
-        state.config.copyWith(activePresetId: presetId),
       NativeAxisChanged(:final kelvin, :final densityPercent, :final extraDimPercent) =>
         state.config.copyWith(
           kelvin: kelvin,
           densityPercent: densityPercent,
           extraDimPercent: extraDimPercent,
         ),
+      // Preset selection needs the preset list, which this notifier does not
+      // own; PresetNotifier listens for it separately.
+      NativePresetSelected() => null,
     };
+    if (updated == null) return;
+
     state = state.copyWith(config: updated);
+    if (updated.isEnabled) {
+      _repository.applyToPlatform(updated);
+    }
     _repository.persist(updated);
   }
 
