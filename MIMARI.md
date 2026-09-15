@@ -137,7 +137,50 @@ Bir maddeyi yaparken başka bir sorun fark edersen:
 * `print` yasak; hata yutulmaz, `Failure` ile taşınır ve kullanıcıya anlaşılır mesaj olur.
 * Hiçbir hata çökmeye dönüşmez.
 
-## 1.5 Doküman disiplini
+## 1.5 "Bitti" ne demek — kabul ölçütü (DoD)
+
+`flutter analyze` yeşil olması bir maddenin bittiği anlamına **gelmez**. Bir madde ancak
+aşağıdakiler sağlandığında `[x]` olur:
+
+**Her madde için:**
+* Analyze + test yeşil, davranışlı kod için yeni test var.
+* Kök neden düzeltildi, semptom yamalanmadı; değiştirilen fonksiyonun **tüm çağıranları** gözden geçirildi.
+* Bölüm 12 (Devir notu) güncellendi.
+
+**Kullanıcı arayüzüne dokunan her madde için ek olarak — ekran kabul kontrol listesi:**
+1. ☐ Light temada okunur (sabit renk kalmadı)
+2. ☐ Dark temada okunur
+3. ☐ RTL bir dilde (ör. `ar`) düzen bozulmuyor
+4. ☐ Sistem yazı tipi %130'a alındığında taşma yok
+5. ☐ Küçük telefon (360dp) ve tablet genişliğinde bozulma yok
+6. ☐ Tüm metinler lokalizasyon anahtarından geliyor, çıplak string yok
+7. ☐ Dokunma alanları ≥ 48dp, TalkBack etiketleri var
+8. ☐ Pro kullanıcıda reklam kalkınca düzende boşluk oluşmuyor
+
+Bu liste maddeye **işaretlenmiş hâlde** Bölüm 12'ye yazılır. İşaretlenemeyen kalem
+varsa madde `[~]` kalır.
+
+## 1.6 Ajanın kendi başına doğrulayamayacağı işler (🔴)
+
+Bazı işler yalnızca **gerçek cihazda insan gözüyle** doğrulanabilir. Bunlar yol
+haritasında **🔴** ile işaretlidir. Kuralı şudur:
+
+* Ajan işi yapar, analyze/test yeşil olur, commit + push eder.
+* Maddeyi **`[x]` YAPMAZ**, `[~]` bırakır.
+* Bölüm 12'deki **"Cihazda doğrulama bekleyenler"** listesine, *ne test edileceğini
+  adım adım yazarak* ekler. Örn: "Bildirimi aç, üç düğmenin de göründüğünü doğrula."
+* Proje sahibi cihazda test edip onay verince madde `[x]` olur.
+
+Bu kural olmadan ajan çalışmayan bir şeyi "tamamlandı" sayar. **İhlal edilmez.**
+
+## 1.7 Madde büyüklüğü
+
+Bir madde tek oturumda bitirilemiyorsa **parçalanır**: alt maddelere bölünür (`D1.1`,
+`D1.2`...), her biri kendi commit'ini alır. "Yüzeysel yapıp `[x]` işaretlemek" protokol
+ihlalidir. Bir maddenin kapsamından emin değilsen Bölüm 2.1'deki premium kabul
+kriterlerine bak: ölçüt orada.
+
+## 1.8 Doküman disiplini
 
 * İzin verilen `.md`: `MIMARI.md`, `README.md`, `LICENSE`, `CHANGELOG.md`,
   `CONTRIBUTING.md`, `PRIVACY.md`, `THIRD_PARTY_LICENSES.md`.
@@ -567,12 +610,19 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 # 11. YOL HARİTASI — YAPILACAKLAR
 
 > `[ ]` yapılacak · `[~]` devam ediyor · `[x]` tamam + test + commit + push
+> **🔴 = ajan kendi başına doğrulayamaz** (Bölüm 1.6). Ajan işi yapar, push eder, ama
+> maddeyi `[~]` bırakır ve Bölüm 12'deki "Cihazda doğrulama bekleyenler" listesine
+> test adımlarıyla ekler. Onayı proje sahibi verir.
 > Sıra bağlayıcıdır. Yolda bulunan işler Bölüm 1.3'e göre **alt madde** olarak eklenir.
 > Parantezdeki `K#` Bölüm 3.2'deki kusur numarasıdır.
 
 ## FAZ A — Doğruluk ve kalıcılık (temel; her şey buna dayanıyor)
 - [ ] **A1.** `KelvinEngine`'i Planckian locus (Kim et al.) + sRGB'ye taşı, McCamy ters
       dönüşümü koru, alt sınırı 1700 K yap; round-trip ve sınır testleri yaz. (K9)
+- [ ] **A1b.** **Veri göçü:** A2 `FilterConfig` şemasını değiştiriyor. Eski
+      SharedPreferences anahtarlarından (`df_filter_alpha`, `df_filter_brightness`, ...)
+      ve 1.x anahtarlarından yeni üç eksene **tek yönlü göç** yaz; şema sürümü tut.
+      Güncelleme alan kullanıcının ayarları **sıfırlanmamalıdır**. Göç testi zorunlu.
 - [ ] **A2.** `FilterConfig`'i üç eksene (kelvin / density / extraDim) göre yeniden modelle;
       güvenlik sınırlarını entity'de zorla; siyah ekranı imkânsızlaştır. (K5)
 - [ ] **A3.** Preset RGB'lerini Kelvin'den türet; 7 varsayılan preset'in Kelvin değerlerini
@@ -582,7 +632,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **A5.** `PresetNotifier` ↔ `FilterNotifier` desenkronizasyonunu gider; aktif preset
       tek yerde tutulsun. (K2)
 - [ ] **A6.** Geri Al (undo) yığını + ana ekranda geri al düğmesi. (K17)
-- [ ] **A7.** Ekstra Karartma'yı native tarafta gerçekten uygula. (K4)
+- [ ] 🔴 **A7.** Ekstra Karartma'yı native tarafta gerçekten uygula. (K4)
 - [ ] **A8.** "% mavi ışık engellendi" uydurma formülünü kaldır; yerine filtrenin kendi
       denkleminden çıkan **göreli melanopik azalma** göstergesi koy (bkz. 5.6). Mutlak lx
       iddia etme. Testle doğrula.
@@ -590,40 +640,40 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       veya `StateNotifier`'da kal); doküman ile kodu aynı hizaya getir. (K18)
 
 ## FAZ B — Android native
-- [ ] **B1.** Bildirim aksiyonlarına gerçek drawable ikonlar; kontrollerin görünmeme
+- [ ] 🔴 **B1.** Bildirim aksiyonlarına gerçek drawable ikonlar; kontrollerin görünmeme
       hatasını çöz. (K3)
-- [ ] **B2.** `RemoteViews` ile özel bildirim kokpiti: preset geçişi + üç eksen kontrolü.
-- [ ] **B3.** Bildirimde Pro kilidi: ücretsizde 1 preset açık, diğerleri kilitli → paywall.
-- [ ] **B4.** Zamanlayıcıyı sağlamlaştır: exact alarm izni, tetikleme sonrası yeniden
+- [ ] 🔴 **B2.** `RemoteViews` ile özel bildirim kokpiti: preset geçişi + üç eksen kontrolü.
+- [ ] 🔴 **B3.** Bildirimde Pro kilidi: ücretsizde 1 preset açık, diğerleri kilitli → paywall.
+- [ ] 🔴 **B4.** Zamanlayıcıyı sağlamlaştır: exact alarm izni, tetikleme sonrası yeniden
       kurulum, boot restore, hedef preset ile başlatma. (K13)
-- [ ] **B5.** Overlay servisini gözden geçir: yapılandırma değişikliği, çoklu ekran,
+- [ ] 🔴 **B5.** Overlay servisini gözden geçir: yapılandırma değişikliği, çoklu ekran,
       çentik, servis yeniden başlatmada durum geri yükleme.
-- [ ] **B6.** Overlay izni verilip dönüldüğünde banner'ın kendini yenilemesi; izin yokken
+- [ ] 🔴 **B6.** Overlay izni verilip dönüldüğünde banner'ın kendini yenilemesi; izin yokken
       net ve zorunlu akış. (K6)
-- [ ] **B7.** OEM pil optimizasyonu servisi öldürdüğünde kurtarma + kullanıcı yönlendirmesi.
-- [ ] **B8.** Quick Settings Tile ve ana ekran widget'ı ile uygulamayı açmadan aç/kapat.
-- [ ] **B9.** Android 15 edge-to-edge + predictive back desteği.
+- [ ] 🔴 **B7.** OEM pil optimizasyonu servisi öldürdüğünde kurtarma + kullanıcı yönlendirmesi.
+- [ ] 🔴 **B8.** Quick Settings Tile ve ana ekran widget'ı ile uygulamayı açmadan aç/kapat.
+- [ ] 🔴 **B9.** Android 15 edge-to-edge + predictive back desteği.
 
 ## FAZ C — Ödeme ve gelir
 - [ ] **C1.** `IPurchaseRepository` sözleşmesi + platform gateway iskeletleri. (K12)
-- [ ] **C2.** `in_app_purchase` ile Play/App Store entegrasyonu: ömür boyu ürün,
+- [ ] 🔴 **C2.** `in_app_purchase` ile Play/App Store entegrasyonu: ömür boyu ürün,
       geri yükleme, pending/hata durumları.
 - [ ] **C3.** `proStatusProvider`; tüm uygulamada tek noktadan Pro kontrolü.
-- [ ] **C4.** 1.x kullanıcılarının satın almasının taşınması (eski ürün kimliği sorgusu).
+- [ ] 🔴 **C4.** 1.x kullanıcılarının satın almasının taşınması (eski ürün kimliği sorgusu).
 - [ ] **C5.** Reklam politikası motoru: 3 gün / 5 oturum dokunulmazlık, oturum tavanı,
       minimum aralık, doğal durak tetikleyicileri.
-- [ ] **C6.** UMP/GDPR onay akışı + iOS ATT izni; onay alınmadan reklam yüklenmez.
-- [ ] **C7.** Ödüllü reklam → 24 saatlik Pro geçişi (günde 2 sınırı).
+- [ ] 🔴 **C6.** UMP/GDPR onay akışı + iOS ATT izni; onay alınmadan reklam yüklenmez.
+- [ ] 🔴 **C7.** Ödüllü reklam → 24 saatlik Pro geçişi (günde 2 sınırı).
 - [ ] **C8.** Yeni Paywall: Pro faydaları, tek fiyat, abonelik yok vurgusu, geri yükleme,
       light/dark uyumlu.
 - [ ] **C9.** Pro'da reklam kaldırılınca düzende boşluk/bozulma olmaması.
 
 ## FAZ D — Arayüz ve deneyim
-- [ ] **D1.** Ana ekran yeniden düzeni: preset'ler ızgara (satır başına ~4), güç düğmesi
+- [ ] 🔴 **D1.** Ana ekran yeniden düzeni: preset'ler ızgara (satır başına ~4), güç düğmesi
       küçültülüp yukarı, gereksiz etiketler kaldırılır; alt banner yerinde kalır. (K15)
 - [ ] **D2.** Kelvin kontrolü: kaydırıcı **kendi spektrum çubuğunun üzerinde** tek bileşen. (K15)
 - [ ] **D3.** Preset kartlarında Kelvin değeri okunaklı boyut ve kontrastta. (K15)
-- [ ] **D4.** Light/dark denetimi: sabit renkleri temizle, her ekranı iki temada da doğrula
+- [ ] 🔴 **D4.** Light/dark denetimi: sabit renkleri temizle, her ekranı iki temada da doğrula
       (Pro kartının altındaki beyaz yazı dâhil). (K8)
 - [ ] **D5.** Özel preset: üç değer + isim + ikon seçimi. (K16)
 - [ ] **D6.** Ana ekranda preset sırasını sürükleyerek değiştirme + varsayılana sıfırlama. (K16)
@@ -639,16 +689,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   - [ ] **D8.4** İkon ve görselleri yenile; kullanıcı dostu, sade, abartısız dil.
   - [ ] **D8.5** Feragat kartı: tıbbi cihaz değildir, tedavi etmez.
 - [ ] **D9.** İkon seti: alt gezinme dâhil, iOS'ta da doğru duran tek set.
-- [ ] **D10.** Splash: light ve dark için ayrı, sade; mevcut ikon korunur, mavi+turuncu
+- [ ] 🔴 **D10.** Splash: light ve dark için ayrı, sade; mevcut ikon korunur, mavi+turuncu
       kimlik, altında tek satır bilimsel açıklama.
 - [ ] **D11.** Pro rozeti: satın alındığında başlıkta "DoctorFilter^Pro".
 - [ ] **D12.** Hakkında: jargon kaldırılır, feragat + kaynaklar + lisans eklenir. (K11)
 - [ ] **D13.** "Puanla" çalışır hâle getirilir (mağaza incelemesi). (K10)
 - [ ] **D14.** "Paylaş" çalışır hâle getirilir (yerel paylaşım sayfası). (K10)
 - [ ] **D15.** İlk açılışta atlanabilir 3 adımlı onboarding: izinler + kısa bilimsel tanıtım.
-- [ ] **D16.** Erişilebilirlik: TalkBack/VoiceOver etiketleri, min 48dp dokunma alanı,
+- [ ] 🔴 **D16.** Erişilebilirlik: TalkBack/VoiceOver etiketleri, min 48dp dokunma alanı,
       büyük yazı tipiyle taşma yok.
-- [ ] **D17.** Tablet ve yatay düzen.
+- [ ] 🔴 **D17.** Tablet ve yatay düzen.
 - [ ] **D18.** Performans: kaydırıcılar takılmadan aksın, gereksiz rebuild olmasın.
 
 ## FAZ E — Yerelleştirme
@@ -657,7 +707,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **E2.** Türkçe ve İngilizce eksiksiz ve elle gözden geçirilmiş.
 - [ ] **E3.** Kalan 69 dil tamamlanır; eksik anahtar İngilizce'ye düşer, anahtar adı
       asla görünmez. (K7)
-- [ ] **E4.** RTL (ar, fa, he, ur) düzen denetimi.
+      **Kalite kuralı:** Ham makine çevirisiyle 69 dili doldurup `[x]` işaretlemek
+      yasaktır. Diller **öncelik gruplarına** bölünür ve ayrı alt maddelerle ilerlenir:
+  - [ ] **E3.1** Birinci grup (tr, en, de, fr, es, it, pt, ru, ar, ja, ko, zh) — özenli,
+        terim tutarlılığı kontrol edilmiş.
+  - [ ] **E3.2** İkinci grup (hi, id, nl, pl, uk, fa, vi, th, sv, cs, ro, el, he, hu).
+  - [ ] **E3.3** Kalan diller. Emin olunmayan dilde **İngilizce fallback bırakılır** —
+        yanlış çeviri, çevirisizlikten kötüdür.
+  - [ ] **E3.4** Bilimsel metinlerde (Bilgi Merkezi) çeviri anlamı kaydırmamalı;
+        Bölüm 5.8'deki yasak iddialar hiçbir dile geri sızmamalı.
+- [ ] 🔴 **E4.** RTL (ar, fa, he, ur) düzen denetimi.
 - [ ] **E5.** Saat/sayı biçimleri locale'den (Türkçe'de PM yok).
 
 ## FAZ F — Açık kaynak, uyum ve teslim
@@ -728,6 +787,13 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
   `lib/presentation/providers/ad_providers.dart` (yeni).
   **Bunlar AdMob entegrasyonuna aittir.** İlk işlerden biri bunları gözden geçirip
   uygun fazın maddesiyle commit'lemek olmalıdır.
+
+## 12.1 Cihazda doğrulama bekleyenler (🔴)
+
+> Ajan buraya, tamamladığı ama cihazda test edilmesi gereken işleri **test adımlarıyla**
+> yazar. Proje sahibi onaylayınca ilgili madde `[x]` olur ve satır buradan silinir.
+
+*(şu an boş)*
 
 **Sıradaki madde:** `A1`.
 
