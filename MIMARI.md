@@ -1009,7 +1009,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       vazgeçiyordu. Metne gündüz uykusu açıkça eklendi.
       > Proje sahibi ayrı bir şablon ekranı isterse bu madde yeniden açılsın; gereken
       > mekanizma zaten var, yalnızca ikinci bir giriş noktası eklenir.
-- [ ] **H14.** **OLED enerji göstergesi:** karartmanın pil kazancını göster (yalnızca OLED).
+- [x] **H14.** **OLED enerji göstergesi.** Yalnızca **tam siyah temayı açmış**
+      kullanıcılara gösterilir: Android panel tipini bildirmez, bu yüzden uygulamanın
+      elindeki tek işaret kullanıcının kendi beyanı. LCD'de pil kazancı iddia etmek
+      düpedüz yanlış olurdu.
+      **Neden doğru:** overlay kareye kompozit edilir, yani piksellerin *son* değeri
+      gerçekten kararır; OLED'de her piksel kendi ışığını ürettiği için akım da düşer.
+      İlişki birebir değildir (sürücü ve denetleyici gücü parlaklıkla ölçeklenmez), bu
+      yüzden metin "yaklaşık" der ve arkasında duramayacağı bir rakam vermez —
+      `luminanceReduction` yayılan ışıktaki azalmadır, vaat edilen pil yüzdesi değil.
 - [x] **H15.** **Preset paylaşımı.** `PresetCode`: üç eksen **beş karakterlik** bir koda
       sığar (21 bit yük + 4 bit sağlama, Crockford base32 — I/L/O/U yok, böylece sesli
       okunan ya da fotoğraftan yazılan bir kod başka bir geçerli koda dönüşemez).
@@ -1162,7 +1170,7 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**Sıradaki madde:** FAZ H — kalan: H1, H11, H14. Sonra `E3.3` (kalan 31
+**Sıradaki madde:** FAZ H — kalan: H1, H11. Sonra `E3.3` (kalan 31
 dil) → FAZ G (iOS/Windows).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.
