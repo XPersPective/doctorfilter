@@ -305,7 +305,65 @@ böylece yapısal olarak imkânsız hâle gelir.
 ipRGC/melanopsin duyarlılığı ~480 nm'de tepe yapar. Etiketler:
 `< 2700 K` uyku dostu · `2700–4000 K` akşam · `4000–5000 K` dengeli · `> 5000 K` mavi ışık riski.
 
-## 5.6 Ekstra Karartma için önerilen değerler
+## 5.6 Asıl metrik: melanopik EDI (modern standart)
+
+"% mavi ışık engellendi" sektörde yaygın ama kaba bir ifadedir. Alanın bugünkü ölçüsü
+**melanopik EDI** (equivalent daylight illuminance, CIE S 026:2018) — ışığın ipRGC'ler
+üzerinden sirkadiyen sisteme verdiği etkin doz.
+
+**Brown ve ark. (2022, PLOS Biology) uzman konsensüs hedefleri:**
+| Zaman | Hedef (göz hizasında, dikey düzlem) |
+|---|---|
+| Gündüz | **en az 250 lx** melanopik EDI |
+| Akşam (yatmadan önceki 3 saat) | **en fazla 10 lx** |
+| Uyku ortamı | **1 lx'in altı** |
+
+Uygulama, ekran parlaklığı + tint + karartmadan **göreli melanopik azalmayı** hesaplar ve
+kullanıcıya "akşam hedefine ne kadar yaklaştın" olarak gösterir. Mutlak lx iddiası
+edilmez (cihaz ekranı ve mesafe bilinmeden ölçülemez); **göreli azalma** ve hedefe
+yakınlık gösterilir.
+
+## 5.7 Kritik bulgu: karartma, renkten daha belirleyici
+
+Nagare ve ark. (2019) Apple Night Shift üzerinde yaptığı çalışmada, **parlaklık
+düşürülmeden yalnızca spektrumu değiştirmenin melatonin baskılanmasını anlamlı ölçüde
+azaltmadığını** gösterdi. Melatonin baskılanması parlaklıkla birlikte artıyor.
+
+**Ürün sonucu:** "Ekstra Karartma" ikincil bir süs değil, **asıl kaldıraçtır**.
+* Arayüzde karartma ekseni Kelvin kadar öne çıkar, geri planda kalmaz.
+* Preset'ler yalnızca sıcak ton değil, **anlamlı karartma** da içerir.
+* Kullanıcı yalnızca Kelvin'i düşürüp karartmayı sıfır bırakırsa uygulama bunu nazikçe
+  belirtir ("renk sıcaklığı tek başına yeterli değil").
+
+## 5.8 İDDİA EDİLMEYECEKLER (kullanıcıyı yanıltmama sözleşmesi)
+
+Cochrane derlemesi (Singh ve ark., 2023; 17 randomize kontrollü çalışma), mavi ışık
+filtreli gözlük camlarının göz yorgunluğu, görme performansı ve uyku üzerinde
+**anlamlı bir fayda göstermediğini** buldu. Ekran filtreleri camlarla birebir aynı şey
+değildir, ama pazarlama iddiaları aynı kaynaktan besleniyor. Bu yüzden:
+
+**Yasak iddialar:**
+* ❌ "Mavi ışık retinaya zarar verir / sarı nokta hastalığına (AMD) yol açar."
+  Ekran seviyelerinde fototoksisite eşiğinin çok altındayız; bu iddia desteklenmiyor.
+* ❌ "Göz yorgunluğunu / göz kuruluğunu tedavi eder."
+  Dijital göz yorgunluğunun başlıca nedenleri **azalan göz kırpma hızı, sürekli yakın
+  odaklanma ve kuru göz**; mavi ışık değil.
+* ❌ "Mavi ışık kilo aldırır / sürekli acıktırır." (Eski içerikte var, dayanaksız.)
+* ❌ Herhangi bir tedavi, tanı veya hastalık önleme vaadi.
+
+**Söylenebilecekler (kanıta dayalı):**
+* ✅ Akşam saatlerinde ekranın **melanopik dozunu** düşürmek melatonin baskılanmasını ve
+  sirkadiyen faz gecikmesini azaltır (Chang ve ark. 2015; Brown ve ark. 2022).
+* ✅ Karanlık ortamda ekran parlaklığını donanım minimumunun altına indirmek **görsel
+  konfor** sağlar ve kamaşmayı azaltır.
+* ✅ Göz yorgunluğu için doğru tavsiye **20-20-20 kuralı, göz kırpma ve mesafe**dir —
+  uygulama bunu hatırlatır (filtreyi çözüm diye sunmaz).
+* ✅ Karartma, renk değişiminden daha etkilidir (Nagare ve ark. 2019).
+
+**Kaynaklar uygulama içinde (Hakkında / Bilgi Merkezi) künyeleriyle listelenir.**
+Kullanıcı iddiayı doğrulayabilmelidir; açık kaynak olmanın anlamı budur.
+
+## 5.9 Ekstra Karartma için önerilen değerler
 Gece okuma için tipik olarak %30–50 yeterlidir; %70 tavan yalnızca zifiri karanlık
 ortam içindir. Uygulama preset'lerde bu aralığı kullanır ve kullanıcıya kaydırıcı
 üzerinde "gece okuma" bölgesini işaretler.
@@ -525,7 +583,10 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       tek yerde tutulsun. (K2)
 - [ ] **A6.** Geri Al (undo) yığını + ana ekranda geri al düğmesi. (K17)
 - [ ] **A7.** Ekstra Karartma'yı native tarafta gerçekten uygula. (K4)
-- [ ] **A8.** Riverpod kullanımını tek yönde netleştir (`Notifier`/`AsyncNotifier`'a geç
+- [ ] **A8.** "% mavi ışık engellendi" uydurma formülünü kaldır; yerine filtrenin kendi
+      denkleminden çıkan **göreli melanopik azalma** göstergesi koy (bkz. 5.6). Mutlak lx
+      iddia etme. Testle doğrula.
+- [ ] **A9.** Riverpod kullanımını tek yönde netleştir (`Notifier`/`AsyncNotifier`'a geç
       veya `StateNotifier`'da kal); doküman ile kodu aynı hizaya getir. (K18)
 
 ## FAZ B — Android native
@@ -567,7 +628,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **D5.** Özel preset: üç değer + isim + ikon seçimi. (K16)
 - [ ] **D6.** Ana ekranda preset sırasını sürükleyerek değiştirme + varsayılana sıfırlama. (K16)
 - [ ] **D7.** Preset'i varsayılanına döndürme ("bu preset'i sıfırla").
-- [ ] **D8.** Bilgi Merkezi: doğru bilimsel metinler, uygun ikonlar, şık görseller.
+- [ ] **D8.** Bilgi Merkezi'ni **sıfırdan yaz**. Mevcut metinler 1.x'ten gelmiş, eskimiş ve
+      kısmen yanlış (retina hasarı, sarı nokta, "sürekli acıktırır" iddiaları). Bkz. 5.8.
+  - [ ] **D8.1** Yasak iddiaları tüm dillerden temizle; yerine kanıta dayalı metinler.
+  - [ ] **D8.2** Konular: görünür ışık ve melanopsin · renk sıcaklığı nedir · melanopik EDI
+        ve akşam hedefi (10 lx) · neden karartma renkten önemli · 20-20-20 ve göz kırpma ·
+        sirkadiyen ritim ve yatma rutini.
+  - [ ] **D8.3** Her kartın altında **kaynak künyesi** (Brown 2022, Nagare 2019,
+        Chang 2015, Cochrane/Singh 2023, CIE S 026).
+  - [ ] **D8.4** İkon ve görselleri yenile; kullanıcı dostu, sade, abartısız dil.
+  - [ ] **D8.5** Feragat kartı: tıbbi cihaz değildir, tedavi etmez.
 - [ ] **D9.** İkon seti: alt gezinme dâhil, iOS'ta da doğru duran tek set.
 - [ ] **D10.** Splash: light ve dark için ayrı, sade; mevcut ikon korunur, mavi+turuncu
       kimlik, altında tek satır bilimsel açıklama.
@@ -624,6 +694,20 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [ ] **H5.** AMOLED tam siyah tema seçeneği.
 - [ ] **H6.** Uygulama kısayolları (uzun basınca hızlı preset).
 - [ ] **H7.** Ayarları JSON olarak dışa/içe aktarma.
+- [ ] **H8.** **Melanopik hedef göstergesi:** "akşam hedefine (10 lx melanopik EDI) ne kadar
+      yakınsın" halkası; gündüz/akşam/uyku bantları. Uygulamanın bilimsel farklılaştırıcısı.
+- [ ] **H9.** **Yatma rutini asistanı:** kullanıcı yatma saatini girer, uygulama 3 saat
+      öncesinden kademeli olarak hedefe indirir (Brown 2022 penceresi).
+- [ ] **H10.** **Ekran kalibrasyonu:** panel farkları gerçektir (OLED/LCD, üretici tonlaması).
+      Tek seferlik "beyaz kağıt gibi görünene kadar ayarla" ince ayarı; hesaplar bu
+      düzeltme katsayısıyla çalışır.
+- [ ] **H11.** **Ortam ışığına uyum:** ışık sensörüne göre yoğunluğu otomatik ayarla (Pro).
+- [ ] **H12.** **Geçici atlama:** uzun basınca filtreyi 10 sn kapat (fotoğraf/renk işi için).
+- [ ] **H13.** **Vardiyalı çalışan modu:** ters uyku programı için zamanlama şablonu.
+- [ ] **H14.** **OLED enerji göstergesi:** karartmanın pil kazancını göster (yalnızca OLED).
+- [ ] **H15.** **Preset paylaşımı:** preset'i kısa kodla paylaş/içe aktar (sunucusuz, kod
+      içinde kodlanmış). Organik büyüme sağlar, veri toplamaz.
+- [ ] **H16.** Filtre açıkken uygulama temasının da koyuya geçmesi (tutarlı his).
 
 ---
 
@@ -647,6 +731,11 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 
 **Sıradaki madde:** `A1`.
 
+**Bilimsel içerik uyarısı:** Bölüm 5.8 bağlayıcıdır. `assets/Localizations/*.json`
+içindeki `intro_slide_description*` metinleri 1.x'ten gelmiştir ve **yasaklı iddialar
+içerir** (retina hasarı, sarı nokta, "sürekli acıktırır"). D8 maddesi bunları 71 dilde
+temizleyecektir. O maddeye kadar bu metinler yeni ekranlarda **kullanılmamalıdır**.
+
 ---
 
 # 13. KARAR GÜNLÜĞÜ
@@ -660,5 +749,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 | 2026-09-15 | Filtre üç eksene ayrıldı (Kelvin / Yoğunluk / Ekstra Karartma) | "Sub-Zero" belirsizdi ve parlaklık alanı hiç uygulanmıyordu (K4) |
 | 2026-09-15 | Kelvin alt sınırı 1000 K → **1700 K** | Kullanılan Planckian yaklaşımı 1667 K altında tanımsız; mum alevi ~1850 K. 1000 K bilimsel olarak yanlıştı (K9) |
 | 2026-09-15 | Mağaza sırası Android → iOS → Microsoft Store | Proje sahibinin yayın planı |
+| 2026-09-15 | Metrik "% mavi ışık engellendi" yerine **göreli melanopik azalma** (CIE S 026 / Brown 2022) | Eski formül uydurma ağırlıklara dayanıyordu; melanopik EDI alanın bugünkü standardı ve doğrulanabilir |
+| 2026-09-15 | Karartma ekseni arayüzde Kelvin kadar öne çıkarılacak | Nagare ve ark. 2019: parlaklık düşmeden yalnızca spektrum değişimi melatonin baskılanmasını anlamlı azaltmıyor |
+| 2026-09-15 | Retina hasarı / AMD / göz yorgunluğu tedavisi iddiaları **yasaklandı** | Cochrane (Singh ve ark. 2023) bu iddiaları desteklemiyor; yanıltıcı sağlık iddiası hem etik dışı hem mağaza riski |
 | 2026-09-15 | iOS'ta overlay yerine: doğrudan parlaklık + Erişilebilirlik Renk Tonu için kurulum sihirbazı + Kısayol/otomasyon ile aç-kapat; **bildirim kokpiti iOS'ta yok** | Apple overlay ve Ayarlar otomasyonuna izin vermiyor; bildirim aksiyonu sistem ayarına dokunamaz. Kullanıcının asıl ihtiyacı (kalıcı, sistem geneli sıcak+kısık ekran) bu yolla karşılanıyor, üstelik uygulamadan çıkınca da kalıcı |
 | 2026-09-15 | Ödeme **yalnızca** platformun yerel mağaza akışı (Play Billing / App Store IAP / MS Store); üçüncü taraf ödeme yasak | Kullanıcı zaten kayıtlı ödeme yöntemiyle iki dokunuşta öder; kart formu dönüşümü düşürür. Ayrıca dijital içerikte harici ödeme mağaza politikalarını ihlal eder |
