@@ -369,13 +369,74 @@ domain/repositories/i_purchase_repository.dart      ← platform-bağımsız sö
 | Platform | Overlay | Bildirim | Zamanlayıcı | Reklam | Satın alma | Öncelik |
 |---|---|---|---|---|---|---|
 | Android | ✅ native | ✅ | ✅ | ✅ | ✅ Play | **1** |
-| iOS | ⚠️ sistem çapında overlay YOK — uygulama içi filtre + Shortcuts/Focus entegrasyonu | ✅ | ✅ | ✅ | ✅ App Store | **2** |
+| iOS | ⚠️ overlay YOK — bkz. 7.2 | ⚠️ sadece hatırlatma, kontrol değil | ✅ | ✅ | ✅ App Store | **2** |
 | Windows | 🔜 katman penceresi | — | 🔜 | ❌ | 🔜 MS Store | **3** |
 | Linux / macOS | 🔜 | — | 🔜 | ❌ | ❌ (mağazasız) | 4 |
 
 Desktop'ta `sqflite` yerine `sqflite_common_ffi`; reklam ve satın alma modülleri platform
 kontrolüyle devre dışı bırakılır. **Uygulama hiçbir platformda çökmez, eksik modül
 yüzünden hata ekranı göstermez.**
+
+## 7.2 iOS — ekran ışığı kontrolü gerçekte nasıl çözülür
+
+Apple, bir uygulamanın başka uygulamaların üzerine çizmesine izin vermez; Android'deki
+`TYPE_APPLICATION_OVERLAY` karşılığı **yoktur ve olmayacaktır**. Ayrıca iOS'ta üçüncü
+taraf uygulamalar için `AccessibilityService` benzeri bir otomasyon da yoktur; uygulama
+Ayarlar ekranındaki bir kaydırıcıyı **kendisi oynatamaz**. App Store'daki hiçbir uygulama
+bunu yapamıyor — aksini iddia eden bir metin mağazadan döner.
+
+Buna rağmen kullanıcının asıl ihtiyacı (telefonu normal kullanırken ekranın kalıcı olarak
+sıcak ve kısık olması) iOS'ta **çözülebilir**. Yetki üçe ayrılır:
+
+### 7.2.1 Uygulamanın doğrudan yapabildiği — anında ve kalıcı
+* **Ekran parlaklığı** (`UIScreen.brightness`): uygulama içinden kaydırıcıyla değiştirilir,
+  sistem parlaklığının kendisidir, uygulamadan çıkınca **geri dönmez**.
+  → "Ekstra Karartma"nın iOS karşılığı budur ve Android'deki gibi çalışır.
+  Otomatik parlaklık sonradan üstüne yazabilir; kullanıcı bu konuda bilgilendirilir.
+* Uygulama içi tam Kelvin filtresi (kendi ekranlarımızda).
+* Zamanlayıcı, sirkadiyen hatırlatıcılar, Bilgi Merkezi.
+
+### 7.2.2 Bir kerelik kurulumla sistem geneli ve kalıcı olan
+iOS'un kendi sistem özellikleri, değerleri **kullanıcı eliyle** girilir, sonra kalıcıdır
+(uygulamadan çıkınca, uygulama silinince, yeniden başlatınca bile durur):
+* **Ayarlar → Erişilebilirlik → Ekran ve Metin Boyutu → Renk Filtreleri → Renk Tonu**
+  (hue + yoğunluk) → sistem geneli sıcak ton.
+* **Beyaz Noktasını Azalt** → donanım minimumu altına karartma.
+
+Uygulamanın görevi: **hedef Kelvin'den doğru hue/yoğunluk değerlerini hesaplayıp**
+kullanıcıya adım adım, ekran görüntüsüyle göstermek (kurulum sihirbazı). İki kaydırıcı,
+bir kerelik, ~20 saniye. Kullanıcı bir daha Ayarlar'a girmez.
+
+### 7.2.3 Açma/kapatma — uygulamadan çıkmadan
+Değerler kalıcı olduğu için geriye yalnızca aç/kapat kalır ve bunun **üç gerçek yolu** vardır:
+1. **Uygulama içi düğme** → kullanıcının kurduğu Kısayol'u `shortcuts://x-callback-url/run-shortcut`
+   ile çalıştırır (kısa bir Kısayollar geçişi olur ve geri döner).
+2. **Erişilebilirlik Kısayolu** (yan tuşa üç kez basma) veya **Arkaya Dokunma** → anlık,
+   uygulamaya hiç girmeden.
+3. **Kısayollar Otomasyonu** → gün batımında otomatik açılır, gün doğumunda kapanır.
+4. (iOS 18+) **Kontrol Merkezi / Kilit ekranı düğmesi** — kendi `ControlWidget`'imiz,
+   parlaklık ve kısayol tetiklemesi için.
+
+### 7.2.4 iOS'ta MÜMKÜN OLMAYAN — vaat edilmeyecek
+* Bildirim üzerinden aç/kapat veya değer değiştirme. Bildirim aksiyonları sistem
+  ayarlarına dokunamaz. **iOS'ta bildirim kokpiti yoktur**; yalnızca hatırlatma bildirimi olur.
+* Preset'ler arası anlık geçiş: Kısayollar filtreyi açıp kapatabilir ama **hue değerini
+  değiştiremez**. iOS'ta kullanıcı tek bir sistem geneli sıcaklıkla yaşar; farklı bir
+  Kelvin isterse kurulum sihirbazını yeniden çalıştırır.
+* Night Shift'in programla açılması (public API yok; yalnızca Kısayollar eylemi).
+
+### 7.2.5 iOS'ta Pro sınırı
+Kurulum sihirbazı ve uygulama içi parlaklık kontrolü **ücretsizdir** — kullanıcı ürünü
+gerçekten deneyimlemeden satın almaya zorlanmaz. Pro'ya giren kolaylıklar:
+hazır Kısayol paketi ve otomasyon kurulumu, Kontrol Merkezi düğmesi, çoklu profil,
+zamanlayıcıda çoklu kural, reklamsızlık.
+Reklam dokunulmazlık süresi (3 gün / 5 oturum) iOS'ta da aynen geçerlidir.
+
+### 7.2.6 Mağaza metni dürüstlüğü
+App Store açıklamasında ve uygulama içinde "başka uygulamaların üzerine filtre" **vaat edilmez**.
+Anlatım: "iOS'un kendi sistem filtresini doğru Kelvin değerleriyle kurar ve otomatikleştirir;
+ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yerine
+**"koruma kurulu / kurulu değil"** durumu ve tek dokunuşla kısayol tetikleme gösterilir.
 
 ## 7.1 Mağaza kuralları — uyulacaklar
 * **Android:** hedef API güncel; `SYSTEM_ALERT_WINDOW` gerekçesi Play formunda açıklanır;
@@ -542,7 +603,15 @@ yüzünden hata ekranı göstermez.**
 - [ ] **F9.** `flutter analyze` 0, `flutter test` tam yeşil, release AAB derlenir.
 
 ## FAZ G — Sonraki platformlar
-- [ ] **G1.** iOS: uygulama içi filtre, bildirim, zamanlayıcı, App Store satın alma, ATT.
+- [ ] **G1.** iOS temel: uygulama içi Kelvin filtresi, `UIScreen.brightness` ile doğrudan
+      ve kalıcı parlaklık kontrolü, zamanlayıcı, App Store satın alma, ATT. (bkz. 7.2.1)
+- [ ] **G1.1** iOS kurulum sihirbazı: hedef Kelvin'den Renk Tonu hue/yoğunluk ve Beyaz
+      Nokta değerlerini hesapla, ekran görüntüsüyle adım adım göster. (bkz. 7.2.2)
+- [ ] **G1.2** iOS aç/kapat yolları: uygulama içi düğme (`shortcuts://x-callback-url`),
+      Erişilebilirlik Kısayolu / Arkaya Dokunma rehberi, gün batımı otomasyonu. (bkz. 7.2.3)
+- [ ] **G1.3** iOS 18+ Kontrol Merkezi `ControlWidget` (parlaklık + kısayol tetikleme).
+- [ ] **G1.4** iOS ana ekranı: aç/kapat düğmesi yerine "koruma kurulu/kurulu değil" durumu;
+      mağaza ve uygulama metinlerinde overlay vaat edilmemesi. (bkz. 7.2.6)
 - [ ] **G2.** Windows: katman penceresi + MSIX + Microsoft Store satın alma.
 - [ ] **G3.** Linux/macOS: derlenebilirlik ve çekirdek özellikler.
 
@@ -591,4 +660,5 @@ yüzünden hata ekranı göstermez.**
 | 2026-09-15 | Filtre üç eksene ayrıldı (Kelvin / Yoğunluk / Ekstra Karartma) | "Sub-Zero" belirsizdi ve parlaklık alanı hiç uygulanmıyordu (K4) |
 | 2026-09-15 | Kelvin alt sınırı 1000 K → **1700 K** | Kullanılan Planckian yaklaşımı 1667 K altında tanımsız; mum alevi ~1850 K. 1000 K bilimsel olarak yanlıştı (K9) |
 | 2026-09-15 | Mağaza sırası Android → iOS → Microsoft Store | Proje sahibinin yayın planı |
+| 2026-09-15 | iOS'ta overlay yerine: doğrudan parlaklık + Erişilebilirlik Renk Tonu için kurulum sihirbazı + Kısayol/otomasyon ile aç-kapat; **bildirim kokpiti iOS'ta yok** | Apple overlay ve Ayarlar otomasyonuna izin vermiyor; bildirim aksiyonu sistem ayarına dokunamaz. Kullanıcının asıl ihtiyacı (kalıcı, sistem geneli sıcak+kısık ekran) bu yolla karşılanıyor, üstelik uygulamadan çıkınca da kalıcı |
 | 2026-09-15 | Ödeme **yalnızca** platformun yerel mağaza akışı (Play Billing / App Store IAP / MS Store); üçüncü taraf ödeme yasak | Kullanıcı zaten kayıtlı ödeme yöntemiyle iki dokunuşta öder; kart formu dönüşümü düşürür. Ayrıca dijital içerikte harici ödeme mağaza politikalarını ihlal eder |
