@@ -168,5 +168,9 @@
   "weekday_thu": "T",
   "weekday_fri": "F",
   "weekday_sat": "S",
-  "weekday_sun": "S"
+  "weekday_sun": "S",
+  "settings_breaks": "Eye breaks",
+  "settings_breaks_desc": "Every 20 minutes, look about 6 metres away for 20 seconds.",
+  "settings_breaks_interval": "Remind me every",
+  "settings_breaks_locked": "20 minutes is the interval the evidence is for. Pro can change it."
 }

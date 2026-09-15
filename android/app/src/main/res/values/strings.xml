@@ -18,6 +18,11 @@
     <string name="notification_title_paused">Filter paused</string>
     <string name="notification_summary">Density %1$d%% · Extra dim %2$d%%</string>
 
+    <string name="break_channel_name">Eye break reminders</string>
+    <string name="break_channel_description">A silent reminder to rest your eyes while the filter is on.</string>
+    <string name="break_title">Time to look away</string>
+    <string name="break_body">Look at something about 6 metres away for 20 seconds. It lets your focusing muscles relax and gets you blinking again.</string>
+
     <string name="shortcut_needs_permission">DoctorFilter needs permission to draw over other apps.</string>
 
     <string name="notification_action_on">Turn on</string>

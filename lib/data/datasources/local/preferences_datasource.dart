@@ -54,6 +54,8 @@ class PreferencesDataSource {
   static const _keyIsDarkMode = 'df_app_is_dark_mode';
   static const _keyAmoled = 'df_app_amoled';
   static const _keyThemeFollowsFilter = 'df_theme_follows_filter';
+  static const _keyBreakEnabled = 'df_break_enabled';
+  static const _keyBreakInterval = 'df_break_interval_minutes';
 
   // v1 keys, read once by the migration and then removed.
   static const _legacyKeyAlpha = 'df_filter_alpha';
@@ -186,6 +188,14 @@ class PreferencesDataSource {
   bool themeFollowsFilter() => _prefs.getBool(_keyThemeFollowsFilter) ?? true;
   Future<void> setThemeFollowsFilter(bool follows) =>
       _prefs.setBool(_keyThemeFollowsFilter, follows);
+
+  bool breakReminderEnabled() => _prefs.getBool(_keyBreakEnabled) ?? false;
+  Future<void> setBreakReminderEnabled(bool isEnabled) =>
+      _prefs.setBool(_keyBreakEnabled, isEnabled);
+
+  int breakIntervalMinutes() => _prefs.getInt(_keyBreakInterval) ?? 20;
+  Future<void> setBreakIntervalMinutes(int minutes) =>
+      _prefs.setInt(_keyBreakInterval, minutes);
 
   /// Brings settings written by an older version forward.
   ///

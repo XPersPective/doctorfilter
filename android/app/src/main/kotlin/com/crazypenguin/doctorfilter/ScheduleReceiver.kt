@@ -142,6 +142,7 @@ class ScheduleReceiver : BroadcastReceiver() {
             Intent.ACTION_BOOT_COMPLETED,
             Intent.ACTION_MY_PACKAGE_REPLACED -> {
                 reArm(context)
+                BreakReminderReceiver.reArm(context)
                 // A filter that was on when the phone went down should be on
                 // when it comes back up.
                 if (FilterState.wasRunning(context)) startFilter(context)

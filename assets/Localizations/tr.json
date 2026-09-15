@@ -168,5 +168,9 @@
   "weekday_thu": "Pe",
   "weekday_fri": "Cu",
   "weekday_sat": "Ct",
-  "weekday_sun": "Pa"
+  "weekday_sun": "Pa",
+  "settings_breaks": "Göz molası",
+  "settings_breaks_desc": "Her 20 dakikada bir, 20 saniye boyunca yaklaşık 6 metre uzağa bak.",
+  "settings_breaks_interval": "Hatırlatma aralığı",
+  "settings_breaks_locked": "Kanıtın işaret ettiği aralık 20 dakika. Pro ile değiştirilebilir."
 }

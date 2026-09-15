@@ -5,6 +5,7 @@ import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
+import 'package:doctorfilter/presentation/providers/break_reminder_provider.dart';
 import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 import 'package:doctorfilter/presentation/services/app_links.dart';
@@ -26,6 +27,7 @@ class SettingsScreen extends ConsumerWidget {
     final isPro = ref.watch(isProProvider);
     final isAmoled = ref.watch(amoledProvider);
     final themeFollowsFilter = ref.watch(themeFollowsFilterProvider);
+    final breaks = ref.watch(breakReminderProvider);
     final config = ref.watch(filterConfigProvider);
 
     return Scaffold(
@@ -130,6 +132,55 @@ class SettingsScreen extends ConsumerWidget {
           ),
 
           const SizedBox(height: 16),
+          _SectionLabel(loc?.translate('settings_breaks') ?? 'Eye breaks'),
+          Card(
+            margin: EdgeInsets.zero,
+            child: Column(
+              children: [
+                SwitchListTile(
+                  secondary: Icon(
+                    Icons.remove_red_eye_outlined,
+                    color: context.colours.primary,
+                  ),
+                  title: Text(
+                    loc?.translate('settings_breaks') ?? 'Eye breaks',
+                  ),
+                  subtitle: Text(
+                    loc?.translate('settings_breaks_desc') ??
+                        'Every 20 minutes, look 6 metres away for 20 seconds.',
+                  ),
+                  value: breaks.isEnabled,
+                  onChanged: ref.read(breakReminderProvider.notifier).setEnabled,
+                ),
+                if (breaks.isEnabled) ...[
+                  const Divider(height: 1, indent: 56),
+                  ListTile(
+                    leading: const Icon(Icons.timer_outlined),
+                    title: Text(
+                      loc?.translate('settings_breaks_interval') ?? 'Remind me every',
+                    ),
+                    subtitle: !isPro
+                        ? Text(
+                            loc?.translate('settings_breaks_locked') ??
+                                '20 minutes is the interval the evidence is for. '
+                                    'Pro can change it.',
+                          )
+                        : null,
+                    trailing: Text(
+                      _minutes(loc, breaks.intervalMinutes),
+                      style: context.texts.bodyLarge,
+                    ),
+                    enabled: isPro,
+                    onTap: isPro
+                        ? () => _pickInterval(context, ref, breaks.intervalMinutes)
+                        : null,
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
           _UsageCard(label: loc?.translate('settings_usage') ?? 'Your week'),
 
           const SizedBox(height: 16),
@@ -196,6 +247,48 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  static String _minutes(AppLocalizations? loc, int minutes) {
+    final template = loc?.translate('duration_minutes');
+    return template == null
+        ? '$minutes min'
+        : template.replaceAll('{minutes}', '$minutes');
+  }
+
+  /// A short list rather than a slider: these are the intervals people actually
+  /// want, and a free-running number invites fiddling with a value that has one
+  /// evidence-backed answer.
+  static Future<void> _pickInterval(
+    BuildContext context,
+    WidgetRef ref,
+    int current,
+  ) async {
+    final loc = AppLocalizations.of(context);
+    const options = [10, 20, 30, 45, 60];
+
+    final chosen = await showModalBottomSheet<int>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final minutes in options)
+              ListTile(
+                title: Text(_minutes(loc, minutes)),
+                trailing: minutes == current
+                    ? Icon(Icons.check_rounded, color: context.colours.primary)
+                    : null,
+                onTap: () => Navigator.pop(sheetContext, minutes),
+              ),
+          ],
+        ),
+      ),
+    );
+
+    if (chosen != null) {
+      await ref.read(breakReminderProvider.notifier).setInterval(chosen);
+    }
   }
 
   static Future<void> _export(BuildContext context, WidgetRef ref) async {
