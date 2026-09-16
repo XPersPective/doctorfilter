@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T2 · **Updated:** 2026-09-16 · **Synced@:** 10d4034
+> **Phase:** BUILD · **Next:** T3 · **Updated:** 2026-09-16 · **Synced@:** bb231b1
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -357,10 +357,8 @@ doctorfilter/
 
 ### Android emülatör doğrulamaları
 Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk --debug`; `adb -s emulator-5554 install -r build/app/outputs/flutter-apk/app-debug.apk`; adb = `C:/Users/rubicon/AppData/Local/Android/Sdk/platform-tools/adb.exe`; Git Bash'te cihaz yolları için `export MSYS_NO_PATHCONV=1`; shell dışa kapalı receiver'lara yayın gönderemez (gerçek kullanıcı yolunu kullan). Bulunan her hata o görevin alt görevi olarak düzeltilir.
-- [ ] T2 [M] Bildirimde kilitli çip → paywall (B3, B3.1)
-  - Where: `kt/FilterNotificationManager.kt:bindPresets`, `kt/MainActivity.kt` paywallPending, `lib/presentation/providers/paywall_request_provider.dart`
-  - Do: 1) Pro olmayan temiz durum: `adb shell pm clear com.crazypenguin.doctorfilter`, uygulamayı aç, onboarding'i geç, `pm grant ... android.permission.POST_NOTIFICATIONS` ve `appops set ... SYSTEM_ALERT_WINDOW allow`, filtreyi aç; 2) uygulamayı ana ekrana gönder (`input keyevent KEYCODE_HOME`), `cmd statusbar expand-notifications`, kilitli çipe dokun → paywall açılmalı; 3) arka plandayken `adb shell am kill com.crazypenguin.doctorfilter` sonrası tekrarla; 4) paywall'ı kapatıp başka kilitli çipe dokun → yine paywall
-  - Done when: üç senaryonun ekran görüntüsünde paywall; `logcat -d | grep FATAL` boş
+- [x] T2 [M] (2026-09-16, Claude Opus 5) Bildirimde kilitli çip → paywall (B3, B3.1)
+  - Done when: üç senaryonun ekran görüntüsünde paywall; `logcat -d | grep FATAL` boş → arka planda, ikinci çip ve etkinlik kapalıyken (soğuk başlatma) üçü de paywall açtı; FATAL yok
 - [ ] T3 [M] Overlay izni geri alma/verme ve servis yeniden başlatma (B5, B6)
   - Where: `lib/presentation/widgets/overlay_permission_banner.dart`, `lib/presentation/providers/filter_provider.dart:didChangeAppLifecycleState`, `kt/OverlayService.kt`
   - Do: 1) filtre açıkken `adb shell appops set com.crazypenguin.doctorfilter SYSTEM_ALERT_WINDOW deny`, uygulamaya dön → banner görünür, çökme yok; 2) `allow`, uygulamaya dön → banner kendiliğinden kalkar; 3) filtre açıkken `adb shell am crash com.crazypenguin.doctorfilter` (süreci öldürür; servis START_STICKY ile yeniden başlar), 10 sn bekle → bildirim başlığındaki K değeri öncekiyle aynı
@@ -413,6 +411,16 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Where: `windows/runner/overlay_window.cpp`
   - Do: `build/windows/x64/runner/Release/doctorfilter.exe` çalıştır; filtreyi aç; PowerShell `System.Drawing` `CopyFromScreen` ile ekran görüntüsü: tüm ekran tonlu; başka pencereye tıklama geçer; Alt-Tab listesinde overlay yok; uygulamayı kapat → ekran görüntüsünde ton kalmaz; ekstra karartma en üstte ekran okunur. İkinci monitör yoksa §6'ya ASSUMPTION yaz
   - Done when: ekran görüntüleri her adımı gösterir
+- [ ] T22 [L] Onboarding'deki eski göz simgesini marka işaretiyle değiştir
+  - Where: `lib/presentation/screens/onboarding_screen.dart` (ilk sayfadaki göz ikonu)
+  - Do: göz `Icon`'u yerine `Image.asset('assets/images/brand_mark.png', width: 96, height: 96)` koy; diğer sayfalara dokunma
+  - Done when: `flutter analyze` temiz, `flutter test` yeşil; emülatörde `pm clear` sonrası ilk ekran görüntüsünde marka işareti
+  - Note: from T2 (discovery)
+- [ ] T23 [M] Soğuk açılışta "izin gerekli" kartının anlık yanıp sönmesi
+  - Where: `lib/presentation/providers/filter_provider.dart` (`FilterState.hasOverlayPermission` başlangıç değeri), `lib/presentation/screens/home_screen.dart` (`!filterState.hasOverlayPermission` koşulu)
+  - Do: 1) izin durumunu üç değerli yap (`bool?`, null = henüz sorulmadı) ya da ayrı `permissionChecked` bayrağı ekle; 2) ana ekranda kart yalnızca kontrol tamamlanıp izin yoksa gösterilsin; 3) `test/widget_test.dart`'a mock `checkOverlayPermission` gecikmeli true dönerken ilk karede `OverlayPermissionBanner` bulunmadığını doğrulayan test
+  - Done when: yeni test ve tüm `flutter test` yeşil; emülatörde izin verilmişken soğuk açılışın ilk saniyesinde kart görünmez (açılıştan 0,5 sn sonra ekran görüntüsü)
+  - Note: from T2 (discovery)
 
 ### İnsan gerektirenler
 - [!] T16 [M] Play gerçek satın alma (C2) — Play Console'da `doctorfilter_pro_lifetime` ürünü ve lisanslı test hesabı gerekir (sahip)
@@ -439,4 +447,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T1 bitti (marka logosu, ekstra commit yok). Sonraki: T2 — `pm clear` ile Pro olmayan temiz durum kurar; bu, emülatördeki test verisini (Pro geçişi, geri alınmış ilk açılış) siler, T13 ekran görüntüleri için Pro geçişi yeniden alınmalı. Emülatör uygulaması şu an açık temada.
+T2 doğrulandı (kod değişikliği yok); yeni görevler T22 (onboarding göz simgesi), T23 (izin kartı yanıp sönmesi). Sonraki: T3. Emülatör: `pm clear` sonrası temiz, Pro yok, İngilizce (cihaz dili), filtre açık.
