@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T7 · **Updated:** 2026-09-16 · **Synced@:** 13749dc
+> **Phase:** BUILD · **Next:** T8 · **Updated:** 2026-09-16 · **Synced@:** ec91a8f
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -367,10 +367,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: ekran görüntülerinde çakışma yok, pil ayarı açılır, geri dönüşler doğru → EKSİK bulundu: pil köprüsü vardı ama hiçbir ekran kullanmıyordu; `settings_screen.dart:_BatteryCard` eklendi (yalnızca optimize ediliyorken, dönüşte kendini yeniler, mevcut 71 dil anahtarları). Sistem listesi açıldı, muafiyet sonrası kart kalktı; ekranlarda çakışma yok, geri dönüşler doğru
 - [x] T6 [M] (2026-09-16, Claude Opus 5) İki temada görsel denetim (D1, D4, C8, AC3)
   - Done when: 14 ekran görüntüsünde her yazı okunur; `flutter test` yeşil → koyu ve açık temada ana ekran, preset, zamanlama, bilgi merkezi, ayarlar, paywall (12 görüntü) okunur; onboarding koyu temada T2'de görüldü; düzeltme gerekmedi
-- [ ] T7 [M] Ana ekranda basılı tut–sürükle sıralama (D6)
-  - Where: `lib/presentation/widgets/preset_grid.dart`
-  - Do: `adb shell input draganddrop <x1> <y1> <x2> <y2> 1500` ile bir preset'i başka konuma taşı; soğuk açılış (`am force-stop` + başlat) sonrası sıra korunur
-  - Done when: sürükleme sonrası ve yeniden açılışta ekran görüntüsünde yeni sıra
+- [x] T7 [M] (2026-09-16, Claude Opus 5) Ana ekranda basılı tut–sürükle sıralama (D6)
+  - Done when: sürükleme sonrası ve yeniden açılışta ekran görüntüsünde yeni sıra → Daylight 4. sıraya taşındı, soğuk açılışta korundu, sonra geri alındı. Not: `input draganddrop` basılı tutmadığı için çalışmaz; `input motionevent DOWN`, 1 sn, `MOVE` adımları, `UP` kullan
 - [ ] T8 [M] Erişilebilirlik etiketleri ve büyük yazı (D16, AC9)
   - Where: `lib/presentation/widgets/power_button.dart`, `preset_grid.dart`, `axis_slider.dart`, `spectrum_slider.dart`
   - Do: 1) `adb shell uiautomator dump /sdcard/ui.xml` + `adb pull`; 2) güç anahtarı, preset kartları, kaydırıcılar ve app bar düğmelerinin `content-desc` veya metni anlamlı ve uygulama dilinde; 3) `adb shell settings put system font_scale 1.3`, ana ekran ve ayarlar ekran görüntüsü; 4) eksikleri düzelt; 5) `font_scale 1.0`
@@ -440,4 +438,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T6 doğrulandı (kod değişikliği yok). Sonraki: T7 (sürükle-sırala). Emülatör: Pro yok, İngilizce, AÇIK tema, filtre kapalı, zamanlama açık. Ekran listesi betiği yeniden yazılabilir: soğuk başlat, alt sekmeler x=404/674/944 y=1752, ayarlar (1005,145), Pro kartı (540,300). Tema tercihi `pm clear` sonrası dosyada yok; tema Ayarlar anahtarından değiştirilir.
+T7 doğrulandı (kod değişikliği yok). Sonraki: T8 (erişilebilirlik; güç anahtarı etiketi iki kez okunuyor, düzeltilecek). Emülatör: Pro yok, İngilizce, açık tema, filtre kapalı. Sürükleme için `input motionevent` dizisi gerekir.
