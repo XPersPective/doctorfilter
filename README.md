@@ -36,6 +36,11 @@ reported as a *relative* reduction, because an absolute figure would require the
 spectrum of your specific panel and your distance from it. Claiming one would be
 inventing a number.
 
+## Screenshots
+
+Not here yet — see [`docs/screenshots/`](docs/screenshots/) for what goes in and
+why they are photographed rather than generated.
+
 ## Features
 
 - Seven built-in presets arranged as a circadian ladder: daylight → office →
