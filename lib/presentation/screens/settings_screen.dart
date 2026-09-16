@@ -40,6 +40,7 @@ class SettingsScreen extends ConsumerWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
           if (!isPro) _ProCard(onTap: () => _open(context, const PaywallScreen())),
+          if (Platform.isAndroid) const _BatteryCard(),
 
           _SectionLabel(
             loc?.translate('settings_appearance') ?? 'Appearance',
@@ -662,6 +663,79 @@ class _ProCard extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown only while Android is battery-optimising the app.
+///
+/// On many phones that is what quietly stops the filter overnight. The card
+/// re-checks when the user comes back from system settings, so it disappears
+/// by itself once they have done what it asks.
+class _BatteryCard extends ConsumerStatefulWidget {
+  const _BatteryCard();
+
+  @override
+  ConsumerState<_BatteryCard> createState() => _BatteryCardState();
+}
+
+class _BatteryCardState extends ConsumerState<_BatteryCard>
+    with WidgetsBindingObserver {
+  bool _optimised = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _check();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _check();
+  }
+
+  Future<void> _check() async {
+    final optimised =
+        await ref.read(platformChannelDataSourceProvider).isBatteryOptimised();
+    if (mounted && optimised != _optimised) {
+      setState(() => _optimised = optimised);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_optimised) return const SizedBox.shrink();
+    final loc = AppLocalizations.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: ListTile(
+          leading: Icon(Icons.battery_alert_rounded,
+              color: context.colours.primary),
+          title: Text(
+            loc?.translate('permission_battery_title') ??
+                'Keep the filter running',
+          ),
+          subtitle: Text(
+            loc?.translate('permission_battery_desc') ??
+                'Your device may stop the filter in the background to save '
+                    'battery. Excluding DoctorFilter from battery optimisation '
+                    'prevents that.',
+          ),
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () =>
+              ref.read(platformChannelDataSourceProvider).openBatterySettings(),
         ),
       ),
     );

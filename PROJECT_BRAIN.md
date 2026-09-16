@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T5 · **Updated:** 2026-09-16 · **Synced@:** e04ba90
+> **Phase:** BUILD · **Next:** T6 · **Updated:** 2026-09-16 · **Synced@:** 1d7218b
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -166,7 +166,7 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 - Kalıcılık: `lib/data/datasources/local/preferences_datasource.dart`, `lib/presentation/providers/filter_provider.dart`; zamanlama native'e açılışta yeniden gönderilir `lib/presentation/providers/schedule_provider.dart:loadSchedule` (başlatma `home_screen.dart` `ref.listen(scheduleProvider)`).
 - Android native emülatörde doğrulandı (2026-09-16): overlay izni alınınca servis kendini durdurur `kt/OverlayService.kt:watchOverlayPermission`; kokpit `kt/FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml` (düz `View` yok), kutucuk `kt/FilterTileService.kt:requestRefresh`, widget `kt/FilterWidgetProvider.kt`, kısayol `kt/ShortcutActivity.kt`, zamanlayıcı `kt/ScheduleReceiver.kt` (gerçek alarm tetiklendi, geçiş tavanı 180 dk). Native metinler `kt/PresetCatalog.kt:text` ← `lib/presentation/providers/notification_sync_provider.dart:nativeLabels`.
 - Reklam: `lib/domain/entities/ad_policy.dart`, `lib/presentation/ads/` (`AdConsent.sdkReady`, `AppOpenAdManager`, `watchAdForProPass`), tetik `lib/main.dart:_initialiseAds`, üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`; emülatörde app-open, banner, ödüllü → Pro doğrulandı.
-- Pro: `lib/presentation/providers/pro_provider.dart`, `lib/data/repositories/store_purchase_repository.dart`, `lib/data/repositories/microsoft_store_purchase_repository.dart`, `windows/runner/store_purchases.cpp`. Ayar yedeği Pro'ya kilitli `lib/presentation/screens/settings_screen.dart`.
+- Pro: `lib/presentation/providers/pro_provider.dart`, `lib/data/repositories/store_purchase_repository.dart`, `lib/data/repositories/microsoft_store_purchase_repository.dart`, `windows/runner/store_purchases.cpp`. Ayar yedeği Pro'ya kilitli ve pil optimizasyonu kartı `lib/presentation/screens/settings_screen.dart`.
 - Ana ekran kaydırıcı notları sabit yuvada (`home_screen.dart` `Visibility.maintain`).
 - iOS: `ios/Runner/AppDelegate.swift`, `lib/core/math/ios_color_filter.dart`, `lib/presentation/screens/ios_setup_screen.dart`, `ios/DoctorFilterControl/` (hedef olarak eklenmedi). Mac'te derlenmedi.
 - Windows: `windows/runner/overlay_window.cpp`, MSIX `pubspec.yaml:msix_config` (publisher yer tutucu); `flutter build windows` geçiyor.
@@ -363,10 +363,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: üç adımın ekran görüntüsü/`dumpsys notification` çıktısı beklenen durumu gösterir; FATAL yok → HATA bulundu ve düzeltildi: izin alınınca sistem pencereyi gizliyor ama servis çalışmaya ve her yerde "Filtre açık" demeye devam ediyordu; `OverlayService.watchOverlayPermission` (AppOps izleme) filtreyi durdurur. İzin geri verilince kart kalktı; süreç `run-as kill -9` ile öldürülünce servis aynı değerlerle döndü
 - [x] T4 [M] (2026-09-16, Claude Opus 5) Yeniden başlatma sonrası zamanlayıcı ve filtre geri yükleme (B4, AC7)
   - Done when: reboot sonrası iki zamanlama alarmı kurulu ve overlay penceresi var → reboot sonrası START/STOP alarmları kurulu, overlay var, bildirim "Filter on · 5500 K"
-- [ ] T5 [M] Pil ayarı yolu ve kenardan kenara düzen (B7, B9)
-  - Where: `lib/presentation/screens/settings_screen.dart` pil satırı, `android/app/src/main/AndroidManifest.xml` `enableOnBackInvokedCallback`
-  - Do: 1) Ayarlar'daki pil satırı → sistem pil optimizasyonu listesi açılır; 2) ana ekran, ayarlar, paywall, zamanlama ekran görüntülerinde durum/gezinme çubuğu içerikle çakışmaz; 3) her ekrandan `input keyevent KEYCODE_BACK` doğru önceki ekrana döner
-  - Done when: ekran görüntülerinde çakışma yok, pil ayarı açılır, geri dönüşler doğru
+- [x] T5 [M] (2026-09-16, Claude Opus 5) Pil ayarı yolu ve kenardan kenara düzen (B7, B9)
+  - Done when: ekran görüntülerinde çakışma yok, pil ayarı açılır, geri dönüşler doğru → EKSİK bulundu: pil köprüsü vardı ama hiçbir ekran kullanmıyordu; `settings_screen.dart:_BatteryCard` eklendi (yalnızca optimize ediliyorken, dönüşte kendini yeniler, mevcut 71 dil anahtarları). Sistem listesi açıldı, muafiyet sonrası kart kalktı; ekranlarda çakışma yok, geri dönüşler doğru
 - [ ] T6 [M] İki temada görsel denetim (D1, D4, C8, AC3)
   - Where: `lib/core/theme/app_theme.dart`; `lib/presentation/screens/`
   - Do: 1) Ayarlar'dan açık tema, sonra koyu tema; 2) her temada ana ekran, preset, zamanlama, bilgi merkezi, ayarlar, paywall, onboarding ekran görüntüsü; 3) okunmayan/düşük kontrastlı her yazıyı `app_theme.dart` token'larıyla düzelt
@@ -378,6 +376,7 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
 - [ ] T8 [M] Erişilebilirlik etiketleri ve büyük yazı (D16, AC9)
   - Where: `lib/presentation/widgets/power_button.dart`, `preset_grid.dart`, `axis_slider.dart`, `spectrum_slider.dart`
   - Do: 1) `adb shell uiautomator dump /sdcard/ui.xml` + `adb pull`; 2) güç anahtarı, preset kartları, kaydırıcılar ve app bar düğmelerinin `content-desc` veya metni anlamlı ve uygulama dilinde; 3) `adb shell settings put system font_scale 1.3`, ana ekran ve ayarlar ekran görüntüsü; 4) eksikleri düzelt; 5) `font_scale 1.0`
+  - Note: T5'te görüldü — güç anahtarının etiketi ekran okuyucuda iki kez okunuyor (`content-desc="Filter on&#10;Filter on"`), düzeltilecek
   - Done when: dump'ta tüm etkileşimli öğelerin etiketi var; 1.3 ölçekte taşma yok; ölçek 1.0'a döndü
 - [ ] T9 [M] Tablet ve yatay düzen (D17)
   - Where: `lib/presentation/widgets/preset_grid.dart`, `lib/presentation/screens/home_screen.dart`
@@ -443,4 +442,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T4 doğrulandı (kod değişikliği yok). Sonraki: T5. Emülatör yeniden başlatıldı; zamanlama 22:00–07:00 açık, filtre açık 5500 K, Pro yok, İngilizce. Süreç öldürmek için `adb shell "run-as com.crazypenguin.doctorfilter kill -9 <pid>"`.
+T5 bitti (pil kartı eklendi). Sonraki: T6 (iki temada görsel denetim). Emülatör: Pro yok, İngilizce, koyu tema, filtre açık 5500 K, zamanlama açık. Git Bash'te `adb shell cat /sdcard/...` için `export MSYS_NO_PATHCONV=1` şart.
