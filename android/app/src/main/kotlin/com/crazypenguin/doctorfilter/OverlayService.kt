@@ -1,5 +1,6 @@
 package com.crazypenguin.doctorfilter
 
+import android.app.AppOpsManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
 import androidx.core.app.ServiceCompat
@@ -117,6 +119,35 @@ class OverlayService : Service() {
         // killed us, in which case the user's settings are on disk and the
         // in-memory companion object is back to its defaults.
         current = FilterState.read(this)
+        watchOverlayPermission()
+    }
+
+    private var permissionWatch: AppOpsManager.OnOpChangedListener? = null
+
+    /**
+     * Stops the filter when the overlay permission is taken away.
+     *
+     * Android hides the window but leaves the service running, so without this
+     * the notification, tile, widget and app all went on saying "Filter on"
+     * over a screen that was no longer filtered.
+     */
+    private fun watchOverlayPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+        val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val listener = AppOpsManager.OnOpChangedListener { _, changedPackage ->
+            if (changedPackage != packageName) return@OnOpChangedListener
+            // Called on a binder thread, and before canDrawOverlays reflects the
+            // change on some releases — hence the short delay on the main thread.
+            handler.postDelayed({
+                if (isRunning && !Settings.canDrawOverlays(this)) {
+                    stopOverlay()
+                    stopSelf()
+                    MainActivity.notifyFilterToggled(false)
+                }
+            }, 300)
+        }
+        appOps.startWatchingMode(AppOpsManager.OPSTR_SYSTEM_ALERT_WINDOW, packageName, listener)
+        permissionWatch = listener
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -421,6 +452,10 @@ class OverlayService : Service() {
     }
 
     override fun onDestroy() {
+        permissionWatch?.let {
+            (getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager).stopWatchingMode(it)
+        }
+        permissionWatch = null
         stopOverlay()
         super.onDestroy()
     }
