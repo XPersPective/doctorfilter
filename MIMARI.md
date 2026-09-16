@@ -897,7 +897,17 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       reklam kurallarının kod dosyasına bağlantısı, Pro'nun cihaz üstü doğrulaması
       (gizlemek yerine açıkça yazıldı), bilimsel özet, **iddia edilmeyenler**, feragat,
       sırsız derleme talimatı, katkı kuralları, lisans.
-  - [ ] **F2.1** Ekran görüntüleri eklenecek (cihaz doğrulaması sonrası).
+  - [~] **F2.1** Ekran görüntüleri. **Hazırlık bitti, görüntüler bekliyor** — madde
+        zaten kendi tanımıyla cihaz doğrulamasına bağlı.
+        `docs/screenshots/` oluşturuldu; hangi beş ekranın, hangi ayarla ve neden
+        çekileceği yazılı. README'de bölüm ve bağlantı yerinde, dosyalar konunca
+        doğrudan çalışıyor.
+        **Neden üretilmiyor:** widget'ları başsız render etmek, uygulamanın değil
+        yerleşimin fotoğrafını verir — gerçek panel yok, gerçek renk tonu yok ve
+        melanopik sayılar hiç kimsenin bakmadığı bir ekranda durur. Tüm iddiası
+        sayılarının dürüst olduğu bir uygulama için, hiç telefonda görünmemiş
+        sayıların resmi yanlış bir ilk izlenimdir.
+        Cihaz kuyruğu (Bölüm 12.1) tamamlandığında beş dosya klasöre konur.
 - [x] **F3.** `THIRD_PARTY_LICENSES.md`: 13 Dart paketi, Android kütüphaneleri,
       5 font (hepsi OFL), bilimsel kaynaklar ve **bilinçli olarak bulunmayanlar**
       (analitik/crash SDK yok, abonelik SDK'sı yok, ticari kullanımı yasaklayan varlık yok).
