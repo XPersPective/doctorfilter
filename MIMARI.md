@@ -1022,11 +1022,24 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       Store logosu 256×256 olarak `windows/runner/resources/app_icon.ico` içinden
       çıkarıldı (ico zaten 256'lık bir PNG taşıyordu) — Android'deki 48×48 ikonu
       büyütmek bulanık bir Store karosu verirdi.
-- [ ] **G2.2** Microsoft Store satın alma (`Windows.Services.Store`). **Engelli:**
-      ürün kimliği Partner Center'da uygulama kaydı yapılmadan var olmuyor; kimliği
-      uydurmak, Play'deki tahmini eski ürün kimliğiyle aynı hatayı ikinci kez yapmak
-      olurdu. Kayıt sonrası `IPurchaseRepository`'ye Windows uygulaması eklenecek —
-      arayüz zaten platformdan bağımsız.
+- [x] **G2.2** Microsoft Store satın alma (`Windows.Services.Store`). **Yazıldı,
+      derlendi, test edildi.** Önceki "engelli" değerlendirmesi yanlıştı: eklenti,
+      Microsoft'un atadığı Store kimliğinin yanında geliştiricinin Partner Center'da
+      yazdığı **Product ID**'yi (`InAppOfferToken`) de taşır. Kod bununla eşleşiyor,
+      yani Play ve App Store'daki `doctorfilter_pro_lifetime` ile **aynı ad**; kayıttan
+      önce var olmayan hiçbir kimliğe bağlı değil, hiçbir şey uydurulmadı.
+      `store_purchases.cpp` (C++/WinRT, ayrı kanal `.../store`): `loadOffer`,
+      `isOwned`, `buy`. Masaüstü uygulamanın CoreWindow'u yok; `IInitializeWithWindow`
+      ile HWND verilmezse satın alma diyaloğu hiç açılmaz. Her yanıt, Flutter'ın
+      yalnızca platform iş parçacığında kabul etmesi yüzünden `apartment_context` ile
+      başlangıç iş parçacığına döndükten sonra gönderiliyor.
+      Paketlenmemiş (debug) derlemede Store kimliği yoktur; çağrılar asılı kalmak yerine
+      `unavailable` döner. Tanınmayan bir yanıt **asla satın alma sayılmaz**.
+      Eski kimlikler Windows'ta sorgulanmıyor: 1.x hiç Windows'ta satılmadı.
+      6 test (`microsoft_store_purchase_repository_test.dart`). Sürüm MSIX'i yeniden
+      üretildi. **Cihazda gerçek satın alma denemesi** ancak Partner Center'da uygulama
+      ve `doctorfilter_pro_lifetime` eklentisi oluşturulduktan sonra yapılabilir
+      (Bölüm 12.1).
 - [~] **G3.** Linux/macOS. Dart katmanı zaten platformdan bağımsız ve kanal çağrılarının
       hepsi `MissingPluginException`'ı yakalıyor, yani uygulama bu platformlarda
       **overlay olmadan** çalışır: preset'ler, hesaplar, Bilgi Merkezi, ayarlar çalışır;
@@ -1264,6 +1277,14 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 4. İkinci monitör tak / çözünürlük değiştir → filtre yeni alanı da kaplamalı.
 5. Uygulamayı kapat → masaüstünde **hiç renk tonu kalmamalı**.
 6. Ekstra karartmayı sonuna kadar aç → ekran hâlâ okunabilir olmalı (alfa tavanı).
+
+**G2.2 — Microsoft Store satın alma (Partner Center kaydı sonrası)**
+1. Partner Center'da uygulamayı ve **Product ID'si tam olarak `doctorfilter_pro_lifetime`**
+   olan dayanıklı (Durable) bir eklenti oluşturun.
+2. `pubspec.yaml` → `msix_config.publisher` yer tutucusunu Partner Center'daki değerle değiştirin.
+3. Store'dan (veya Store sandbox'tan) kurulan paketle Pro'yu satın alın → Pro açılmalı.
+4. Uygulamayı kaldırıp yeniden kurun → açılışta Pro sessizce geri gelmeli.
+5. Satın alma diyaloğunu kapatın → hata değil, iptal olarak işlenmeli.
 
 **G1 — iOS (🔴 macOS + Xcode gerektirir; bu makinede doğrulanamadı)**
 1. `flutter build ios` derlenmeli.

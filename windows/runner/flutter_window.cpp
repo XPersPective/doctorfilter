@@ -8,6 +8,7 @@
 #include <string>
 
 #include "flutter/generated_plugin_registrant.h"
+#include "store_purchases.h"
 
 namespace {
 
@@ -48,6 +49,7 @@ bool FlutterWindow::OnCreate() {
   }
   RegisterPlugins(flutter_controller_->engine());
   RegisterFilterChannel();
+  RegisterStorePurchases(flutter_controller_->engine()->messenger(), GetHandle());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {

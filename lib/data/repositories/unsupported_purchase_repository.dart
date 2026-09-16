@@ -3,8 +3,8 @@ import 'package:doctorfilter/core/errors/result.dart';
 import 'package:doctorfilter/domain/entities/pro_status.dart';
 import 'package:doctorfilter/domain/repositories/i_purchase_repository.dart';
 
-/// Stands in on platforms with no store the app can sell through — Linux, and
-/// Windows until the Microsoft Store integration lands.
+/// Stands in on platforms with no store the app can sell through — Linux and
+/// the web.
 ///
 /// It reports [isAvailable] as false rather than throwing, so the UI hides the
 /// purchase button instead of offering one that fails. Showing a user a "Buy
