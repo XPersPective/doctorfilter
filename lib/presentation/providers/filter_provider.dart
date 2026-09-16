@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/errors/failure.dart';
@@ -102,6 +103,14 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
     );
 
     _nativeSubscription = _repository.nativeEvents.listen(_onNativeEvent);
+
+    // On Windows the overlay is a window of this process and dies with it, so
+    // a filter saved as on would read "Filter on" over an untinted desktop
+    // after a restart. Android's overlay is a service that outlives the app and
+    // restores itself, so it is left alone there.
+    if (config.isEnabled && defaultTargetPlatform == TargetPlatform.windows) {
+      await _repository.applyToPlatform(config);
+    }
   }
 
   /// The overlay permission can only be granted in system settings, so the app

@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T12 · **Updated:** 2026-09-16 · **Synced@:** f8eb98e
+> **Phase:** BUILD · **Next:** T12 · **Updated:** 2026-09-16 · **Synced@:** 8d643f5
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -169,14 +169,14 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 - Pro: `lib/presentation/providers/pro_provider.dart`, `lib/data/repositories/store_purchase_repository.dart`, `lib/data/repositories/microsoft_store_purchase_repository.dart`, `windows/runner/store_purchases.cpp`. Ayar yedeği Pro'ya kilitli ve pil optimizasyonu kartı `lib/presentation/screens/settings_screen.dart`.
 - Ana ekran kaydırıcı notları sabit yuvada (`home_screen.dart` `Visibility.maintain`).
 - iOS: `ios/Runner/AppDelegate.swift`, `lib/core/math/ios_color_filter.dart`, `lib/presentation/screens/ios_setup_screen.dart`, `ios/DoctorFilterControl/` (hedef olarak eklenmedi). Mac'te derlenmedi.
-- Windows: `windows/runner/overlay_window.cpp`, MSIX `pubspec.yaml:msix_config` (publisher yer tutucu); `flutter build windows` geçiyor.
+- Windows: `windows/runner/overlay_window.cpp` (açık kaydedilmiş filtre açılışta yeniden çizilir `filter_provider.dart:_init`, doğrulandı), MSIX `pubspec.yaml:msix_config` (publisher yer tutucu); `flutter build windows` geçiyor.
 - Marka ikonları: `tool/brand/generate_icons.py` → Android uyarlanabilir ikon + splash (`res/drawable/splash_logo.xml`), iOS, macOS, web, Windows ico, `assets/images/brand_mark.png`. Ana ekran başlığı `lib/presentation/widgets/brand_lockup.dart:BrandLockup` (Audiowide `assets/fonts/Audiowide-Regular.ttf`).
 - Yerelleştirme: `assets/Localizations/*.json` (71), `lib/core/localization/app_localizations.dart`.
 
 GAP: Android özellikleri için kalan emülatör doğrulamaları (paywall çipi, izin akışı, boot, tema, RTL, erişilebilirlik, tablet, sürükleme, istisnalar, mola) → T2–T12
 GAP: README ekran görüntüleri yok → T13
 GAP: Bildirim contentDescription'ları cihaz dilinde → T14
-GAP: Windows overlay davranışı elle doğrulanmadı → T15
+GAP: Windows tek örnek ve overlay kapanma koruması → T24, T25
 GAP: Gerçek mağaza satın alma, eski ürün kimliği, Partner Center, iOS/macOS/Linux derleme, AB onayı → T16–T21 (insan gerekir)
 
 ## 4. FILE MAP
@@ -377,7 +377,7 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: ekran görüntülerinde metin sağdan sola, düzen aynalı, bildirim metinleri Arapça → düzen aynalı, bildirim Arapça. HATA düzeltildi: Kelvin değerleri RTL paragrafta "K 5500" ve "K · 15% · 0% 5500" diye ters çıkıyordu; `app_localizations.dart:ltrIsolate` (U+2066/U+2069) tüm gösterim yerlerinde ve bildirim şablonlarında. RTL widget testine iddia eklendi (düzeltme geri alınınca başarısız)
 - [x] T11 [M] (2026-09-16, Claude Opus 5) Uygulama istisnaları (H1)
   - Done when: `dumpsys window windows` kamera öndeyken overlay'i görünmez (alpha 0 veya yok), çıkınca görünür gösterir; kart davranışı ekran görüntüleriyle → askıya alma pencere alfasıyla değil görünüm renginin alfasıyla yapılıyor, bu yüzden piksel ölçüldü: Kamera öndeyken üst şerit (0,172,193) = tonsuz Material cyan; istisna kapalıyken (30,180,197) tonlu. İzin kartı izin verilince kalktı, alınınca geri geldi
-- [ ] T12 [M] Mola hatırlatıcısının gerçek alarmla tetiklenmesi
+- [~] T12 [M] (claimed 2026-09-16) Mola hatırlatıcısının gerçek alarmla tetiklenmesi
   - Where: `kt/BreakReminderReceiver.kt`, `lib/presentation/providers/break_reminder_provider.dart`
   - Do: Ayarlar'dan molaları aç, filtreyi aç, `dumpsys alarm | grep BREAK_REMINDER` ile tetik zamanını oku ve bekle
   - Done when: `dumpsys notification --noredact | grep android.title` mola bildirimini uygulama dilinde gösterir
@@ -389,10 +389,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Where: `kt/FilterNotificationManager.kt` (cockpitView, collapsedView, bindPresets, bindAxis), `res/layout/notification_cockpit.xml`, `res/layout/notification_collapsed.xml`
   - Do: layout'lardaki `android:contentDescription="@string/..."` değerlerini koddan `setContentDescription(<id>, PresetCatalog.text(context, R.string.<ad>))` ile ata (güç düğmesi, eksen artır/azalt, kilit rozetleri); layout'taki öznitelikler yedek olarak kalabilir
   - Done when: uygulama dili Türkçe iken bildirim gölgesinde `uiautomator dump` bu düğmelerin content-desc'ini Türkçe gösterir; `flutter build apk --debug` geçer
-- [ ] T15 [M] Windows overlay elle doğrulama (G2)
-  - Where: `windows/runner/overlay_window.cpp`
-  - Do: `build/windows/x64/runner/Release/doctorfilter.exe` çalıştır; filtreyi aç; PowerShell `System.Drawing` `CopyFromScreen` ile ekran görüntüsü: tüm ekran tonlu; başka pencereye tıklama geçer; Alt-Tab listesinde overlay yok; uygulamayı kapat → ekran görüntüsünde ton kalmaz; ekstra karartma en üstte ekran okunur. İkinci monitör yoksa §6'ya ASSUMPTION yaz
-  - Done when: ekran görüntüleri her adımı gösterir
+- [x] T15 [M] (2026-09-16, Claude Opus 5) Windows overlay elle doğrulama (G2)
+  - Done when: ekran görüntüleri her adımı gösterir → HATA düzeltildi: açık kaydedilmiş filtre Windows'ta yeniden açılışta çizilmiyordu ("Filtre açık" ama ton yok); `filter_provider.dart:_init` Windows'ta yeniden uygular (+2 test). Win32 ile doğrulandı: overlay layered/transparent/topmost/toolwindow/noactivate; WindowFromPoint alttaki pencereyi buluyor (tıklama geçer); ekran ortalaması 31→104,83,62 (tüm ekran tonlu); uygulama kapanınca tam 31,31,31'e döndü; en koyu ayarda (1700 K, %100/%100) ekran ortalaması 73,36,2, içerik seçilebilir. Tek monitör var (adım 4 yapılamadı, §6)
 - [ ] T22 [L] Onboarding'deki eski göz simgesini marka işaretiyle değiştir
   - Where: `lib/presentation/screens/onboarding_screen.dart` (ilk sayfadaki göz ikonu)
   - Do: göz `Icon`'u yerine `Image.asset('assets/images/brand_mark.png', width: 96, height: 96)` koy; diğer sayfalara dokunma
@@ -403,6 +401,16 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Do: 1) izin durumunu üç değerli yap (`bool?`, null = henüz sorulmadı) ya da ayrı `permissionChecked` bayrağı ekle; 2) ana ekranda kart yalnızca kontrol tamamlanıp izin yoksa gösterilsin; 3) `test/widget_test.dart`'a mock `checkOverlayPermission` gecikmeli true dönerken ilk karede `OverlayPermissionBanner` bulunmadığını doğrulayan test
   - Done when: yeni test ve tüm `flutter test` yeşil; emülatörde izin verilmişken soğuk açılışın ilk saniyesinde kart görünmez (açılıştan 0,5 sn sonra ekran görüntüsü)
   - Note: from T2 (discovery)
+- [ ] T24 [M] Windows'ta tek örnek: ikinci açılış ikinci overlay'i üst üste bindirmesin
+  - Where: `windows/runner/main.cpp` (`wWinMain` başı)
+  - Do: 1) `CreateMutexW(nullptr, TRUE, L"Local\CrazyPenguin.DoctorFilter")`; `GetLastError() == ERROR_ALREADY_EXISTS` ise `FindWindowW(L"FLUTTER_RUNNER_WIN32_WINDOW", nullptr)` ile mevcut pencereyi `ShowWindow(SW_RESTORE)` + `SetForegroundWindow` ile öne getir ve `return EXIT_SUCCESS`; 2) `flutter build windows`
+  - Done when: exe iki kez başlatılınca `Get-Process doctorfilter` tek süreç gösterir ve ekranda tek `DoctorFilterOverlay` penceresi vardır (T15'teki `wincheck.ps1` benzeri EnumWindows sayımı)
+  - Note: from T15 (discovery: iki süreç aynı anda çalıştı, iki overlay)
+- [ ] T25 [M] Windows overlay penceresi WM_CLOSE ile kapatılamasın
+  - Where: `windows/runner/overlay_window.cpp` pencere prosedürü
+  - Do: `WM_CLOSE` mesajını yut (`return 0`); overlay yalnızca `stopOverlay`/uygulama kapanışında `DestroyWindow` ile kalkar
+  - Done when: filtre açıkken overlay HWND'ye `SendMessage(WM_CLOSE)` sonrası pencere hâlâ var ve ekran tonlu; uygulama ana penceresi kapatılınca ton kalkar
+  - Note: from T15 (discovery: `Process.CloseMainWindow` overlay'i kapattı, uygulama "Filtre açık" demeye devam etti)
 
 ### İnsan gerektirenler
 - [!] T16 [M] Play gerçek satın alma (C2) — Play Console'da `doctorfilter_pro_lifetime` ürünü ve lisanslı test hesabı gerekir (sahip)
@@ -418,6 +426,7 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 | Date | Type | What | Why / evidence |
 |---|---|---|---|
+| 2026-09-16 | ASSUMPTION | Windows'ta ikinci monitör/çözünürlük değişimi (G2 adım 4) denenemedi: makinede tek monitör var; kod her boyamada sanal ekranı yeniden ölçüyor (`overlay_window.cpp`) | T15 |
 | 2026-09-16 | ASSUMPTION | Yatay telefonda NavigationRail'e geçilmedi; ana ekran kaydırılarak kullanılabiliyor. Filtre uygulaması yatay kullanımı nadir | T9 ekran görüntüsü |
 | 2026-09-16 | AUDIT | A0: `brain.py check` FAIL yok; §3 iddiaları kodda açıldı (`schedule_provider.dart:25`, `PresetCatalog.kt:51 text`, `ad_consent.dart:40 sdkReady`); her GAP görevli; AC1–AC11 görevlere/T0 testlerine bağlı; ilk 5 açık görev yeniden okundu, T2 (temiz durum) ve T3 (süreç öldürme) belirsizlikleri giderildi; `flutter test` 194 yeşil | Görev yok |
 | 2026-09-16 | DECISION | MIMARI.md benimsendi ve kaldırıldı (73 bitti; 1 açık + cihaz doğrulaması bekleyen `[~]` maddeler) | Tek plan dosyası PROJECT_BRAIN.md; eski gerekçeler `git show 5453c2b:MIMARI.md` |
@@ -430,4 +439,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T11 doğrulandı (kod değişikliği yok). Sonraki: T12 (mola hatırlatıcı gerçek alarmı). Emülatör: İngilizce, açık tema, filtre açık 5500 K, Pro yok, GET_USAGE_STATS ignore, istisnalarda Kamera seçili.
+T15 bitti. AÇIK İŞ (commit edilmedi, çalışma ağacında): T12 [~] mola alarmı bekleniyor (emülatör saatiyle 15:48–16:03 penceresi; bildirim `dumpsys notification` ile aranıyor); T14 Kotlin değişikliği (`FilterNotificationManager.kt` contentDescription) derleniyor ama emülatörde doğrulanmadı; T22 onboarding marka işareti + test hazır, emülatörde doğrulanmadı. T12 bitmeden APK yeniden kurulmamalı (kurulum alarmları sıfırlar).
