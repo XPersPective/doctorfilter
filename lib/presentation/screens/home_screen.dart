@@ -114,7 +114,13 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: ListView(
+        // Capped on tablets: sliders a whole screen wide are hard to aim and
+        // the preset row turns into a strip of confetti.
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: ListView(
           padding: const EdgeInsets.only(bottom: 16),
           children: [
             // iOS cannot draw over other apps at all, so the permission banner
@@ -238,6 +244,8 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
           ],
+        ),
+          ),
         ),
       ),
       bottomNavigationBar: Column(
