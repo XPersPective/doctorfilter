@@ -867,12 +867,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       seçilemiyordu.
 - [x] **E3.** **71/71 dil tamam** — `merge_l10n.py --audit` `incomplete: 0`.
       İngilizce'ye düşme kuralı kaldı ama kullanılmadı: hiçbir dilde eksik anahtar yok. (K7)
+      FAZ G'nin iOS kurulum metinleri (17 anahtar) ve `app_tagline` de 71 dilin hepsine
+      girdi. iOS ekranları henüz hiçbir derlemede görünmüyor olsa da eksik bırakmak,
+      bir commit sonra kapattığımız gerilemenin aynısını geri getirmek olurdu.
       **Kalite kuralı:** Ham makine çevirisiyle 69 dili doldurup `[x]` işaretlemek
       yasaktır. Diller **öncelik gruplarına** bölünür ve ayrı alt maddelerle ilerlenir:
   - [x] **E3.1** Birinci grup (tr, en, de, fr, es, it, pt, ru, ar, ja, ko, zh) — özenli,
         terim tutarlılığı kontrol edilmiş.
   - [x] **E3.2** İkinci grup (hi, id, nl, pl, uk, fa, vi, th, sv, cs, ro, el, he, hu).
-  - [x] **E3.3** Kalan diller. **71/71 dil tamam, 207 anahtarın hepsi her dosyada.**
+  - [x] **E3.3** Kalan diller. **71/71 dil tamam, 225 anahtarın hepsi her dosyada.**
         `merge_l10n.py --audit` `incomplete: 0` veriyor. Fallback bırakma kuralı
         uygulanmadı çünkü gerek kalmadı — her dil elle yazıldı.
         Not: `fil` ve `tl` aynı dil; uygulama iki kodu da taşıyor çünkü cihazlar
