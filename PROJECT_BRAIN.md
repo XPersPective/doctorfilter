@@ -189,6 +189,7 @@ doctorfilter/
       src/**  # 52 files
       build.gradle.kts
       google-services.json.example
+      proguard-rules.pro  # R8 keep kuralları (T27)
     gradle/
       wrapper/**  # 1 files
     build.gradle.kts
@@ -205,7 +206,12 @@ doctorfilter/
     Localizations/**  # 71 files
   docs/
     screenshots/
+      education.png
+      home.png
+      notification.png
+      presets.png
       README.md
+      schedule.png
   ios/
     DoctorFilterControl/
       DoctorFilterControl.swift
@@ -378,7 +384,7 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
 - [x] T13 [L] (2026-09-16, Claude Opus 5) README ekran görüntüleri (F2.1)
   - Done when: README'deki her `docs/screenshots/...png` bağlantısı var olan dosyaya işaret eder (`grep -o 'docs/screenshots/[^)]*png' README.md | xargs ls`) → emülatörden 5 PNG (1080×1920, filtre açık Evening, İngilizce, koyu tema, geçici Pro geçişiyle reklamsız); README'de görüntü satırı; `docs/screenshots/README.md` nasıl çekildiğini dürüstçe anlatıyor. Not: spec "küçült" diyordu ama klasör README'si yerel çözünürlüğü istiyordu, ona uyuldu
 - [x] T14 [M] (2026-09-16, Claude Opus 5) Bildirim erişilebilirlik açıklamaları uygulama dilinde
-  - Done when: uygulama dili Türkçe iken bildirim gölgesinde `uiautomator dump` bu düğmelerin content-desc'ini Türkçe gösterir; `flutter build apk --debug` geçer → uygulama dili Türkçe iken dump: "Kapat", "Daha karanlık", "Daha parlak", kilitler "Tüm ön ayarlar ve kontroller için Pro'ya geçin". Ayrıca yanlış etiket düzeltildi: Kelvin/yoğunluk satırlarının −/+ düğmeleri "Brighter/Dimmer" diye okunuyordu; artık "<eksen adı> −/+"
+  - Done when: uygulama dili Türkçe iken bildirim gölgesinde `uiautomator dump` bu düğmelerin content-desc'ini Türkçe gösterir; `flutter build apk --debug` geçer → uygulama dili Türkçe iken dump: "Kapat", "Daha karanlık", "Daha parlak", kilitler "Tüm ön ayarlar ve kontroller için Pro'ya geçin". Ayrıca yanlış etiket düzeltildi: Kelvin/yoğunluk satırlarının −/+ düğmeleri "Brighter/Dimmer" diye okunuyordu; artık eksen adı + −/+
 - [x] T15 [M] (2026-09-16, Claude Opus 5) Windows overlay elle doğrulama (G2)
   - Done when: ekran görüntüleri her adımı gösterir → HATA düzeltildi: açık kaydedilmiş filtre Windows'ta yeniden açılışta çizilmiyordu ("Filtre açık" ama ton yok); `filter_provider.dart:_init` Windows'ta yeniden uygular (+2 test). Win32 ile doğrulandı: overlay layered/transparent/topmost/toolwindow/noactivate; WindowFromPoint alttaki pencereyi buluyor (tıklama geçer); ekran ortalaması 31→104,83,62 (tüm ekran tonlu); uygulama kapanınca tam 31,31,31'e döndü; en koyu ayarda (1700 K, %100/%100) ekran ortalaması 73,36,2, içerik seçilebilir. Tek monitör var (adım 4 yapılamadı, §6)
 - [x] T22 [L] (2026-09-16, Claude Opus 5) Onboarding'deki eski göz simgesini marka işaretiyle değiştir
