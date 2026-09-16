@@ -961,7 +961,12 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       hesaplanmaz. Karşılığı olmayan yöntemler `NotImplemented` döner, sahte `true` değil.
 - [ ] **G2.1** Windows paketleme ve satın alma: MSIX + Microsoft Store API.
       Store'da uygulama kaydı proje sahibini gerektiriyor (Bölüm 12.1).
-- [ ] **G3.** Linux/macOS: derlenebilirlik ve çekirdek özellikler.
+- [~] **G3.** Linux/macOS. Dart katmanı zaten platformdan bağımsız ve kanal çağrılarının
+      hepsi `MissingPluginException`'ı yakalıyor, yani uygulama bu platformlarda
+      **overlay olmadan** çalışır: preset'ler, hesaplar, Bilgi Merkezi, ayarlar çalışır;
+      ekran filtresi çalışmaz. Bu durum kullanıcıya vaat edilmemeli.
+      **Derleme bu makinede doğrulanamadı** (Windows). macOS/Linux'ta katman penceresi
+      yazılacaksa Windows'taki `OverlayWindow` aynı kanal sözleşmesini izler; örnek odur.
 
 ## FAZ H — Büyüme özellikleri (kullanıcıyı tutan, sıkmayan)
 - [x] **H1.** Uygulama bazlı istisna listesi. Sıcak ve karartılmış bir ekran, tam da
@@ -1314,9 +1319,21 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**FAZ H bitti. FAZ E (yerelleştirme) bitti — 71/71 dil.**
+**FAZ H bitti. FAZ E (yerelleştirme) bitti — 71/71 dil. FAZ G'nin yazılabilir kısmı bitti.**
 
-**Sıradaki madde:** FAZ G — G1 iOS (+G1.1–G1.4), G2 Windows/MSIX, G3 Linux/macOS.
+**Sıradaki madde:** Kalan her şey ya **cihaz** ya da **proje sahibi hesabı** gerektiriyor:
+
+| Madde | Neden burada bitirilemedi |
+|---|---|
+| G1, G1.1, G1.2, G1.4 | Kod yazıldı; **macOS + Xcode** olmadan derlenip denenemez |
+| G1.3 (Kontrol Merkezi) | Yeni Xcode widget uzantısı hedefi gerekiyor; `project.pbxproj`'u körlemesine düzenlemek projeyi bozar |
+| G2.1 (MSIX + Store) | Microsoft Store'da uygulama kaydı proje sahibini gerektiriyor |
+| G3 (Linux/macOS derleme) | Bu makine Windows |
+| Bölüm 12.1'deki ~50 adım | Gerçek cihazda elle doğrulama |
+| `doctorfilter_pro_lifetime` | Play Console'da ürün oluşturulmalı |
+| Eski 1.x ürün kimliği | `ProProduct.legacyIds` içindeki değer **tahmin**; Play Console'dan doğrulanmalı |
+
+Kod tarafında açık kalan tek şey, aşağıdaki alt maddeler ve Bölüm 12.1.
 
 > **Yerelleştirme borcu kapandı (2026-09-16):** FAZ H ile 66 yeni anahtar geldi ve o an
 > tamamlanmış 40 dilin hepsini yarım bıraktı; yeni ekranlar cümle ortasında İngilizceye
