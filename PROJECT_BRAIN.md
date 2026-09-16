@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T13 · **Updated:** 2026-09-16 · **Synced@:** 230292c
+> **Phase:** BUILD · **Next:** T13 · **Updated:** 2026-09-16 · **Synced@:** 994b72d
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -385,10 +385,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: uygulama dili Türkçe iken bildirim gölgesinde `uiautomator dump` bu düğmelerin content-desc'ini Türkçe gösterir; `flutter build apk --debug` geçer → uygulama dili Türkçe iken dump: "Kapat", "Daha karanlık", "Daha parlak", kilitler "Tüm ön ayarlar ve kontroller için Pro'ya geçin". Ayrıca yanlış etiket düzeltildi: Kelvin/yoğunluk satırlarının −/+ düğmeleri "Brighter/Dimmer" diye okunuyordu; artık "<eksen adı> −/+"
 - [x] T15 [M] (2026-09-16, Claude Opus 5) Windows overlay elle doğrulama (G2)
   - Done when: ekran görüntüleri her adımı gösterir → HATA düzeltildi: açık kaydedilmiş filtre Windows'ta yeniden açılışta çizilmiyordu ("Filtre açık" ama ton yok); `filter_provider.dart:_init` Windows'ta yeniden uygular (+2 test). Win32 ile doğrulandı: overlay layered/transparent/topmost/toolwindow/noactivate; WindowFromPoint alttaki pencereyi buluyor (tıklama geçer); ekran ortalaması 31→104,83,62 (tüm ekran tonlu); uygulama kapanınca tam 31,31,31'e döndü; en koyu ayarda (1700 K, %100/%100) ekran ortalaması 73,36,2, içerik seçilebilir. Tek monitör var (adım 4 yapılamadı, §6)
-- [ ] T22 [L] Onboarding'deki eski göz simgesini marka işaretiyle değiştir
-  - Where: `lib/presentation/screens/onboarding_screen.dart` (ilk sayfadaki göz ikonu)
-  - Do: göz `Icon`'u yerine `Image.asset('assets/images/brand_mark.png', width: 96, height: 96)` koy; diğer sayfalara dokunma
-  - Done when: `flutter analyze` temiz, `flutter test` yeşil; emülatörde `pm clear` sonrası ilk ekran görüntüsünde marka işareti
+- [x] T22 [L] (2026-09-16, Claude Opus 5) Onboarding'deki eski göz simgesini marka işaretiyle değiştir
+  - Done when: `flutter analyze` temiz, `flutter test` yeşil; emülatörde `pm clear` sonrası ilk ekran görüntüsünde marka işareti → ilk sayfada `brand_mark.png`; widget testi `find.image` ile doğruluyor; emülatörde görüldü
   - Note: from T2 (discovery)
 - [ ] T23 [M] Soğuk açılışta "izin gerekli" kartının anlık yanıp sönmesi
   - Where: `lib/presentation/providers/filter_provider.dart` (`FilterState.hasOverlayPermission` başlangıç değeri), `lib/presentation/screens/home_screen.dart` (`!filterState.hasOverlayPermission` koşulu)
@@ -429,4 +427,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T15 bitti. AÇIK İŞ (commit edilmedi, çalışma ağacında): T12 [~] mola alarmı bekleniyor (emülatör saatiyle 15:48–16:03 penceresi; bildirim `dumpsys notification` ile aranıyor); T14 Kotlin değişikliği (`FilterNotificationManager.kt` contentDescription) derleniyor ama emülatörde doğrulanmadı; T22 onboarding marka işareti + test hazır, emülatörde doğrulanmadı. T12 bitmeden APK yeniden kurulmamalı (kurulum alarmları sıfırlar).
+T12, T14, T22, T24, T25 bitti. Sonraki: T13 (README ekran görüntüleri; Pro geçişi yok — ya reklamlar görünür ya da görüntüler reklamsız çekilecek şekilde ödüllü geçiş alınmalı; kurulum tarihi 7 günden yeni olduğu için hediye düğmesi yok, `df_ad_first_launch` geri alınmalı), sonra T23. Emülatör: Türkçe, açık tema, filtre açık 2200 K, Pro yok.

@@ -95,6 +95,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   List<_PageData> _pages(AppLocalizations? loc) => [
         _PageData(
           icon: Icons.visibility_rounded,
+          // The same mark the user just tapped on the home screen.
+          image: 'assets/images/brand_mark.png',
           title: loc?.translate('onboarding_welcome_title') ?? 'Welcome',
           body: loc?.translate('onboarding_welcome_body') ?? '',
           // The brand line belongs on the first screen a person actually reads,
@@ -120,6 +122,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 class _PageData {
   const _PageData({
     required this.icon,
+    this.image,
     required this.title,
     required this.body,
     this.requestsPermission = false,
@@ -127,6 +130,7 @@ class _PageData {
   });
 
   final IconData icon;
+  final String? image;
   final String title;
   final String body;
   final bool requestsPermission;
@@ -148,7 +152,10 @@ class _Page extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 24),
-          Icon(page.icon, size: 84, color: context.colours.primary),
+          if (page.image != null)
+            Image.asset(page.image!, width: 112, height: 112)
+          else
+            Icon(page.icon, size: 84, color: context.colours.primary),
           if (page.tagline != null) ...[
             const SizedBox(height: 16),
             Text(
