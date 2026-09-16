@@ -635,16 +635,23 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       taşır, ölü RGB anahtarlarını siler, Kelvin'i yeni aralığa normalize eder.
       `DatabaseHelper._onUpgrade` kullanıcının **özel preset'lerini** aynı mantıkla taşır;
       yerleşik preset'ler değiştirilir (v1 değerleri kendi içinde tutarsızdı).
-- [ ] **A2.** `FilterConfig`'i üç eksene (kelvin / density / extraDim) göre yeniden modelle;
-      güvenlik sınırlarını entity'de zorla; siyah ekranı imkânsızlaştır. (K5)
-- [ ] **A3.** Preset RGB'lerini Kelvin'den türet; 7 varsayılan preset'in Kelvin değerlerini
-      bilimsel olarak gözden geçir. (K9)
+- [x] **A2.** `FilterConfig` üç eksene göre yeniden modellendi; tavanlar **kurucuda**
+      zorlanıyor (`maxDensityPercent` 80, `maxExtraDimPercent` 70, `maxCompositeAlpha`
+      0.92). Arayüz ekranı kullanılabilir tutmakla görevlendirilmiyor: sınırlar tüm
+      çağıranların geçtiği tek yerde. En kötü durumda bile ekranın %8'i görünür kalır,
+      yani siyah ekran artık imkânsız. (K5)
+- [x] **A3.** `FilterPreset` artık RGB **saklamıyor**; `tintRgb` Kelvin'den türetiliyor,
+      böylece etiketle renk ayrışamaz (eskiden 1905 K'ya varan sapma vardı). 7 varsayılan
+      preset sirkadiyen merdiven olarak yeniden değerlendi:
+      5500/4300/3400/2700/2900/2200/1850 K. (K9)
 - [x] **A4.** Kalıcılık 4.2'ye taşındı. `IFilterRepository`'den **alan bazlı güncelleme
       kaldırıldı**; `persist(config)` tam kaydı 150 ms debounce ile yazar, `flush()` uygulama
       arka plana alınırken/kapanırken bekleyeni diske indirir. Yarışın kaynağı olan
       `UpdateFilterParamsUseCase` **silindi**. (K1)
-- [ ] **A5.** `PresetNotifier` ↔ `FilterNotifier` desenkronizasyonunu gider; aktif preset
-      tek yerde tutulsun. (K2)
+- [x] **A5.** Aktif preset yalnızca `FilterConfig.activePresetId` içinde. `PresetNotifier`
+      ikinci bir kopya tutmuyordu artık — iki kopya ayrışıyordu ve karusel bir preset'i
+      vurgularken kaydırıcılar başkasının değerlerini gösteriyordu. Elle eksen değiştirmek
+      preset'ten ayrılmayı `_apply` içinde tek yerde yapıyor. (K2)
 - [x] **A6.** Geri Al: `FilterNotifier` son 20 yapılandırmayı tutuyor, ana ekranda
       (yalnızca geri alınacak bir şey varken görünen) geri al düğmesi var. Bir kaydırma
       hareketi **tek** geri al adımına iniyor (600 ms birleştirme penceresi) — yoksa
@@ -767,7 +774,10 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       telefonda 4), güç düğmesi 88px daireden **başlıktaki kompakt anahtar**a indi ve etiketi
       kendi üzerinde, ayrı durum satırı kaldırıldı; sağda melanopik azalma rozeti. Alt banner
       yerinde. Normal bir telefonda kaydırmadan sığıyor. (K15) — **cihazda bakılmalı**
-- [ ] **D2.** Kelvin kontrolü: kaydırıcı **kendi spektrum çubuğunun üzerinde** tek bileşen. (K15)
+- [x] **D2.** `SpectrumSlider` tek bileşen: `_SpectrumTrackShape` rayı doğrudan
+      `KelvinEngine`'den gelen gradyanla çiziyor, `_RingThumbShape` onun **üzerinde**
+      duruyor. Ayrı bir spektrum çubuğu + altında kaydırıcı yok; gösterilen renk,
+      kaydırıcının bulunduğu yerin rengi. (K15)
 - [x] **D3.** Preset kartlarında Kelvin `labelSmall` + `onSurfaceVariant` ile okunuyor
       (eskiden 9px, `Colors.grey.shade500`). Sayıyı okutamayan bir uygulamanın iddiası sayıydı. (K15)
 - [~] 🔴 **D4.** Tema baştan yazıldı: iki tema **tek üreticiden** çıkıyor, böylece bir kontrol
@@ -841,8 +851,8 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 - [x] **E2.** İngilizce ve Türkçe elle yazıldı (makine çevirisi değil). Eski 1.x
       anahtarları korundu. Dil listesi 32'den **71'e** çıkarıldı — dosyaların 39'u
       seçilemiyordu.
-- [ ] **E3.** Kalan 69 dil tamamlanır; eksik anahtar İngilizce'ye düşer, anahtar adı
-      asla görünmez. (K7)
+- [x] **E3.** **71/71 dil tamam** — `merge_l10n.py --audit` `incomplete: 0`.
+      İngilizce'ye düşme kuralı kaldı ama kullanılmadı: hiçbir dilde eksik anahtar yok. (K7)
       **Kalite kuralı:** Ham makine çevirisiyle 69 dili doldurup `[x]` işaretlemek
       yasaktır. Diller **öncelik gruplarına** bölünür ve ayrı alt maddelerle ilerlenir:
   - [x] **E3.1** Birinci grup (tr, en, de, fr, es, it, pt, ru, ar, ja, ko, zh) — özenli,
