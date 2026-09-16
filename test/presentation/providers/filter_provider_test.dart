@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/errors/result.dart';
@@ -225,4 +226,24 @@ void main() {
       expect(read().errorKey, isNotNull);
     });
   });
+
+  group('restoring the overlay at launch', () {
+    tearDown(() => debugDefaultTargetPlatformOverride = null);
+
+    test('Windows redraws a filter that was saved as on', () async {
+      // The overlay window dies with the process there; without this the app
+      // said "Filter on" over an untinted desktop after a restart.
+      debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+      await ready();
+      expect(repository.appliedToPlatform, hasLength(1));
+      expect(repository.appliedToPlatform.single.kelvin, 2700);
+    });
+
+    test('Android leaves it to the service that outlives the app', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      await ready();
+      expect(repository.appliedToPlatform, isEmpty);
+    });
+  });
 }
+
