@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T10 · **Updated:** 2026-09-16 · **Synced@:** e36b740
+> **Phase:** BUILD · **Next:** T11 · **Updated:** 2026-09-16 · **Synced@:** 5a3c347
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -373,10 +373,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: dump'ta tüm etkileşimli öğelerin etiketi var; 1.3 ölçekte taşma yok; ölçek 1.0'a döndü → HATALAR düzeltildi: güç anahtarı, preset kartları ve melanopik halka etiketi iki kez okunuyordu (`excludeSemantics` + `onTap` yeniden bildirildi); kaydırıcılar hangi eksen olduklarını söylemiyordu (`MergeSemantics` + eksen adı); "percent"/"kelvin" İngilizce sabitleri %/K oldu. Yeni widget testi (düzeltme geri alınınca başarısız). 1.3 yazı ölçeğinde taşma yok
 - [x] T9 [M] (2026-09-16, Claude Opus 5) Tablet ve yatay düzen (D17)
   - Done when: iki düzende taşma şeridi yok; emülatör ayarları sıfırlandı → taşma yok. İyileştirme: tablette içerik ekranı boydan boya kaplıyordu; ana ekran gövdesi 720dp ile sınırlandı ve ortalandı. Yatayda banner+gezinme çubuğu içeriğin çoğunu kaplıyor ama kaydırılabilir (ASSUMPTION §6)
-- [ ] T10 [M] Arapça RTL düzeni (E4, AC2)
-  - Where: `lib/presentation/screens/language_screen.dart`, `lib/core/localization/supported_languages.dart`
-  - Do: dil ekranından العربية seç; ana ekran, zamanlama, ayarlar ve genişletilmiş bildirim ekran görüntüsü; sonra Türkçe'ye dön
-  - Done when: ekran görüntülerinde metin sağdan sola, düzen aynalı, bildirim metinleri Arapça
+- [x] T10 [M] (2026-09-16, Claude Opus 5) Arapça RTL düzeni (E4, AC2)
+  - Done when: ekran görüntülerinde metin sağdan sola, düzen aynalı, bildirim metinleri Arapça → düzen aynalı, bildirim Arapça. HATA düzeltildi: Kelvin değerleri RTL paragrafta "K 5500" ve "K · 15% · 0% 5500" diye ters çıkıyordu; `app_localizations.dart:ltrIsolate` (U+2066/U+2069) tüm gösterim yerlerinde ve bildirim şablonlarında. RTL widget testine iddia eklendi (düzeltme geri alınınca başarısız)
 - [ ] T11 [M] Uygulama istisnaları (H1)
   - Where: `lib/presentation/screens/exclusions_screen.dart`, `kt/AppExclusions.kt`, `kt/OverlayService.kt` istisna yoklaması
   - Do: 1) Ayarlar → istisnalar: izin kartı görünür; 2) `adb shell appops set com.crazypenguin.doctorfilter GET_USAGE_STATS allow`, ekrana dön → kart kendiliğinden kalkar; 3) Kamera'yı seç, filtre açıkken `adb shell am start -a android.media.action.STILL_IMAGE_CAMERA` → ~1,5 sn içinde overlay gizlenir; 4) ana ekrana dön → overlay geri gelir; 5) `GET_USAGE_STATS deny` → izin kartı geri gelir
@@ -434,4 +432,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T9 bitti (tablette ana ekran genişlik sınırı). Sonraki: T10 (Arapça RTL). Emülatör: boyut/yoğunluk/dönüş sıfırlandı, Pro yok, İngilizce, açık tema.
+T10 bitti (RTL'de Kelvin sırası). Sonraki: T11 (uygulama istisnaları). Emülatör uygulaması şu an ARAPÇA (`flutter.df_app_locale`=ar; `run-as ... sed` ile değiştirilebilir), filtre açık 5500 K, Pro yok, açık tema. RTL'de dokunma koordinatları aynalıdır.

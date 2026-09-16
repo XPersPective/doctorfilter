@@ -270,7 +270,9 @@ class _PresetRow extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          '${preset.kelvin} K · ${preset.densityPercent}% · ${preset.extraDimPercent}%',
+          ltrIsolate(
+            '${preset.kelvin} K · ${preset.densityPercent}% · ${preset.extraDimPercent}%',
+          ),
           style: context.texts.bodySmall?.copyWith(
             fontFamily: 'Orbitron',
             color: context.colours.onSurfaceVariant,

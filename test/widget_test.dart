@@ -116,6 +116,9 @@ void main() {
     expect(find.byType(HomeScreen), findsOneWidget);
     expect(Directionality.of(tester.element(find.byType(HomeScreen))),
         TextDirection.rtl);
+    // Kelvin readouts must be isolated as left-to-right, or "2700 K" renders
+    // as "K 2700" in a right-to-left paragraph.
+    expect(find.textContaining(RegExp(r'\u2066\d+ K\u2069')), findsWidgets);
   });
 
   Finder proBadge() => find.descendant(

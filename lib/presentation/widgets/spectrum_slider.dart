@@ -60,7 +60,7 @@ class SpectrumSlider extends StatelessWidget {
               ),
             ),
             Text(
-              '$kelvin K',
+              ltrIsolate('$kelvin K'),
               style: context.texts.titleMedium?.copyWith(
                 fontFamily: 'Orbitron',
                 fontWeight: FontWeight.bold,
@@ -90,7 +90,7 @@ class SpectrumSlider extends StatelessWidget {
                 max: KelvinEngine.maxKelvin.toDouble(),
                 divisions:
                     (KelvinEngine.maxKelvin - KelvinEngine.minKelvin) ~/ 50,
-                label: '$kelvin K',
+                label: ltrIsolate('$kelvin K'),
                 semanticFormatterCallback: (value) => '${value.round()} K',
                 onChanged: (value) {
                   final next = value.round();

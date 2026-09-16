@@ -110,7 +110,7 @@ class _CalibrationScreenState extends ConsumerState<CalibrationScreen> {
                   // 25 K steps: finer than the eye can judge against paper, and
                   // coarse enough that the slider settles where it is put.
                   divisions: (_range * 2) ~/ 25,
-                  label: '${_offset > 0 ? '+' : ''}$_offset K',
+                  label: ltrIsolate('${_offset > 0 ? '+' : ''}$_offset K'),
                   onChanged: (value) => _preview(value.round()),
                 ),
               ),
@@ -126,7 +126,7 @@ class _CalibrationScreenState extends ConsumerState<CalibrationScreen> {
             child: Text(
               _offset == 0
                   ? loc?.translate('calibration_none') ?? 'No correction'
-                  : '${_offset > 0 ? '+' : ''}$_offset K',
+                  : ltrIsolate('${_offset > 0 ? '+' : ''}$_offset K'),
               style: context.texts.titleMedium,
             ),
           ),

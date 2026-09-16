@@ -185,7 +185,7 @@ class _KelvinScale extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${example.kelvin} K',
+                    ltrIsolate('${example.kelvin} K'),
                     style: context.texts.labelSmall?.copyWith(
                       fontFamily: 'Orbitron',
                       color: context.colours.onSurfaceVariant,

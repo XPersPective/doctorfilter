@@ -279,7 +279,7 @@ class _PresetTile extends StatelessWidget {
                 ),
               ),
               Text(
-                '${preset.kelvin} K',
+                ltrIsolate('${preset.kelvin} K'),
                 maxLines: 1,
                 // Readable, not decorative: at 9px this was the number the user
                 // could not read, in an app whose whole claim is the number.

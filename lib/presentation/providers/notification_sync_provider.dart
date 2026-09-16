@@ -81,7 +81,7 @@ Future<void> _pushCatalog(
 Map<String, String> nativeLabels(String Function(String key) t) => {
       'notification_channel_name': t('native_channel_name'),
       'notification_channel_description': t('native_channel_desc'),
-      'notification_title_active': '${t('filter_active')} · %1\$d K',
+      'notification_title_active': '${t('filter_active')} · ${ltrIsolate('%1\$d K')}',
       'notification_title_paused': t('native_paused'),
       'notification_summary':
           '${t('density_label')} %1\$d%% · ${t('extra_dim_label')} %2\$d%%',
@@ -99,7 +99,7 @@ Map<String, String> nativeLabels(String Function(String key) t) => {
       'axis_kelvin': t('kelvin_label'),
       'axis_density': t('density_label'),
       'axis_dim': t('extra_dim_label'),
-      'tile_subtitle_active': '${t('native_tile_on')} · %1\$d K',
+      'tile_subtitle_active': '${t('native_tile_on')} · ${ltrIsolate('%1\$d K')}',
       'tile_subtitle_off': t('native_tile_off'),
       'widget_on': t('filter_active'),
       'widget_off': t('filter_inactive'),
