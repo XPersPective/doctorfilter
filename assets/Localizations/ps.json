@@ -205,5 +205,6 @@
   "exclusions_list_failed": "د اپلیکېشنونو لیست ونه لوستل شو.",
   "exclusions_permission_title": "لومړی یوه اجازه",
   "exclusions_permission_body": "ستاسو کامرې ته د لارې ورکولو لپاره اپلیکېشن باید پوه شي چې کوم اپلیکېشن مخې ته دی. Android دې ته usage access وايي او تاسو یې د سیسټم په تنظیماتو کې ورکوئ. DoctorFilter یوازې د هغه اپلیکېشن نوم لولي چې په هغه شېبه کې خلاص وي، هیڅکله ستاسو تاریخچه نه، او هیڅ شی ستاسو له ټیلیفون څخه نه وځي.",
-  "exclusions_permission_action": "تنظیمات پرانیزئ"
+  "exclusions_permission_action": "تنظیمات پرانیزئ",
+  "app_tagline": "په کېلوین کې اندازه کیږي. په شمېرو کې ریښتینی."
 }

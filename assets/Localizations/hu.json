@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Az alkalmazáslistát nem sikerült beolvasni.",
   "exclusions_permission_title": "Előbb egy engedély",
   "exclusions_permission_body": "Ahhoz, hogy félreálljon a kamerád elől, az alkalmazásnak tudnia kell, melyik alkalmazás van elöl. Az Android ezt használati hozzáférésnek hívja, és a rendszerbeállításokban adod meg. A DoctorFilter csak az éppen nyitva lévő alkalmazás nevét olvassa, az előzményeidet soha, és semmi nem hagyja el a telefonodat.",
-  "exclusions_permission_action": "Beállítások megnyitása"
+  "exclusions_permission_action": "Beállítások megnyitása",
+  "app_tagline": "Kelvinben mérve. Őszinte a számokkal."
 }

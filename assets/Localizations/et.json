@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Rakenduste loendit ei õnnestunud lugeda.",
   "exclusions_permission_title": "Kõigepealt üks luba",
   "exclusions_permission_body": "Et kaamerale teed anda, peab rakendus teadma, milline rakendus on esiplaanil. Android nimetab seda kasutusandmete juurdepääsuks ja sa annad selle süsteemi seadetes. DoctorFilter loeb ainult parajasti avatud rakenduse nime, mitte kunagi sinu ajalugu, ja miski ei lahku sinu telefonist.",
-  "exclusions_permission_action": "Ava seaded"
+  "exclusions_permission_action": "Ava seaded",
+  "app_tagline": "Mõõdetud kelvinites. Aus numbrite suhtes."
 }

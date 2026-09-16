@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Seznama aplikacij ni bilo mogoče prebrati.",
   "exclusions_permission_title": "Najprej eno dovoljenje",
   "exclusions_permission_body": "Da se umakne vaši kameri, mora aplikacija vedeti, katera aplikacija je spredaj. Android temu pravi dostop do podatkov o uporabi in ga dodelite v sistemskih nastavitvah. DoctorFilter prebere le ime trenutno odprte aplikacije, nikoli vaše zgodovine, in nič ne zapusti vašega telefona.",
-  "exclusions_permission_action": "Odpri nastavitve"
+  "exclusions_permission_action": "Odpri nastavitve",
+  "app_tagline": "Merjeno v kelvinih. Pošteno do številk."
 }

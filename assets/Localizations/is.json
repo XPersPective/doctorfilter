@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Ekki tókst að lesa forritalistann.",
   "exclusions_permission_title": "Fyrst ein heimild",
   "exclusions_permission_body": "Til að víkja fyrir myndavélinni þarf forritið að vita hvaða forrit er í forgrunni. Android kallar þetta notkunaraðgang og þú veitir hann í kerfisstillingum. DoctorFilter les aðeins heiti þess forrits sem er opið þá stundina, aldrei ferilinn þinn, og ekkert fer úr símanum þínum.",
-  "exclusions_permission_action": "Opna stillingar"
+  "exclusions_permission_action": "Opna stillingar",
+  "app_tagline": "Mælt í kelvinum. Heiðarlegt um tölurnar."
 }

@@ -205,5 +205,6 @@
   "exclusions_list_failed": "No s'ha pogut llegir la llista d'aplicacions.",
   "exclusions_permission_title": "Primer un permís",
   "exclusions_permission_body": "Per deixar pas a la càmera, l'aplicació ha de saber quina aplicació és al davant. L'Android en diu accés d'ús i el concedeixes a la configuració del sistema. El DoctorFilter només llegeix el nom de l'aplicació oberta en aquell moment, mai el teu historial, i res no surt del telèfon.",
-  "exclusions_permission_action": "Obre la configuració"
+  "exclusions_permission_action": "Obre la configuració",
+  "app_tagline": "Mesurat en kelvins. Honest amb les xifres."
 }

@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Nepavyko perskaityti programėlių sąrašo.",
   "exclusions_permission_title": "Pirmiausia vienas leidimas",
   "exclusions_permission_body": "Kad užleistų vietą fotoaparatui, programėlė turi žinoti, kuri programėlė yra priekyje. „Android“ tai vadina naudojimo duomenų prieiga, ir ją suteikiate sistemos nustatymuose. DoctorFilter skaito tik tuo metu atidarytos programėlės pavadinimą, niekada jūsų istorijos, ir niekas nepalieka jūsų telefono.",
-  "exclusions_permission_action": "Atidaryti nustatymus"
+  "exclusions_permission_action": "Atidaryti nustatymus",
+  "app_tagline": "Matuojama kelvinais. Sąžininga dėl skaičių."
 }

@@ -205,5 +205,6 @@
   "exclusions_list_failed": "अ‍ॅप्सची यादी वाचता आली नाही.",
   "exclusions_permission_title": "आधी एक परवानगी",
   "exclusions_permission_body": "तुमच्या कॅमेऱ्यासाठी बाजूला होण्यासाठी अ‍ॅपला कोणते अ‍ॅप समोर आहे हे माहीत असणे आवश्यक आहे. Android याला usage access म्हणते आणि तुम्ही ती सिस्टम सेटिंग्जमध्ये देता. DoctorFilter फक्त त्या क्षणी उघडलेल्या अ‍ॅपचे नाव वाचते, तुमचा इतिहास कधीच नाही, आणि काहीही तुमचा फोन सोडत नाही.",
-  "exclusions_permission_action": "सेटिंग्ज उघडा"
+  "exclusions_permission_action": "सेटिंग्ज उघडा",
+  "app_tagline": "केल्विनमध्ये मोजलेले. आकड्यांबाबत प्रामाणिक."
 }

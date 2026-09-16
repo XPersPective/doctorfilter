@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Hindi mabasa ang listahan ng mga app.",
   "exclusions_permission_title": "Isang pahintulot muna",
   "exclusions_permission_body": "Para makapagbigay-daan sa camera mo, kailangang malaman ng app kung aling app ang nasa harap. Tinatawag itong usage access ng Android at ibinibigay mo sa mga setting ng system. Ang binabasa lang ng DoctorFilter ay ang pangalan ng app na nakabukas sa sandaling iyon, hindi kailanman ang kasaysayan mo, at walang lumalabas sa telepono mo.",
-  "exclusions_permission_action": "Buksan ang mga setting"
+  "exclusions_permission_action": "Buksan ang mga setting",
+  "app_tagline": "Sinusukat sa kelvin. Tapat sa mga numero."
 }

@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Tətbiq siyahısı oxuna bilmədi.",
   "exclusions_permission_title": "Əvvəlcə bir icazə",
   "exclusions_permission_body": "Kameranıza yol vermək üçün tətbiqin hansı tətbiqin öndə olduğunu bilməsi lazımdır. Android buna istifadə girişi deyir və siz onu sistem ayarlarından verirsiniz. DoctorFilter yalnız həmin anda açıq olan tətbiqin adını oxuyur, heç vaxt tarixçənizi oxumur və heç nə telefonunuzdan çıxmır.",
-  "exclusions_permission_action": "Ayarları aç"
+  "exclusions_permission_action": "Ayarları aç",
+  "app_tagline": "Kelvinlə ölçülür. Rəqəmlərində dürüstdür."
 }
