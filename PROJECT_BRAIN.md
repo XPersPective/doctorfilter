@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T12 · **Updated:** 2026-09-16 · **Synced@:** e591b97
+> **Phase:** BUILD · **Next:** T13 · **Updated:** 2026-09-16 · **Synced@:** 83c64b9
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -376,10 +376,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: ekran görüntülerinde metin sağdan sola, düzen aynalı, bildirim metinleri Arapça → düzen aynalı, bildirim Arapça. HATA düzeltildi: Kelvin değerleri RTL paragrafta "K 5500" ve "K · 15% · 0% 5500" diye ters çıkıyordu; `app_localizations.dart:ltrIsolate` (U+2066/U+2069) tüm gösterim yerlerinde ve bildirim şablonlarında. RTL widget testine iddia eklendi (düzeltme geri alınınca başarısız)
 - [x] T11 [M] (2026-09-16, Claude Opus 5) Uygulama istisnaları (H1)
   - Done when: `dumpsys window windows` kamera öndeyken overlay'i görünmez (alpha 0 veya yok), çıkınca görünür gösterir; kart davranışı ekran görüntüleriyle → askıya alma pencere alfasıyla değil görünüm renginin alfasıyla yapılıyor, bu yüzden piksel ölçüldü: Kamera öndeyken üst şerit (0,172,193) = tonsuz Material cyan; istisna kapalıyken (30,180,197) tonlu. İzin kartı izin verilince kalktı, alınınca geri geldi
-- [~] T12 [M] (claimed 2026-09-16) Mola hatırlatıcısının gerçek alarmla tetiklenmesi
-  - Where: `kt/BreakReminderReceiver.kt`, `lib/presentation/providers/break_reminder_provider.dart`
-  - Do: Ayarlar'dan molaları aç, filtreyi aç, `dumpsys alarm | grep BREAK_REMINDER` ile tetik zamanını oku ve bekle
-  - Done when: `dumpsys notification --noredact | grep android.title` mola bildirimini uygulama dilinde gösterir
+- [x] T12 [M] (2026-09-16, Claude Opus 5) Mola hatırlatıcısının gerçek alarmla tetiklenmesi
+  - Done when: `dumpsys notification --noredact | grep android.title` mola bildirimini uygulama dilinde gösterir → açıldıktan sonra RTC alarmı (15:48 + 15 dk pencere) 15:49:56'da tetiklendi; bildirim "Time to look away" / "Every 20 minutes, look about 6 metres away for 20 seconds." (uygulama dili İngilizce)
 - [ ] T13 [L] README ekran görüntüleri (F2.1)
   - Where: `docs/screenshots/README.md` (5 ekran, ayarları ve dosya adları orada), `README.md` "## Screenshots"
   - Do: `docs/screenshots/README.md` listesine göre emülatörden `adb exec-out screencap -p` ile 5 PNG çek, orada yazan dosya adlarıyla `docs/screenshots/` içine kaydet, PIL ile genişliği 540'a küçült; test reklamı görünmesin (Pro geçişi aktifken çek)
