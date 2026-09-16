@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "overlay_window.h"
 #include "win32_window.h"
 
 // A window that does nothing but host a Flutter view.
@@ -28,6 +29,12 @@ class FlutterWindow : public Win32Window {
 
   // The Flutter instance hosted by this window.
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
+
+  // The screen filter itself. Owned here because it lives and dies with the
+  // app: closing DoctorFilter must not leave a tint stuck over the desktop.
+  OverlayWindow overlay_;
+
+  void RegisterFilterChannel();
 };
 
 #endif  // RUNNER_FLUTTER_WINDOW_H_
