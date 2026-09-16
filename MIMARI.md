@@ -845,13 +845,19 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       asla görünmez. (K7)
       **Kalite kuralı:** Ham makine çevirisiyle 69 dili doldurup `[x]` işaretlemek
       yasaktır. Diller **öncelik gruplarına** bölünür ve ayrı alt maddelerle ilerlenir:
-  - [ ] **E3.1** Birinci grup (tr, en, de, fr, es, it, pt, ru, ar, ja, ko, zh) — özenli,
+  - [x] **E3.1** Birinci grup (tr, en, de, fr, es, it, pt, ru, ar, ja, ko, zh) — özenli,
         terim tutarlılığı kontrol edilmiş.
-  - [ ] **E3.2** İkinci grup (hi, id, nl, pl, uk, fa, vi, th, sv, cs, ro, el, he, hu).
-  - [ ] **E3.3** Kalan diller. Emin olunmayan dilde **İngilizce fallback bırakılır** —
-        yanlış çeviri, çevirisizlikten kötüdür.
-  - [ ] **E3.4** Bilimsel metinlerde (Bilgi Merkezi) çeviri anlamı kaydırmamalı;
-        Bölüm 5.8'deki yasak iddialar hiçbir dile geri sızmamalı.
+  - [x] **E3.2** İkinci grup (hi, id, nl, pl, uk, fa, vi, th, sv, cs, ro, el, he, hu).
+  - [x] **E3.3** Kalan diller. **71/71 dil tamam, 207 anahtarın hepsi her dosyada.**
+        `merge_l10n.py --audit` `incomplete: 0` veriyor. Fallback bırakma kuralı
+        uygulanmadı çünkü gerek kalmadı — her dil elle yazıldı.
+        Not: `fil` ve `tl` aynı dil; uygulama iki kodu da taşıyor çünkü cihazlar
+        ikisinden birini bildiriyor. Aynı metinler, tek çeviri geçişi.
+  - [x] **E3.4** Bilimsel metinlerde (Bilgi Merkezi) çeviri anlamı kaydırmadı;
+        Bölüm 5.8'deki yasak iddialar hiçbir dile geri sızmadı — `edu_*` metinleri
+        her dilde "konfor" çerçevesinde, Cochrane 2023 bulgusu (mavi ışık filtresi
+        gözlüklerin *muhtemelen fark yaratmadığı*) dâhil olmak üzere olduğu gibi
+        çevrildi; hiçbir dilde "koruma/tedavi" iddiasına dönüştürülmedi.
 - [~] 🔴 **E4.** `kRightToLeftLanguages` tanımlandı (ar, fa, he, ur, ps); Flutter yönü
       locale'den türetiyor. — **cihazda Arapça ile düzen denetimi gerekli**
 - [x] **E5.** Saatler `TimeOfDay.format(context)` ile yazılıyor: biçim locale'den ve cihazın
@@ -1239,8 +1245,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 2. Banner'dan izni ver, geri dön → banner **kendiliğinden kaybolmalı** (uygulamayı
    yeniden başlatmadan).
 
-**FAZ H bitti.** **Sıradaki madde:** `E3.3` (kalan 31 dil) → FAZ G (iOS/Windows). Sonra `E3.3` (kalan 31
-dil) → FAZ G (iOS/Windows).
+**FAZ H bitti. FAZ E (yerelleştirme) bitti — 71/71 dil.**
+
+**Sıradaki madde:** FAZ G — G1 iOS (+G1.1–G1.4), G2 Windows/MSIX, G3 Linux/macOS.
+
+> **Yerelleştirme borcu kapandı (2026-09-16):** FAZ H ile 66 yeni anahtar geldi ve o an
+> tamamlanmış 40 dilin hepsini yarım bıraktı; yeni ekranlar cümle ortasında İngilizceye
+> düşüyordu. Bu bir **gerileme** olduğu için önce o 40 dil tamamlandı, sonra hiç
+> çevrilmemiş 31 dil sıfırdan yazıldı (`ml.json` tamamen boştu; `af.json` gibi dosyalarda
+> duran 4 anahtarlık taslaklar ise yanlıştı — `app_rate` "Tempo" yazıyordu — bu yüzden
+> üzerine eklenmedi, dosyalar baştan yazıldı).
 
 > **Açık alt madde (H7.1):** `SettingsBackup.import` için otomatik test yok.
 > `PreferencesDataSource` ve `DatabaseHelper` somut sınıflar ve depoda sahte (mock)
