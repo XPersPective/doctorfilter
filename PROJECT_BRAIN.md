@@ -1,8 +1,8 @@
 <!-- project-brain:v1 -->
 # PROJECT BRAIN — DoctorFilter
 
-> **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** A3 · **Updated:** 2026-09-16 · **Synced@:** 0f6d4cb
+> **Status:** Yapılabilecek her şey bitti ve denetlendi (A4). Kalan 6 görev proje sahibini bekliyor: mağaza hesapları, eski ürün kimliği, iOS/macOS/Linux derlemesi, AB onayı.
+> **Phase:** BUILD · **Next:** none · **Updated:** 2026-09-16 · **Synced@:** bc6637e
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -134,17 +134,17 @@ When this file exceeds ~500 lines: move fully completed §5 sections to `PROJECT
 DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga (mavi) ışığı Kelvin cinsinden **doğrulanabilir renk bilimiyle** azaltan, ekranı donanım minimumunun altına karartabilen, açık kaynak (GPL-3.0), veri toplamayan, premium kalitede göz konforu uygulaması. Önce Android (2.0 mağaza sürümü), sonra iOS ve Windows. 71 dil. Gelir: kullanıcıyı rahatsız etmeyen reklam + yalnızca **ömür boyu Pro** (abonelik yok), yalnızca mağazaların kendi ödeme sistemi.
 
 **Acceptance criteria**
-- [ ] AC1 Hiçbir ayar kaybolmaz: değer o an kalıcı; ekran değiştirip dönünce ve uygulamayı kapatıp açınca aynı (`flutter test` kalıcılık testleri + emülatörde soğuk açılış).
-- [ ] AC2 Çevrilmemiş metin yok: 71 dil eksiksiz (`test/core/localization`, `test/presentation/providers/native_labels_test.dart`); RTL düzen doğru; saat biçimi locale'den.
-- [ ] AC3 Açık ve koyu temada okunmayan yazı yok (her ekranın iki temada emülatör ekran görüntüsü).
-- [ ] AC4 Hesaplar bilimsel ve testli; uydurma yüzde yok (`test/core/math`, `test/domain/entities`).
-- [ ] AC5 Reklam ilk deneyimi bozmaz, Pro'da hiç görünmez, kalkınca boşluk kalmaz (`test/domain/entities/ad_policy_test.dart` + emülatörde Pro geçişiyle banner'ın kalkması).
-- [ ] AC6 Bildirim kokpiti uygulamayı açmadan gerçek kontrol sağlar (emülatörde çip/eksen/aksiyon dokunuşları).
-- [ ] AC7 Zamanlayıcı cihaz yeniden başlasa bile çalışır (emülatörde `adb reboot` sonrası alarmlar kurulu).
-- [ ] AC8 Çökme yok; izin reddi, servis ve mağaza hataları anlaşılır mesajla (logcat'te FATAL yok, izin geri alma senaryosu).
-- [ ] AC9 Erişilebilir: ekran okuyucu etiketleri, 48dp dokunma alanı, büyük yazıda taşma yok (`test/widget_test.dart` taşma testleri + uiautomator dump).
+- [x] AC1 Hiçbir ayar kaybolmaz: değer o an kalıcı; ekran değiştirip dönünce ve uygulamayı kapatıp açınca aynı (`flutter test` kalıcılık testleri + emülatörde soğuk açılış).
+- [x] AC2 Çevrilmemiş metin yok: 71 dil eksiksiz (`test/core/localization`, `test/presentation/providers/native_labels_test.dart`); RTL düzen doğru; saat biçimi locale'den.
+- [x] AC3 Açık ve koyu temada okunmayan yazı yok (her ekranın iki temada emülatör ekran görüntüsü).
+- [x] AC4 Hesaplar bilimsel ve testli; uydurma yüzde yok (`test/core/math`, `test/domain/entities`).
+- [x] AC5 Reklam ilk deneyimi bozmaz, Pro'da hiç görünmez, kalkınca boşluk kalmaz (`test/domain/entities/ad_policy_test.dart` + emülatörde Pro geçişiyle banner'ın kalkması).
+- [x] AC6 Bildirim kokpiti uygulamayı açmadan gerçek kontrol sağlar (emülatörde çip/eksen/aksiyon dokunuşları).
+- [x] AC7 Zamanlayıcı cihaz yeniden başlasa bile çalışır (emülatörde `adb reboot` sonrası alarmlar kurulu).
+- [x] AC8 Çökme yok; izin reddi, servis ve mağaza hataları anlaşılır mesajla (logcat'te FATAL yok, izin geri alma senaryosu).
+- [x] AC9 Erişilebilir: ekran okuyucu etiketleri, 48dp dokunma alanı, büyük yazıda taşma yok (`test/widget_test.dart` taşma testleri + uiautomator dump).
 - [ ] AC10 Play, App Store ve Microsoft Store politikalarına uygun; yasak sağlık iddiası yok (§6 "yasak iddialar" satırı).
-- [ ] AC11 Ana ekranda marka logosu: solda ikon, sağda iki renkli "doctorFilter", Pro ise sonda küçük üst simge PRO, altında slogan; splash'ta ikon.
+- [x] AC11 Ana ekranda marka logosu: solda ikon, sağda iki renkli "doctorFilter", Pro ise sonda küçük üst simge PRO, altında slogan; splash'ta ikon.
 
 **Constraints:** Flutter 3.47 / Dart 3.13, flutter_riverpod StateNotifier, clean architecture (core/domain/data/presentation). Her commit'te `flutter analyze` temiz, `flutter test` yeşil. **Güvenlik:** `.env`, `.env.local`, `android/key.properties`, `*.jks`, `*.keystore`, `*.p12`, `google-services.json`, `GoogleService-Info.plist` asla repoya girmez; `.gitignore` zayıflatılmaz; gerçek AdMob/ürün kimliği koda yazılmaz (`lib/core/config/env_config.dart` dart-define + Google test id fallback); proje sahibinin kişisel bilgisi hiçbir dosyaya yazılmaz. `migrate_working_dir/local_archive` (eski 1.x arşivi, gitignored) **taranmaz**; yalnızca adı bilinen logo/font dosyaları kopyalanabilir. Yasak iddialar: retinaya zarar/AMD, göz yorgunluğu/kuruluğu tedavisi, kilo, herhangi bir tedavi/tanı/önleme vaadi. Ürün kimliği `doctorfilter_pro_lifetime` her mağazada aynı. Android doğrulaması yerel emülatörle yapılır ("cihaz gerekir" gerekçesi yok). Commit mesajları `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>` ile biter; push `master`.
 **Out of scope:** abonelik, kendi sunucu/hesap/analitik, mağaza dışı ödeme, iOS'ta diğer uygulamaların üzerinde filtre vaadi.
@@ -173,7 +173,6 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 - Marka ikonları: `tool/brand/generate_icons.py` → Android uyarlanabilir ikon + splash (`res/drawable/splash_logo.xml`), iOS, macOS, web, Windows ico, `assets/images/brand_mark.png`. Ana ekran başlığı `lib/presentation/widgets/brand_lockup.dart:BrandLockup` (Audiowide `assets/fonts/Audiowide-Regular.ttf`).
 - Yerelleştirme: `assets/Localizations/*.json` (71), `lib/core/localization/app_localizations.dart`.
 
-GAP: Android özellikleri için kalan emülatör doğrulamaları (paywall çipi, izin akışı, boot, tema, RTL, erişilebilirlik, tablet, sürükleme, istisnalar, mola) → T2–T12
 GAP: Gerçek mağaza satın alma, eski ürün kimliği, Partner Center, iOS/macOS/Linux derleme, AB onayı → T16–T21 (insan gerekir)
 
 ## 4. FILE MAP
@@ -397,6 +396,9 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
 - [x] T26 [M] (2026-09-16, Claude Opus 5) Android'de uygulama açılışında filtre durumunu native servisten al
   - Done when: yeni testler ve `flutter test` yeşil; emülatörde uygulama kapalıyken kutucukla filtre açılıp uygulama açılınca "Filter on" görünür → `_init` olaylara abone olduktan SONRA `isFilterRunning` sorar (önce sormak, abonelikten önce gelen kutucuk olayını kaçırıyordu); 3 yeni test. Gerçek QS dokunuşuyla: uygulama kapalı/arka planda/zorla durdurulmuşken kutucuk → uygulama doğru durumu gösterdi. ÇÖKME de bulundu ve düzeltildi: arka plandan `startForegroundService` Android 12+'da istisna atıp süreci öldürüyordu (`ScheduleReceiver` geri yükleme yolu); tüm başlatmalar `OverlayService.start` üzerinden, reddedilirse çökmek yerine false. Not: `cmd statusbar click-tile` güvenilir değil, gerçek dokunuş kullanıldı
   - Note: from T23 (discovery: servis "Filter on · 3400 K" çalışırken uygulama "Filter off" gösterdi; kutucuk/bildirim değişikliği uygulama kapalıyken Dart'a ulaşmıyor)
+- [x] T27 [H] (2026-09-16, Claude Opus 5) Sürüm (release) APK açılışta çöküyordu
+  - Done when: `flutter build apk --release` kurulup açılınca FATAL yok; filtre, bildirim, banner, ayarlar, paywall çalışır → R8, WorkManager'ın (reklam SDK'sıyla gelen) Room `WorkDatabase_Impl` kurucusunu siliyordu; `android/app/proguard-rules.pro` + `build.gradle.kts` `proguardFiles`. Sürüm APK'sı emülatörde uçtan uca denendi
+  - Note: from A4
 
 ### İnsan gerektirenler
 - [!] T16 [M] Play gerçek satın alma (C2) — Play Console'da `doctorfilter_pro_lifetime` ürünü ve lisanslı test hesabı gerekir (sahip)
@@ -412,6 +414,7 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 | Date | Type | What | Why / evidence |
 |---|---|---|---|
+| 2026-09-16 | AUDIT | A4 (kısmi — kalan görevlerin hepsi `[!]`): `flutter analyze` temiz; `flutter test` 204 yeşil; `flutter build apk --release` ve `flutter build windows` geçti; sürüm APK'sı emülatörde denendi ve BAŞLANGIÇ ÇÖKMESİ bulundu → T27 düzeltildi. AC kanıtları: AC1 kalıcılık testleri + T7/T4 soğuk açılış/reboot; AC2 71 dil + `native_labels_test` + T10 RTL; AC3 T6 iki tema; AC4 `test/core/math`; AC5 `ad_policy_test` + T15 öncesi Pro geçişiyle banner'ın kalkması (I3/I4); AC6 I8/T2 kokpit dokunuşları; AC7 T4 reboot; AC8 T3 izin geri alma, T26 arka plan FGS çökmesi giderildi, sürüm APK FATAL yok; AC9 T8 dump + 1.3 ölçek; AC11 T1. AC10 işaretlenmedi: mağaza incelemesi olmadan kanıtlanamaz (T16, T18, T19). Değişiklik incelemesi (`git diff 10d4034..HEAD`, 34 dosya): TODO/FIXME/debug çıktısı yok, gizli bilgi yok, README gerçekle uyumlu (reklam kuralları, ekran görüntüleri, PROJECT_BRAIN bağlantıları). `Phase: DONE` yapılmadı çünkü §3'te insan gerektiren GAP var | T27 |
 | 2026-09-16 | ASSUMPTION | Windows'ta ikinci monitör/çözünürlük değişimi (G2 adım 4) denenemedi: makinede tek monitör var; kod her boyamada sanal ekranı yeniden ölçüyor (`overlay_window.cpp`) | T15 |
 | 2026-09-16 | ASSUMPTION | Yatay telefonda NavigationRail'e geçilmedi; ana ekran kaydırılarak kullanılabiliyor. Filtre uygulaması yatay kullanımı nadir | T9 ekran görüntüsü |
 | 2026-09-16 | AUDIT | A0: `brain.py check` FAIL yok; §3 iddiaları kodda açıldı (`schedule_provider.dart:25`, `PresetCatalog.kt:51 text`, `ad_consent.dart:40 sdkReady`); her GAP görevli; AC1–AC11 görevlere/T0 testlerine bağlı; ilk 5 açık görev yeniden okundu, T2 (temiz durum) ve T3 (süreç öldürme) belirsizlikleri giderildi; `flutter test` 194 yeşil | Görev yok |
@@ -425,4 +428,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T26 bitti (durum uyumu + arka plan FGS çökmesi). Açık `[ ]` görev kalmadı; kalanlar `[!]` T16–T21. Sonraki: A3/A4 denetimi (tam test, derlemeler, AC kanıtları, tüm değişikliğin gözden geçirilmesi). Emülatör: İngilizce, koyu tema, filtre açık, geçici Pro geçişi.
+Tüm yapılabilir görevler kapandı; A4 kısmen geçti (T27 sürüm çökmesi bulundu ve düzeltildi). Durdu çünkü kalan görevlerin hepsi insan gerektiriyor: T16 Play gerçek satın alma (Play Console ürünü `doctorfilter_pro_lifetime` + test hesabı), T17 eski 1.x ürün kimliği (`ProProduct.legacyIds`, tahmini `doctorfilter_proversion`), T18 Partner Center eklentisi + `msix_config.publisher`, T19 iOS derleme/cihaz (Mac + Xcode), T20 AB onay formu (AdMob UMP mesajı), T21 Linux/macOS derleme. Bunlardan biri çözülünce ilgili görev `[ ]` yapılıp döngü sürdürülür; sonra A4 tekrarlanır ve AC10 kanıtlanır.
