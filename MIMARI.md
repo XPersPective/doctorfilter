@@ -954,10 +954,19 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       Kısayol adı sabit ("DoctorFilter"): metnin alıntılayabileceği tek bir ad,
       doldurulacak bir alandan daha kolay takip edilir, kısayolu yeniden adlandırmak ise
       iki dokunuş.
-- [ ] **G1.3** iOS 18+ Kontrol Merkezi `ControlWidget` (parlaklık + kısayol tetikleme).
-      **Engelli:** yeni bir Xcode widget uzantısı hedefi gerektiriyor. `project.pbxproj`'u
-      Xcode olmadan körlemesine düzenlemek projeyi bozma riski taşıdığı için yapılmadı;
-      macOS'lu bir makinede Xcode üzerinden hedef eklendikten sonra yazılmalı.
+- [~] 🔴 **G1.3** iOS 18+ Kontrol Merkezi. **Swift kaynağı yazıldı**
+      (`ios/DoctorFilterControl/DoctorFilterControl.swift`); Xcode hedefi eklenmedi.
+      **Neden hedef eklenmedi:** widget uzantısı ayrı bir derleme hedefidir ve hedef,
+      `project.pbxproj` elle düzenlenerek güvenle oluşturulamaz — tek yanlış UUID ya da
+      eksik bir derleme aşaması **tüm iOS derlemesini** bozar ve bu hasar, biri Mac'te
+      derlemeyi deneyene kadar görünmez. Doğrulayamayacağım riskli bir değişiklik
+      yapmaktansa kaynağı hazır bıraktım; `ios/DoctorFilterControl/README.md` hedefi
+      Xcode'da eklemenin adımlarını (~2 dakika) ve doğrulama adımlarını içeriyor.
+      **Ne yapar:** Renk Filtreleri'ni **doğrudan değiştirmez** — hiçbir genel API bunu
+      yapmaz, ne denetimden ne başka yerden (Bölüm 7.2.4). Kullanıcının kendi
+      Kısayol'unu çalıştırır; Renk Filtreleri eylemi Kısayollar'da vardır.
+      Uygulama içi düğmeden tek farkı: uygulamaya hiç girilmemesi.
+      Kısayol adı (`DoctorFilter`) `ios_setup_screen.dart` ile aynı sabit.
 - [~] 🔴 **G1.4** iOS ana ekranı. Aç/kapat düğmesi iOS'ta **hiç çizilmiyor** —
       kapatacak bir şey yok; kullanıcının kurduğu sistem filtresi kendisi kapatana kadar
       açık kalır ve bunu ima eden bir düğme, hiçbir şey yapmayan bir denetim olurdu.
