@@ -45,6 +45,8 @@ class PlatformChannelDataSource {
         _events.add(NativeFilterToggled(_boolArg(args, 'isEnabled')));
       case 'onPresetSelected':
         _events.add(NativePresetSelected(_intArg(args, 'presetId', 0)));
+      case 'onOpenPaywall':
+        _events.add(const NativePaywallRequested());
       case 'onAxisChanged':
         _events.add(NativeAxisChanged(
           kelvin: _nullableIntArg(args, 'kelvin'),
@@ -248,6 +250,14 @@ final class NativeFilterToggled extends NativeFilterEvent {
 final class NativePresetSelected extends NativeFilterEvent {
   const NativePresetSelected(this.presetId);
   final int presetId;
+}
+
+/// The notification's locked chip was tapped.
+///
+/// Carries nothing: the request is the whole message. Tapping a lock is a user
+/// asking to see what it costs, not a change to the filter.
+final class NativePaywallRequested extends NativeFilterEvent {
+  const NativePaywallRequested();
 }
 
 final class NativeAxisChanged extends NativeFilterEvent {

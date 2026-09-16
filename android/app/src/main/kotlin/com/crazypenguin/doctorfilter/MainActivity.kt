@@ -43,6 +43,32 @@ class MainActivity : FlutterActivity() {
         fun notifyNextPresetRequested() =
             send("onPresetSelected", mapOf("presetId" to -2))
 
+        /**
+         * Set when the notification's locked chip is tapped before Dart is
+         * listening.
+         *
+         * Tapping a locked chip launches the activity, and the activity is
+         * usually not running yet — so the request has to wait for the channel
+         * rather than being sent into nothing. Without this the chip merely
+         * brought the app forward, which reads as the button being broken.
+         */
+        @Volatile
+        private var paywallPending = false
+
+        private fun requestPaywall() {
+            if (channel == null) {
+                paywallPending = true
+                return
+            }
+            send("onOpenPaywall", emptyMap())
+        }
+
+        private fun flushPendingPaywall() {
+            if (!paywallPending) return
+            paywallPending = false
+            send("onOpenPaywall", emptyMap())
+        }
+
         fun notifyAxisChanged(
             kelvin: Int? = null,
             densityPercent: Int? = null,
@@ -57,11 +83,29 @@ class MainActivity : FlutterActivity() {
         )
     }
 
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        super.onCreate(savedInstanceState)
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == FilterNotificationManager.ACTION_OPEN_PAYWALL) {
+            requestPaywall()
+        }
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
         val methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL_NAME)
         channel = methodChannel
+        flushPendingPaywall()
 
         methodChannel.setMethodCallHandler { call, result ->
             when (call.method) {

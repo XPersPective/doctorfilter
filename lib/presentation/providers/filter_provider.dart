@@ -136,6 +136,8 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
       // Preset selection needs the preset list, which this notifier does not
       // own; PresetNotifier listens for it separately.
       NativePresetSelected() => null,
+      // Not a change to the filter at all — the home screen opens the paywall.
+      NativePaywallRequested() => null,
     };
     if (updated == null) return;
 

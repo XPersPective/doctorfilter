@@ -23,10 +23,12 @@ import 'package:doctorfilter/presentation/widgets/overlay_permission_banner.dart
 import 'package:doctorfilter/presentation/widgets/power_button.dart';
 import 'package:doctorfilter/presentation/widgets/preset_grid.dart';
 import 'package:doctorfilter/presentation/widgets/spectrum_slider.dart';
+import 'package:doctorfilter/presentation/providers/paywall_request_provider.dart';
 import 'education_screen.dart';
 import 'ios_setup_screen.dart';
 import 'presets_screen.dart';
 import 'scheduler_screen.dart';
+import 'paywall_screen.dart';
 import 'settings_screen.dart';
 
 /// The control screen.
@@ -49,6 +51,15 @@ class HomeScreen extends ConsumerWidget {
 
     // Keeps the notification's copy of the preset list current.
     ref.watch(notificationCatalogSyncProvider);
+
+    // The locked chips in the notification launch the app asking for the
+    // paywall; without this the tap only brought the app forward, which reads
+    // as the button being broken.
+    ref.listen(nativePaywallRequestProvider, (_, next) {
+      if (next.hasValue && context.mounted) {
+        _open(context, const PaywallScreen());
+      }
+    });
 
     final bypass = ref.watch(bypassProvider);
 
