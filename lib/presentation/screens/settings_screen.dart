@@ -248,10 +248,20 @@ class SettingsScreen extends ConsumerWidget {
                     loc?.translate('settings_backup') ?? 'Back up settings',
                   ),
                   subtitle: Text(
-                    loc?.translate('settings_backup_desc') ??
-                        'Save your presets and filter settings as a file.',
+                    isPro
+                        ? loc?.translate('settings_backup_desc') ??
+                            'Save your presets and filter settings as a file.'
+                        : loc?.translate('settings_ambient_locked') ??
+                            'Included with Pro.',
                   ),
-                  onTap: () => _export(context, ref),
+                  trailing: isPro ? null : const Icon(Icons.lock_outline_rounded),
+                  // Pro only, at the owner's call: a free backup is a free
+                  // way to carry Pro-built settings across reinstalls. Locked
+                  // rows open the paywall rather than doing nothing, so the
+                  // tap reads as an offer, not a broken button.
+                  onTap: isPro
+                      ? () => _export(context, ref)
+                      : () => _open(context, const PaywallScreen()),
                 ),
                 const Divider(height: 1, indent: 56),
                 ListTile(
@@ -259,7 +269,10 @@ class SettingsScreen extends ConsumerWidget {
                   title: Text(
                     loc?.translate('settings_restore') ?? 'Restore from a file',
                   ),
-                  onTap: () => _import(context, ref),
+                  trailing: isPro ? null : const Icon(Icons.lock_outline_rounded),
+                  onTap: isPro
+                      ? () => _import(context, ref)
+                      : () => _open(context, const PaywallScreen()),
                 ),
               ],
             ),
