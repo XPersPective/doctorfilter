@@ -8,6 +8,7 @@ import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/domain/entities/ad_policy.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/presentation/ads/banner_ad_widget.dart';
+import 'package:doctorfilter/presentation/ads/rewarded_pass.dart';
 import 'package:doctorfilter/presentation/providers/schedule_provider.dart';
 import 'package:doctorfilter/presentation/providers/ad_providers.dart';
 import 'package:doctorfilter/presentation/providers/core_providers.dart';
@@ -49,6 +50,7 @@ class HomeScreen extends ConsumerWidget {
     final presets = ref.watch(presetProvider).presets;
     final loc = AppLocalizations.of(context);
     final config = filterState.config;
+    final isPro = ref.watch(isProProvider);
 
     // Keeps the notification's copy of the preset list current.
     ref.watch(notificationCatalogSyncProvider);
@@ -71,7 +73,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 16,
-        title: _Title(isPro: ref.watch(isProProvider)),
+        title: _Title(isPro: isPro),
         actions: [
           if (config.isEnabled)
             _BypassAction(
@@ -84,6 +86,22 @@ class HomeScreen extends ConsumerWidget {
               tooltip: loc?.translate('action_undo') ?? 'Undo',
               icon: const Icon(Icons.undo_rounded),
               onPressed: filter.undo,
+            ),
+          // Up here rather than only on the paywall, at the owner's call: the
+          // free day of Pro is the offer most worth seeing, and the policy
+          // keeps it hidden for the first week and once today's cap is used.
+          if (AdPolicy.mayWatchRewarded(
+            state: ref.watch(adPolicyProvider),
+            isPro: isPro,
+            now: DateTime.now(),
+          ))
+            IconButton(
+              tooltip: loc?.translate('pro_try_with_ad', args: {
+                    'hours': '${AdPolicy.rewardedPassDuration.inHours}',
+                  }) ??
+                  'Watch an ad for 24 hours of Pro',
+              icon: const Icon(Icons.card_giftcard_rounded),
+              onPressed: () => _offerProPass(context, ref),
             ),
           IconButton(
             tooltip: loc?.translate('nav_settings') ?? 'Settings',
@@ -295,6 +313,35 @@ class HomeScreen extends ConsumerWidget {
     // Turning it off is the user saying they are done for now.
     if (wasEnabled && !state.config.isEnabled) {
       await _maybeShowAd(ref, AdMoment.filterDisabled);
+    }
+  }
+
+  /// Says what the deal is before playing anything: an icon alone does not.
+  static Future<void> _offerProPass(BuildContext context, WidgetRef ref) async {
+    final loc = AppLocalizations.of(context);
+    final hours = '${AdPolicy.rewardedPassDuration.inHours}';
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.card_giftcard_rounded),
+        title: Text(
+          loc?.translate('pro_try_with_ad', args: {'hours': hours}) ??
+              'Watch an ad for $hours hours of Pro',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(loc?.translate('action_cancel') ?? 'Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(loc?.translate('action_ok') ?? 'OK'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      await watchAdForProPass(context, ref);
     }
   }
 

@@ -11,6 +11,7 @@ AdPolicyState eligible({
   int presetChanges = 0,
   int rewardedToday = 0,
   DateTime? rewardedDay,
+  DateTime? lastAppOpen,
 }) =>
     AdPolicyState(
       firstLaunch: _now.subtract(const Duration(days: 30)),
@@ -20,6 +21,7 @@ AdPolicyState eligible({
       presetChangesThisSession: presetChanges,
       rewardedViewsToday: rewardedToday,
       rewardedDay: rewardedDay,
+      lastAppOpenAt: lastAppOpen,
     );
 
 bool allowed(
@@ -155,6 +157,68 @@ void main() {
       final once = eligible(rewardedToday: 1, rewardedDay: _now);
       expect(
         AdPolicy.mayWatchRewarded(state: once, isPro: false, now: _now),
+        isTrue,
+      );
+    });
+  });
+
+  group('app-open ads', () {
+    bool appOpen(AdPolicyState state, {bool isPro = false}) =>
+        AdPolicy.mayShowAppOpen(state: state, isPro: isPro, now: _now);
+
+    test('allowed for an established user who has not seen one lately', () {
+      expect(appOpen(eligible()), isTrue);
+    });
+
+    test('never for Pro', () {
+      expect(appOpen(eligible(), isPro: true), isFalse);
+    });
+
+    test('never in the first days, however often the app is opened', () {
+      final fresh = AdPolicyState(
+        firstLaunch: _now.subtract(const Duration(days: 2)),
+        sessionCount: 40,
+      );
+      expect(appOpen(fresh), isFalse);
+    });
+
+    test('never before enough sessions, however old the install', () {
+      expect(appOpen(eligible(sessions: AdPolicy.graceSessions)), isFalse);
+    });
+
+    test('shares the session budget with interstitials', () {
+      expect(appOpen(eligible(shownThisSession: 1)), isFalse);
+    });
+
+    test('not again within the gap', () {
+      final recent = eligible(
+        lastAppOpen: _now.subtract(AdPolicy.appOpenGap - const Duration(minutes: 1)),
+      );
+      expect(appOpen(recent), isFalse);
+      final later = eligible(lastAppOpen: _now.subtract(AdPolicy.appOpenGap));
+      expect(appOpen(later), isTrue);
+    });
+  });
+
+  group('rewarded pass unlocks a week after install', () {
+    test('not offered on day six', () {
+      final young = AdPolicyState(
+        firstLaunch: _now.subtract(const Duration(days: 6)),
+        sessionCount: 30,
+      );
+      expect(
+        AdPolicy.mayWatchRewarded(state: young, isPro: false, now: _now),
+        isFalse,
+      );
+    });
+
+    test('offered from day seven', () {
+      final week = AdPolicyState(
+        firstLaunch: _now.subtract(AdPolicy.rewardedUnlockAfter),
+        sessionCount: 1,
+      );
+      expect(
+        AdPolicy.mayWatchRewarded(state: week, isPro: false, now: _now),
         isTrue,
       );
     });

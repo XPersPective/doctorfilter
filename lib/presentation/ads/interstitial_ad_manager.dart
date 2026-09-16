@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:doctorfilter/core/config/env_config.dart';
+import 'package:doctorfilter/presentation/ads/ad_consent.dart';
 
 /// Loads and shows full-screen ads.
 ///
@@ -11,33 +13,41 @@ import 'package:doctorfilter/core/config/env_config.dart';
 /// stay testable without one.
 class InterstitialAdManager {
   InterstitialAd? _ad;
-  bool _isLoading = false;
+  Future<void>? _loading;
 
   static bool get _isSupported => Platform.isAndroid || Platform.isIOS;
 
   bool get isReady => _ad != null;
 
-  Future<void> preload() async {
-    if (!_isSupported || _ad != null || _isLoading) return;
-    _isLoading = true;
+  /// Completes when the ad has loaded or failed — not when the request was
+  /// sent. Callers that preload and then show depend on that; returning early
+  /// meant "show" always found nothing.
+  Future<void> preload() {
+    if (!_isSupported || _ad != null) return Future.value();
+    return _loading ??= _load().whenComplete(() => _loading = null);
+  }
 
+  Future<void> _load() async {
+    await AdConsent.sdkReady;
+    final done = Completer<void>();
     await InterstitialAd.load(
       adUnitId: EnvConfig.adMobInterstitialUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           _ad = ad;
-          _isLoading = false;
+          done.complete();
         },
         onAdFailedToLoad: (error) {
           _ad = null;
-          _isLoading = false;
           if (kDebugMode) {
             debugPrint('[Ads] Interstitial failed to load: ${error.message}');
           }
+          done.complete();
         },
       ),
     );
+    return done.future;
   }
 
   /// Shows a preloaded ad, returning whether one actually appeared.

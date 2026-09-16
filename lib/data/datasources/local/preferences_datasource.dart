@@ -47,6 +47,7 @@ class PreferencesDataSource {
   static const _keyAdLastInterstitial = 'df_ad_last_interstitial';
   static const _keyAdRewardedViews = 'df_ad_rewarded_views';
   static const _keyAdRewardedDay = 'df_ad_rewarded_day';
+  static const _keyAdLastAppOpen = 'df_ad_last_app_open';
 
   static const _keyOnboardingDone = 'df_onboarding_done';
 
@@ -147,6 +148,7 @@ class PreferencesDataSource {
     final firstLaunchMillis = _prefs.getInt(_keyAdFirstLaunch);
     final lastInterstitialMillis = _prefs.getInt(_keyAdLastInterstitial);
     final rewardedDayMillis = _prefs.getInt(_keyAdRewardedDay);
+    final lastAppOpenMillis = _prefs.getInt(_keyAdLastAppOpen);
 
     return AdPolicyState(
       firstLaunch: firstLaunchMillis == null
@@ -160,6 +162,9 @@ class PreferencesDataSource {
       rewardedDay: rewardedDayMillis == null
           ? null
           : DateTime.fromMillisecondsSinceEpoch(rewardedDayMillis),
+      lastAppOpenAt: lastAppOpenMillis == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(lastAppOpenMillis),
     );
   }
 
@@ -175,6 +180,8 @@ class PreferencesDataSource {
         ),
       if (state.rewardedDay != null)
         _prefs.setInt(_keyAdRewardedDay, state.rewardedDay!.millisecondsSinceEpoch),
+      if (state.lastAppOpenAt != null)
+        _prefs.setInt(_keyAdLastAppOpen, state.lastAppOpenAt!.millisecondsSinceEpoch),
     ]);
   }
 

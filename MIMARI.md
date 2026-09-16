@@ -1221,9 +1221,29 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       kullanıma değil tersine yarar: ilk açılış tarihi (reklam grace süresi, 7 günlük ödül
       kilidi) de geri gelir, sayaçlar sıfırlanmaz. "Verileri temizle" ise sunucusuz
       engellenemez; hesap/sunucu yok ilkesi (§5) gereği kabul edilen sınır.
-- [ ] **I3.** Açılış (app-open) reklamı: ilk günlerde **kesinlikle gösterilmez**; banner kalır.
-- [ ] **I4.** 24 saatlik ödüllü Pro geçişi: **kurulumdan 7 gün sonra** açılır; Pro değilse
-      üst çubukta ayarların yanında **görünür** bir düğme.
+- [x] **I3.** Açılış (app-open) reklamı: ilk günlerde **kesinlikle gösterilmez**; banner kalır.
+      `AdPolicy.mayShowAppOpen` (saf, testli): Pro'ya asla; interstitial ile aynı grace
+      (3 gün **ve** 5 oturum); oturumun tek tam ekran reklam hakkını harcar (açılışta
+      gören, çıkışta bir daha görmez); iki açılış reklamı arası en az **4 saat**
+      (`appOpenGap`; uygulama yatarken birden çok kez açılır). Yalnızca soğuk açılışta,
+      onboarding'in üstüne asla; reklam **4 sn** içinde yüklenmezse gösterilmez — geç
+      gelen reklam kaydırıcıya uzanmış kullanıcının üstüne düşer. Birim kimliği
+      `ADMOB_*_APP_OPEN_UNIT_ID` (varsayılan Google test birimi; README güncellendi).
+- [x] **I4.** 24 saatlik ödüllü Pro geçişi: **kurulumdan 7 gün sonra** açılır; Pro değilse
+      üst çubukta ayarların yanında **görünür** bir düğme. `AdPolicy.rewardedUnlockAfter`
+      (7 gün, testli) hem paywall'daki hem üst çubuktaki düğmeyi yönetir. Üst çubukta
+      hediye simgesi; dokununca teklifi açıkça söyleyen onay penceresi (yalnız simge
+      anlaşmayı anlatmaz). Akış tek yerde: `watchAdForProPass`.
+      **Doğrulama sırasında bulunan ve düzeltilen üç reklam hatası** (emülatörde, kurulum
+      tarihi geri alınarak uçtan uca denendi):
+      * **Banner hiç yüklenmiyordu.** İstek, onay (UMP) ve SDK başlatılmadan önce
+        gidiyordu; ne yüklendi ne hata verdi — ücretsiz kullanıcı reklamsız görünüyordu.
+        Tüm yüklemeler artık `AdConsent.sdkReady`'yi bekler.
+      * **Ödüllü reklam hiç oynamıyordu.** `preload()` isteği gönderip hemen dönüyordu,
+        `showForReward` boş buluyordu. Artık yükleme bitince döner (15 sn sınırlı).
+      * **İzlenen reklam ödül vermiyordu.** `show()` reklam **açılınca** dönüyor,
+        `earned` o an hep false'tu; reklam "Reward granted" dese de Pro açılmıyordu.
+        Sonuç artık reklam **kapanınca** verilir.
 - [ ] **I5.** Splash ikonu uygulama ikonuyla aynı değil. Orijinal ikon kullanılacak, şekli ve
       rengi bozulmadan hafif gölgeyle profesyonelleştirilecek.
 - [ ] **I6.** Marka logosu: solda ikon, sağda iki renkli "doctorFilter" yazısı (orijinal 1.x

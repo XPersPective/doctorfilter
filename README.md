@@ -142,7 +142,8 @@ create:
 flutter build appbundle --release \
   --dart-define=ADMOB_ANDROID_BANNER_UNIT_ID=ca-app-pub-xxx/xxx \
   --dart-define=ADMOB_ANDROID_INTERSTITIAL_UNIT_ID=ca-app-pub-xxx/xxx \
-  --dart-define=ADMOB_ANDROID_REWARDED_UNIT_ID=ca-app-pub-xxx/xxx
+  --dart-define=ADMOB_ANDROID_REWARDED_UNIT_ID=ca-app-pub-xxx/xxx \
+  --dart-define=ADMOB_ANDROID_APP_OPEN_UNIT_ID=ca-app-pub-xxx/xxx
 ```
 
 Release signing needs `android/key.properties` and a keystore, neither of which

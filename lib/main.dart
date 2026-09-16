@@ -10,6 +10,8 @@ import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/data/datasources/local/preferences_datasource.dart';
 import 'package:doctorfilter/presentation/ads/ad_consent.dart';
+import 'package:doctorfilter/presentation/ads/app_open_ad_manager.dart';
+import 'package:doctorfilter/presentation/providers/ad_providers.dart';
 import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
@@ -73,6 +75,14 @@ class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp> {
     await AdConsent.gather();
     if (!mounted) return;
     await MobileAds.instance.initialize();
+    AdConsent.markSdkReady();
+    if (!mounted) return;
+
+    // Cold starts only, and never over onboarding: the first thing a new user
+    // sees is the app. The policy keeps it out of the first days as well.
+    final policy = ref.read(adPolicyProvider.notifier);
+    if (_showOnboarding || !policy.mayShowAppOpen) return;
+    if (await AppOpenAdManager.loadAndShow()) policy.recordAppOpenShown();
   }
 
   @override

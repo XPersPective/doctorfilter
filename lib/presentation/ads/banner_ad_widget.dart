@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:doctorfilter/core/config/env_config.dart';
+import 'package:doctorfilter/presentation/ads/ad_consent.dart';
 import 'package:doctorfilter/presentation/providers/ad_providers.dart';
 
 /// Banner anchored above the bottom navigation bar.
@@ -32,7 +33,9 @@ class _BannerAdWidgetState extends ConsumerState<BannerAdWidget> {
     // Read rather than watch: a Pro user must never have the SDK started, and
     // entitlement gained mid-session is handled by the build method below.
     if (_isSupported && ref.read(showBannerProvider)) {
-      _loadAd();
+      AdConsent.sdkReady.then((_) {
+        if (mounted && ref.read(showBannerProvider)) _loadAd();
+      });
     }
   }
 

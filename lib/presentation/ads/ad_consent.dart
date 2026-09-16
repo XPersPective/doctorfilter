@@ -29,6 +29,20 @@ abstract final class AdConsent {
   /// does not fire a request Google would reject.
   static bool get canRequestAds => _completed;
 
+  static final Completer<void> _sdkReady = Completer<void>();
+
+  /// Completes once consent is settled and the SDK is initialised.
+  ///
+  /// Every ad load waits on this. A banner requested while the consent form
+  /// was still up simply never answered — neither loaded nor failed — so the
+  /// app looked ad-free to free users. Never completes for Pro users, whose
+  /// SDK is never started.
+  static Future<void> get sdkReady => _sdkReady.future;
+
+  static void markSdkReady() {
+    if (!_sdkReady.isCompleted) _sdkReady.complete();
+  }
+
   /// Resolves consent. Safe to call more than once; only the first does work.
   ///
   /// Never throws. A consent failure should cost the app its ad revenue for the
