@@ -13,6 +13,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
     CreateAndAttachConsole();
   }
 
+  // One instance only. A second launch would draw a second overlay on top of
+  // the first — twice the tint, and closing either window leaves the other.
+  // Bring the running window forward instead.
+  HANDLE single_instance =
+      ::CreateMutexW(nullptr, TRUE, L"Local\\CrazyPenguin.DoctorFilter");
+  if (single_instance != nullptr && ::GetLastError() == ERROR_ALREADY_EXISTS) {
+    if (HWND running = ::FindWindowW(L"FLUTTER_RUNNER_WIN32_WINDOW",
+                                     L"DoctorFilter")) {
+      ::ShowWindow(running, SW_RESTORE);
+      ::SetForegroundWindow(running);
+    }
+    ::CloseHandle(single_instance);
+    return EXIT_SUCCESS;
+  }
+
   // Initialize COM, so that it is available for use in the library and/or
   // plugins.
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
@@ -27,7 +42,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
-  if (!window.Create(L"doctorfilter", origin, size)) {
+  if (!window.Create(L"DoctorFilter", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

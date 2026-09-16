@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T12 · **Updated:** 2026-09-16 · **Synced@:** 8e6e9e3
+> **Phase:** BUILD · **Next:** T12 · **Updated:** 2026-09-16 · **Synced@:** e591b97
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -176,7 +176,6 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 GAP: Android özellikleri için kalan emülatör doğrulamaları (paywall çipi, izin akışı, boot, tema, RTL, erişilebilirlik, tablet, sürükleme, istisnalar, mola) → T2–T12
 GAP: README ekran görüntüleri yok → T13
 GAP: Bildirim contentDescription'ları cihaz dilinde → T14
-GAP: Windows tek örnek ve overlay kapanma koruması → T24, T25
 GAP: Gerçek mağaza satın alma, eski ürün kimliği, Partner Center, iOS/macOS/Linux derleme, AB onayı → T16–T21 (insan gerekir)
 
 ## 4. FILE MAP
@@ -401,10 +400,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Do: 1) izin durumunu üç değerli yap (`bool?`, null = henüz sorulmadı) ya da ayrı `permissionChecked` bayrağı ekle; 2) ana ekranda kart yalnızca kontrol tamamlanıp izin yoksa gösterilsin; 3) `test/widget_test.dart`'a mock `checkOverlayPermission` gecikmeli true dönerken ilk karede `OverlayPermissionBanner` bulunmadığını doğrulayan test
   - Done when: yeni test ve tüm `flutter test` yeşil; emülatörde izin verilmişken soğuk açılışın ilk saniyesinde kart görünmez (açılıştan 0,5 sn sonra ekran görüntüsü)
   - Note: from T2 (discovery)
-- [ ] T24 [M] Windows'ta tek örnek: ikinci açılış ikinci overlay'i üst üste bindirmesin
-  - Where: `windows/runner/main.cpp` (`wWinMain` başı)
-  - Do: 1) `CreateMutexW(nullptr, TRUE, L"Local\CrazyPenguin.DoctorFilter")`; `GetLastError() == ERROR_ALREADY_EXISTS` ise `FindWindowW(L"FLUTTER_RUNNER_WIN32_WINDOW", nullptr)` ile mevcut pencereyi `ShowWindow(SW_RESTORE)` + `SetForegroundWindow` ile öne getir ve `return EXIT_SUCCESS`; 2) `flutter build windows`
-  - Done when: exe iki kez başlatılınca `Get-Process doctorfilter` tek süreç gösterir ve ekranda tek `DoctorFilterOverlay` penceresi vardır (T15'teki `wincheck.ps1` benzeri EnumWindows sayımı)
+- [x] T24 [M] (2026-09-16, Claude Opus 5) Windows'ta tek örnek: ikinci açılış ikinci overlay'i üst üste bindirmesin
+  - Done when: exe iki kez başlatılınca `Get-Process doctorfilter` tek süreç gösterir ve ekranda tek `DoctorFilterOverlay` penceresi vardır (T15'teki `wincheck.ps1` benzeri EnumWindows sayımı) → `main.cpp` adlı mutex; exe iki kez başlatılınca 1 süreç, 1 overlay. Pencere başlığı "doctorfilter" → "DoctorFilter" (FindWindow bununla eşleşiyor)
   - Note: from T15 (discovery: iki süreç aynı anda çalıştı, iki overlay)
 - [x] T25 [M] (2026-09-16, Claude Opus 5) Windows overlay penceresi WM_CLOSE ile kapatılamasın
   - Done when: filtre açıkken overlay HWND'ye `SendMessage(WM_CLOSE)` sonrası pencere hâlâ var ve ekran tonlu; uygulama ana penceresi kapatılınca ton kalkar → `OverlayWndProc` WM_CLOSE'u yutuyor; overlay HWND'ye WM_CLOSE sonrası `IsWindow` true, ekran ortalaması 104,83,62 (tonlu) kaldı; ana pencere kapanınca 31,31,31
