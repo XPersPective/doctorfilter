@@ -45,6 +45,32 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  # Builds the Microsoft Store package from the Windows release build.
+  # A dev dependency, not a runtime one: it is a packaging tool and has no
+  # business shipping inside the app.
+  msix: ^3.16.9
+
+# Microsoft Store packaging. `dart run msix:create` turns the Windows release
+# build into an installable .msix.
+#
+# Unsigned on purpose. Signing needs the certificate the Store issues against a
+# real publisher identity, and a self-signed one would only teach testers to
+# click through a warning. The Store re-signs the package on upload anyway, so
+# the unsigned artefact is what you submit.
+msix_config:
+  display_name: DoctorFilter
+  publisher_display_name: CrazyPenguin
+  # Replaced by the Store with the identity from Partner Center on first
+  # submission. Kept obviously-placeholder so it cannot be mistaken for real.
+  identity_name: CrazyPenguin.DoctorFilter
+  publisher: CN=PLACEHOLDER-REPLACE-WITH-PARTNER-CENTER-PUBLISHER-ID
+  msix_version: 2.0.0.0
+  logo_path: assets/images/icon.png
+  # No capabilities beyond the default. The overlay is a plain layered window
+  # and needs none; asking for more than is used is how a submission gets
+  # questioned.
+  capabilities: ''
+  store: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -986,8 +986,28 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       Kanal Android ile aynı sözleşmeyi kullanır (Dart birleşik renk + alfa gönderir);
       eksenler ve tavanlar birim testli tek yerde kalır, platform başına yeniden
       hesaplanmaz. Karşılığı olmayan yöntemler `NotImplemented` döner, sahte `true` değil.
-- [ ] **G2.1** Windows paketleme ve satın alma: MSIX + Microsoft Store API.
-      Store'da uygulama kaydı proje sahibini gerektiriyor (Bölüm 12.1).
+- [~] **G2.1** Windows paketleme ve satın alma. **Paketleme bitti ve doğrulandı**;
+      satın alma yarısı Store kaydına bağlı (aşağıda G2.2).
+      `dart run msix:create` → `build/windows/x64/runner/Release/doctorfilter.msix`
+      (15 MB, 185 girdi) bu makinede üretildi ve manifesti denetlendi.
+      **İmzasız, bilerek:** imza, Store'un gerçek yayıncı kimliğine karşı verdiği
+      sertifikayı gerektirir; kendinden imzalı bir sertifika yalnızca test edenlere
+      uyarıyı tıklayıp geçmeyi öğretirdi. Store yüklemede paketi zaten yeniden
+      imzalıyor, yani gönderilecek olan imzasız üründür.
+      `publisher` alanı **açıkça sahte** (`CN=PLACEHOLDER-REPLACE-WITH-...`) — gerçek
+      sanılabilecek bir değer koymak, birinin onu gerçek sanmasına yol açardı.
+      Yalnızca `runFullTrust`; overlay düz bir katman penceresi ve başka yetki
+      istemiyor. Kullanılandan fazlasını istemek, gönderimin sorgulanma yoludur.
+      `msix` **dev bağımlılığı**: paketleme aracıdır, uygulamanın içinde gitmesinin
+      bir anlamı yok.
+      Store logosu 256×256 olarak `windows/runner/resources/app_icon.ico` içinden
+      çıkarıldı (ico zaten 256'lık bir PNG taşıyordu) — Android'deki 48×48 ikonu
+      büyütmek bulanık bir Store karosu verirdi.
+- [ ] **G2.2** Microsoft Store satın alma (`Windows.Services.Store`). **Engelli:**
+      ürün kimliği Partner Center'da uygulama kaydı yapılmadan var olmuyor; kimliği
+      uydurmak, Play'deki tahmini eski ürün kimliğiyle aynı hatayı ikinci kez yapmak
+      olurdu. Kayıt sonrası `IPurchaseRepository`'ye Windows uygulaması eklenecek —
+      arayüz zaten platformdan bağımsız.
 - [~] **G3.** Linux/macOS. Dart katmanı zaten platformdan bağımsız ve kanal çağrılarının
       hepsi `MissingPluginException`'ı yakalıyor, yani uygulama bu platformlarda
       **overlay olmadan** çalışır: preset'ler, hesaplar, Bilgi Merkezi, ayarlar çalışır;
