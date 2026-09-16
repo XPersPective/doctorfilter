@@ -38,8 +38,16 @@ inventing a number.
 
 ## Screenshots
 
-Not here yet — see [`docs/screenshots/`](docs/screenshots/) for what goes in and
-why they are photographed rather than generated.
+<p>
+  <img src="docs/screenshots/home.png" width="180" alt="Home: three controls and the melanopic ring">
+  <img src="docs/screenshots/notification.png" width="180" alt="Notification cockpit">
+  <img src="docs/screenshots/presets.png" width="180" alt="Presets">
+  <img src="docs/screenshots/schedule.png" width="180" alt="Schedule">
+  <img src="docs/screenshots/education.png" width="180" alt="Eye health, with sources">
+</p>
+
+The running app with the filter on, not renders — see
+[`docs/screenshots/`](docs/screenshots/) for how they were taken.
 
 ## Features
 

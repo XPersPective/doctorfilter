@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T13 · **Updated:** 2026-09-16 · **Synced@:** 994b72d
+> **Phase:** BUILD · **Next:** T23 · **Updated:** 2026-09-16 · **Synced@:** 4d254e9
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -174,7 +174,6 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 - Yerelleştirme: `assets/Localizations/*.json` (71), `lib/core/localization/app_localizations.dart`.
 
 GAP: Android özellikleri için kalan emülatör doğrulamaları (paywall çipi, izin akışı, boot, tema, RTL, erişilebilirlik, tablet, sürükleme, istisnalar, mola) → T2–T12
-GAP: README ekran görüntüleri yok → T13
 GAP: Gerçek mağaza satın alma, eski ürün kimliği, Partner Center, iOS/macOS/Linux derleme, AB onayı → T16–T21 (insan gerekir)
 
 ## 4. FILE MAP
@@ -377,10 +376,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: `dumpsys window windows` kamera öndeyken overlay'i görünmez (alpha 0 veya yok), çıkınca görünür gösterir; kart davranışı ekran görüntüleriyle → askıya alma pencere alfasıyla değil görünüm renginin alfasıyla yapılıyor, bu yüzden piksel ölçüldü: Kamera öndeyken üst şerit (0,172,193) = tonsuz Material cyan; istisna kapalıyken (30,180,197) tonlu. İzin kartı izin verilince kalktı, alınınca geri geldi
 - [x] T12 [M] (2026-09-16, Claude Opus 5) Mola hatırlatıcısının gerçek alarmla tetiklenmesi
   - Done when: `dumpsys notification --noredact | grep android.title` mola bildirimini uygulama dilinde gösterir → açıldıktan sonra RTC alarmı (15:48 + 15 dk pencere) 15:49:56'da tetiklendi; bildirim "Time to look away" / "Every 20 minutes, look about 6 metres away for 20 seconds." (uygulama dili İngilizce)
-- [ ] T13 [L] README ekran görüntüleri (F2.1)
-  - Where: `docs/screenshots/README.md` (5 ekran, ayarları ve dosya adları orada), `README.md` "## Screenshots"
-  - Do: `docs/screenshots/README.md` listesine göre emülatörden `adb exec-out screencap -p` ile 5 PNG çek, orada yazan dosya adlarıyla `docs/screenshots/` içine kaydet, PIL ile genişliği 540'a küçült; test reklamı görünmesin (Pro geçişi aktifken çek)
-  - Done when: README'deki her `docs/screenshots/...png` bağlantısı var olan dosyaya işaret eder (`grep -o 'docs/screenshots/[^)]*png' README.md | xargs ls`)
+- [x] T13 [L] (2026-09-16, Claude Opus 5) README ekran görüntüleri (F2.1)
+  - Done when: README'deki her `docs/screenshots/...png` bağlantısı var olan dosyaya işaret eder (`grep -o 'docs/screenshots/[^)]*png' README.md | xargs ls`) → emülatörden 5 PNG (1080×1920, filtre açık Evening, İngilizce, koyu tema, geçici Pro geçişiyle reklamsız); README'de görüntü satırı; `docs/screenshots/README.md` nasıl çekildiğini dürüstçe anlatıyor. Not: spec "küçült" diyordu ama klasör README'si yerel çözünürlüğü istiyordu, ona uyuldu
 - [x] T14 [M] (2026-09-16, Claude Opus 5) Bildirim erişilebilirlik açıklamaları uygulama dilinde
   - Done when: uygulama dili Türkçe iken bildirim gölgesinde `uiautomator dump` bu düğmelerin content-desc'ini Türkçe gösterir; `flutter build apk --debug` geçer → uygulama dili Türkçe iken dump: "Kapat", "Daha karanlık", "Daha parlak", kilitler "Tüm ön ayarlar ve kontroller için Pro'ya geçin". Ayrıca yanlış etiket düzeltildi: Kelvin/yoğunluk satırlarının −/+ düğmeleri "Brighter/Dimmer" diye okunuyordu; artık "<eksen adı> −/+"
 - [x] T15 [M] (2026-09-16, Claude Opus 5) Windows overlay elle doğrulama (G2)
@@ -427,4 +424,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T12, T14, T22, T24, T25 bitti. Sonraki: T13 (README ekran görüntüleri; Pro geçişi yok — ya reklamlar görünür ya da görüntüler reklamsız çekilecek şekilde ödüllü geçiş alınmalı; kurulum tarihi 7 günden yeni olduğu için hediye düğmesi yok, `df_ad_first_launch` geri alınmalı), sonra T23. Emülatör: Türkçe, açık tema, filtre açık 2200 K, Pro yok.
+T13 bitti. Sonraki: T23 (izin kartı yanıp sönmesi), ardından tüm açık görevler bitince A3/A4. Emülatör: İngilizce, koyu tema, filtre açık Evening, geçici Pro geçişi (`df_pro_pass_expiry`, ~24 saat).
