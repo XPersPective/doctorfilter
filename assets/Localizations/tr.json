@@ -205,5 +205,17 @@
   "exclusions_list_failed": "Uygulama listesi okunamadı.",
   "exclusions_permission_title": "Önce bir izin",
   "exclusions_permission_body": "Kameranız için kenara çekilebilmesi için uygulamanın hangi uygulamanın önde olduğunu bilmesi gerekir. Android buna kullanım erişimi diyor ve sistem ayarlarından veriyorsunuz. DoctorFilter yalnızca o an açık olan uygulamanın adını okur; geçmişinizi asla okumaz ve hiçbir şey telefonunuzdan çıkmaz.",
-  "exclusions_permission_action": "Ayarları aç"
+  "exclusions_permission_action": "Ayarları aç",
+  "ios_setup_title": "Ekranınızı kurun",
+  "ios_setup_intro": "iOS'un kendi ekran filtresi var. Bu uygulama doğru değerleri hesaplar ve nereye koyacağınızı gösterir. Bunu bir kez yaparsınız — değerler sonrasında yerinde kalır.",
+  "ios_setup_step_path": "Ayarlar → Erişilebilirlik → Ekran ve Metin Boyutu → Renk Filtreleri'ni açın",
+  "ios_setup_step_path_body": "Renk Filtreleri'ni açın ve Renk Tonu'nu seçin.",
+  "ios_setup_hue": "Renk tonu",
+  "ios_setup_intensity": "Yoğunluk",
+  "ios_setup_white_point": "Erişilebilirlik → Ekran ve Metin Boyutu → Beyaz Noktasını Azalt",
+  "ios_setup_precision": "iOS kaydırıcılarında sayı yok; bunlar kesin değerler değil, kaydırıcı üzerindeki konumlardır. Yaklaşık olması yeterli — birkaç derecelik fark gözle görülmez.",
+  "ios_protection_on": "Koruma kurulu",
+  "ios_protection_off": "Koruma henüz kurulu değil",
+  "ios_protection_action": "Kur",
+  "ios_protection_redo": "Değerleri değiştir"
 }

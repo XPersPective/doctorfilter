@@ -902,15 +902,35 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       indireceği boyut bunun çok altında olacak.
 
 ## FAZ G — Sonraki platformlar
-- [ ] **G1.** iOS temel: uygulama içi Kelvin filtresi, `UIScreen.brightness` ile doğrudan
-      ve kalıcı parlaklık kontrolü, zamanlayıcı, App Store satın alma, ATT. (bkz. 7.2.1)
-- [ ] **G1.1** iOS kurulum sihirbazı: hedef Kelvin'den Renk Tonu hue/yoğunluk ve Beyaz
-      Nokta değerlerini hesapla, ekran görüntüsüyle adım adım göster. (bkz. 7.2.2)
+- [~] 🔴 **G1.** iOS temel. **Dart tarafı ve Swift kanalı yazıldı; cihazda doğrulanmadı**
+      (bu makinede Xcode yok — Bölüm 12.1'e test adımları eklendi).
+      `AppDelegate.swift` kanalı kasıtlen küçük: `UIScreen.brightness` oku/yaz (sistem
+      parlaklığının kendisi; uygulamadan çıkınca geri dönmez, yani ekstra karartmanın
+      dürüst iOS karşılığı) ve Android'e özgü sorulara `false`. Karşılığı olmayan
+      yöntemler **taklit edilmiyor**, `FlutterMethodNotImplemented` dönüyor — sessizce
+      hiçbir şey yapan bir yöntem, uygulamanın yapamadığı şeyi iddia etmesinin yoludur.
+- [x] **G1.1** iOS kurulum sihirbazı. `IosColourFilter` hedef Kelvin'den Renk Tonu
+      hue/yoğunluk ve Beyaz Nokta konumlarını hesaplar; `IosSetupScreen` adım adım,
+      **ölçekli kaydırıcı çizimiyle** gösterir.
+      **Dürüstlük:** iOS kaydırıcılarında sayı yoktur, yalnızca konum vardır. Bu yüzden
+      çıktı "kaydırıcının % kaçı" — kullanıcının üzerinde hareket edebileceği tek şey bu.
+      Kesin değer vermek, denetimin veremeyeceği bir hassasiyeti vaat etmek olurdu;
+      `achievableKelvin` de bu yüzden 50 K'ya yuvarlar.
+      7 testli (`ios_color_filter_test.dart`): sıcak hedefler turuncu bölgede kalıyor
+      (20–45°), daha sıcak = daha güçlü ton, nötr uçta ton neredeyse sıfır, yoğunluk
+      density ekseniyle ölçekleniyor ama hue kaymıyor.
 - [ ] **G1.2** iOS aç/kapat yolları: uygulama içi düğme (`shortcuts://x-callback-url`),
       Erişilebilirlik Kısayolu / Arkaya Dokunma rehberi, gün batımı otomasyonu. (bkz. 7.2.3)
 - [ ] **G1.3** iOS 18+ Kontrol Merkezi `ControlWidget` (parlaklık + kısayol tetikleme).
-- [ ] **G1.4** iOS ana ekranı: aç/kapat düğmesi yerine "koruma kurulu/kurulu değil" durumu;
-      mağaza ve uygulama metinlerinde overlay vaat edilmemesi. (bkz. 7.2.6)
+- [~] 🔴 **G1.4** iOS ana ekranı. Aç/kapat düğmesi iOS'ta **hiç çizilmiyor** —
+      kapatacak bir şey yok; kullanıcının kurduğu sistem filtresi kendisi kapatana kadar
+      açık kalır ve bunu ima eden bir düğme, hiçbir şey yapmayan bir denetim olurdu.
+      Yerine "koruma kurulu / kurulu değil" kartı var. Overlay izni banner'ı da iOS'ta
+      çizilmiyor: var olmayan bir şeyi istiyor olurdu.
+      **Kurulu mu?** iOS, Renk Filtreleri'nin açık olup olmadığını okumanın bir yolunu
+      vermiyor. Bu yüzden durum **kullanıcının beyanı**, tespit değil — ve uygulama
+      hangisi olduğunu söylüyor. Kontrol edemediği bir şeyi kontrol etmiş gibi yapmak,
+      çizemediği overlay'i vaat etmekle aynı sahtelik olurdu.
 - [ ] **G2.** Windows: katman penceresi + MSIX + Microsoft Store satın alma.
 - [ ] **G3.** Linux/macOS: derlenebilirlik ve çekirdek özellikler.
 
@@ -1135,6 +1155,17 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 
 > Ajan buraya, tamamladığı ama cihazda test edilmesi gereken işleri **test adımlarıyla**
 > yazar. Proje sahibi onaylayınca ilgili madde `[x]` olur ve satır buradan silinir.
+
+**G1 — iOS (🔴 macOS + Xcode gerektirir; bu makinede doğrulanamadı)**
+1. `flutter build ios` derlenmeli.
+2. Uygulama içi Ekstra Karartma kaydırıcısı → **sistem parlaklığı** değişmeli;
+   uygulamadan çıkınca **geri dönmemeli** (Bölüm 7.2.1'in tek somut iddiası budur).
+3. Kurulum sihirbazındaki hue/yoğunluk konumlarını Ayarlar'da uygula → ekran tonu
+   uygulamanın gösterdiği Kelvin'e gözle yakın olmalı (referans: beyaz kâğıt).
+4. Ana ekranda **aç/kapat düğmesi görünmemeli**; overlay izni banner'ı da çıkmamalı.
+5. "Kur" → sihirbaz; dönüşte "koruma kurulu" durumu kalıcı olmalı.
+6. Mağaza açıklamasında ve uygulama içinde hiçbir yerde "diğer uygulamaların üzerinde
+   filtre" vaadi geçmemeli (Bölüm 7.2.6).
 
 **H1 — Uygulama istisnaları**
 1. Ayarlar → "Şu uygulamalarda duraklat" → izin kartı çıkmalı.

@@ -60,6 +60,7 @@ class PreferencesDataSource {
   static const _keyAmbient = 'df_ambient_adaptation';
   static const _keyExclusionsEnabled = 'df_exclusions_enabled';
   static const _keyExcludedPackages = 'df_excluded_packages';
+  static const _keyIosSetupDone = 'df_ios_setup_done';
 
   // v1 keys, read once by the migration and then removed.
   static const _legacyKeyAlpha = 'df_filter_alpha';
@@ -196,6 +197,16 @@ class PreferencesDataSource {
   bool breakReminderEnabled() => _prefs.getBool(_keyBreakEnabled) ?? false;
   Future<void> setBreakReminderEnabled(bool isEnabled) =>
       _prefs.setBool(_keyBreakEnabled, isEnabled);
+
+  /// Whether the user says they have set up iOS's own colour filter.
+  ///
+  /// A declaration, not a detection: iOS exposes no way to read whether Colour
+  /// Filters is on, so the app asks rather than pretending to know. Claiming to
+  /// have checked something it cannot check would be the same dishonesty as
+  /// claiming an overlay it cannot draw.
+  bool iosSetupDone() => _prefs.getBool(_keyIosSetupDone) ?? false;
+  Future<void> setIosSetupDone(bool isDone) =>
+      _prefs.setBool(_keyIosSetupDone, isDone);
 
   bool appExclusionsEnabled() => _prefs.getBool(_keyExclusionsEnabled) ?? false;
   Future<void> setAppExclusionsEnabled(bool isEnabled) =>
