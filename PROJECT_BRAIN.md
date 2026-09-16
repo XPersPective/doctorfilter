@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T4 · **Updated:** 2026-09-16 · **Synced@:** b725961
+> **Phase:** BUILD · **Next:** T5 · **Updated:** 2026-09-16 · **Synced@:** e04ba90
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -361,10 +361,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: üç senaryonun ekran görüntüsünde paywall; `logcat -d | grep FATAL` boş → arka planda, ikinci çip ve etkinlik kapalıyken (soğuk başlatma) üçü de paywall açtı; FATAL yok
 - [x] T3 [M] (2026-09-16, Claude Opus 5) Overlay izni geri alma/verme ve servis yeniden başlatma (B5, B6)
   - Done when: üç adımın ekran görüntüsü/`dumpsys notification` çıktısı beklenen durumu gösterir; FATAL yok → HATA bulundu ve düzeltildi: izin alınınca sistem pencereyi gizliyor ama servis çalışmaya ve her yerde "Filtre açık" demeye devam ediyordu; `OverlayService.watchOverlayPermission` (AppOps izleme) filtreyi durdurur. İzin geri verilince kart kalktı; süreç `run-as kill -9` ile öldürülünce servis aynı değerlerle döndü
-- [ ] T4 [M] Yeniden başlatma sonrası zamanlayıcı ve filtre geri yükleme (B4, AC7)
-  - Where: `kt/ScheduleReceiver.kt:onReceive` BOOT_COMPLETED
-  - Do: 1) zamanlamayı aç, filtreyi aç; 2) `adb -s emulator-5554 reboot`, `adb wait-for-device`, `getprop sys.boot_completed` 1 olana kadar bekle, +30 sn; 3) `dumpsys alarm | grep doctorfilter.ACTION_SCHEDULE` ve `dumpsys window windows | grep "u0 com.crazypenguin.doctorfilter}"`
-  - Done when: reboot sonrası iki zamanlama alarmı kurulu ve overlay penceresi var
+- [x] T4 [M] (2026-09-16, Claude Opus 5) Yeniden başlatma sonrası zamanlayıcı ve filtre geri yükleme (B4, AC7)
+  - Done when: reboot sonrası iki zamanlama alarmı kurulu ve overlay penceresi var → reboot sonrası START/STOP alarmları kurulu, overlay var, bildirim "Filter on · 5500 K"
 - [ ] T5 [M] Pil ayarı yolu ve kenardan kenara düzen (B7, B9)
   - Where: `lib/presentation/screens/settings_screen.dart` pil satırı, `android/app/src/main/AndroidManifest.xml` `enableOnBackInvokedCallback`
   - Do: 1) Ayarlar'daki pil satırı → sistem pil optimizasyonu listesi açılır; 2) ana ekran, ayarlar, paywall, zamanlama ekran görüntülerinde durum/gezinme çubuğu içerikle çakışmaz; 3) her ekrandan `input keyevent KEYCODE_BACK` doğru önceki ekrana döner
@@ -445,4 +443,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T3 bitti (izin geri alınınca filtre artık duruyor). Sonraki: T4 (emülatör reboot). Emülatör: Pro yok, İngilizce, filtre açık 5500 K, izinler verili. Süreç öldürmek için `am crash` işe yaramıyor; `adb shell "run-as com.crazypenguin.doctorfilter kill -9 <pid>"` kullan.
+T4 doğrulandı (kod değişikliği yok). Sonraki: T5. Emülatör yeniden başlatıldı; zamanlama 22:00–07:00 açık, filtre açık 5500 K, Pro yok, İngilizce. Süreç öldürmek için `adb shell "run-as com.crazypenguin.doctorfilter kill -9 <pid>"`.
