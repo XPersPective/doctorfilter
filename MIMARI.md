@@ -1202,6 +1202,26 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       tercihi asla üzerine yazılmaz**: filtre kapanınca açık tema geri gelir.
       Ayarlardan kapatılabilir; varsayılan açık.
 
+## FAZ I — Proje sahibinin 2. tur geri bildirimi (2026-09-16)
+- [ ] **I1.** Hata: en alttaki kaydırıcı (Ekstra Karartma) sıfıra inince parmak üstteki
+      kaydırıcıya "atlıyor". Kök neden araştırılacak ve düzeltilecek.
+- [ ] **I2.** Ayar yedeği (dışa/içe aktarma) **yalnızca Pro**. Ücretsiz kullanıcı telefonu
+      sıfırlayıp/uygulamayı kaldırıp yedeği geri yükleyerek Pro özelliklerini bedava
+      kullanamamalı.
+- [ ] **I3.** Açılış (app-open) reklamı: ilk günlerde **kesinlikle gösterilmez**; banner kalır.
+- [ ] **I4.** 24 saatlik ödüllü Pro geçişi: **kurulumdan 7 gün sonra** açılır; Pro değilse
+      üst çubukta ayarların yanında **görünür** bir düğme.
+- [ ] **I5.** Splash ikonu uygulama ikonuyla aynı değil. Orijinal ikon kullanılacak, şekli ve
+      rengi bozulmadan hafif gölgeyle profesyonelleştirilecek.
+- [ ] **I6.** Marka logosu: solda ikon, sağda iki renkli "doctorFilter" yazısı (orijinal 1.x
+      yazısı: eğik, "doctor" sarı-turuncu, "Filter" mavi), Pro ise sonunda küçük üst simge
+      PRO, altında slogan. Ana ekranda; splash'ta mümkün değilse yalnızca ikon.
+- [ ] **I7.** (Bulgu) Windows uygulama ikonu ve MSIX Store logosu hâlâ **Flutter'ın varsayılan
+      logosu** — DoctorFilter ikonu ile değiştirilecek.
+- [ ] **I8.** Bildirim kokpiti ve sistem entegrasyonları (Hızlı Ayarlar kutucuğu, widget,
+      kısayollar, zamanlayıcı) **yereldeki Android emülatöründe** çalıştırılıp doğrulanacak.
+
+
 ---
 
 # 12. DEVİR NOTU — NEREDE KALINDI
