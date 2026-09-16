@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T11 · **Updated:** 2026-09-16 · **Synced@:** 5a3c347
+> **Phase:** BUILD · **Next:** T12 · **Updated:** 2026-09-16 · **Synced@:** f8eb98e
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -375,10 +375,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: iki düzende taşma şeridi yok; emülatör ayarları sıfırlandı → taşma yok. İyileştirme: tablette içerik ekranı boydan boya kaplıyordu; ana ekran gövdesi 720dp ile sınırlandı ve ortalandı. Yatayda banner+gezinme çubuğu içeriğin çoğunu kaplıyor ama kaydırılabilir (ASSUMPTION §6)
 - [x] T10 [M] (2026-09-16, Claude Opus 5) Arapça RTL düzeni (E4, AC2)
   - Done when: ekran görüntülerinde metin sağdan sola, düzen aynalı, bildirim metinleri Arapça → düzen aynalı, bildirim Arapça. HATA düzeltildi: Kelvin değerleri RTL paragrafta "K 5500" ve "K · 15% · 0% 5500" diye ters çıkıyordu; `app_localizations.dart:ltrIsolate` (U+2066/U+2069) tüm gösterim yerlerinde ve bildirim şablonlarında. RTL widget testine iddia eklendi (düzeltme geri alınınca başarısız)
-- [ ] T11 [M] Uygulama istisnaları (H1)
-  - Where: `lib/presentation/screens/exclusions_screen.dart`, `kt/AppExclusions.kt`, `kt/OverlayService.kt` istisna yoklaması
-  - Do: 1) Ayarlar → istisnalar: izin kartı görünür; 2) `adb shell appops set com.crazypenguin.doctorfilter GET_USAGE_STATS allow`, ekrana dön → kart kendiliğinden kalkar; 3) Kamera'yı seç, filtre açıkken `adb shell am start -a android.media.action.STILL_IMAGE_CAMERA` → ~1,5 sn içinde overlay gizlenir; 4) ana ekrana dön → overlay geri gelir; 5) `GET_USAGE_STATS deny` → izin kartı geri gelir
-  - Done when: `dumpsys window windows` kamera öndeyken overlay'i görünmez (alpha 0 veya yok), çıkınca görünür gösterir; kart davranışı ekran görüntüleriyle
+- [x] T11 [M] (2026-09-16, Claude Opus 5) Uygulama istisnaları (H1)
+  - Done when: `dumpsys window windows` kamera öndeyken overlay'i görünmez (alpha 0 veya yok), çıkınca görünür gösterir; kart davranışı ekran görüntüleriyle → askıya alma pencere alfasıyla değil görünüm renginin alfasıyla yapılıyor, bu yüzden piksel ölçüldü: Kamera öndeyken üst şerit (0,172,193) = tonsuz Material cyan; istisna kapalıyken (30,180,197) tonlu. İzin kartı izin verilince kalktı, alınınca geri geldi
 - [ ] T12 [M] Mola hatırlatıcısının gerçek alarmla tetiklenmesi
   - Where: `kt/BreakReminderReceiver.kt`, `lib/presentation/providers/break_reminder_provider.dart`
   - Do: Ayarlar'dan molaları aç, filtreyi aç, `dumpsys alarm | grep BREAK_REMINDER` ile tetik zamanını oku ve bekle
@@ -432,4 +430,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T10 bitti (RTL'de Kelvin sırası). Sonraki: T11 (uygulama istisnaları). Emülatör uygulaması şu an ARAPÇA (`flutter.df_app_locale`=ar; `run-as ... sed` ile değiştirilebilir), filtre açık 5500 K, Pro yok, açık tema. RTL'de dokunma koordinatları aynalıdır.
+T11 doğrulandı (kod değişikliği yok). Sonraki: T12 (mola hatırlatıcı gerçek alarmı). Emülatör: İngilizce, açık tema, filtre açık 5500 K, Pro yok, GET_USAGE_STATS ignore, istisnalarda Kamera seçili.
