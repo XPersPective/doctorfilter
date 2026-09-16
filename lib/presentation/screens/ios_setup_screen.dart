@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/math/ios_color_filter.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
+import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
+import 'package:doctorfilter/presentation/services/app_links.dart';
 
 /// Walks the user through setting iOS's own colour filter to the temperature
 /// they chose here.
@@ -75,6 +77,46 @@ class IosSetupScreen extends ConsumerWidget {
               fraction: whitePoint,
             ),
 
+          const SizedBox(height: 8),
+          Center(
+            child: FilledButton(
+              onPressed: () =>
+                  ref.read(iosSetupProvider.notifier).setDone(true),
+              child: Text(loc?.translate('ios_setup_done') ?? "I've done this"),
+            ),
+          ),
+
+          const SizedBox(height: 32),
+          Text(
+            loc?.translate('ios_toggle_title') ?? 'Turning it on and off',
+            style: context.texts.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            // Says the quiet part: there is a visible hop into Shortcuts. A
+            // user who is not expecting it thinks something broke.
+            loc?.translate('ios_toggle_body') ??
+                'The values above stay put, so all that is left is a switch. '
+                    'Three ways, none of which need this app open: the '
+                    'Accessibility Shortcut (triple-click the side button), '
+                    'Back Tap, or a Shortcuts automation at sunset. The button '
+                    'below runs a shortcut of your own named "DoctorFilter"; '
+                    'iOS flashes over to Shortcuts and straight back, which is '
+                    'iOS doing its job, not a fault.',
+            style: context.texts.bodyMedium,
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.play_arrow_rounded),
+              onPressed: () => _runShortcut(context),
+              label: Text(
+                loc?.translate('ios_toggle_run') ?? 'Run my shortcut',
+              ),
+            ),
+          ),
+
           const SizedBox(height: 24),
           Card(
             margin: EdgeInsets.zero,
@@ -111,6 +153,30 @@ class IosSetupScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// The shortcut name the app looks for.
+///
+/// Fixed rather than configurable: one name the setup text can quote is easier
+/// to follow than a field to fill in, and a shortcut is renamed in two taps.
+const String _shortcutName = 'DoctorFilter';
+
+Future<void> _runShortcut(BuildContext context) async {
+  final loc = AppLocalizations.of(context);
+  final launched = await AppLinks.runShortcut(_shortcutName);
+
+  if (launched || !context.mounted) return;
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        content: Text(
+          loc?.translate('ios_toggle_missing') ??
+              'No shortcut named "$_shortcutName" was found. Create one in the '
+                  'Shortcuts app with the "Set Colour Filters" action.',
+        ),
+      ),
+    );
 }
 
 class _Step extends StatelessWidget {

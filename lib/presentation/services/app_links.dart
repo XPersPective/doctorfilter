@@ -48,6 +48,28 @@ abstract final class AppLinks {
   ///
   /// Hands off to the platform's own share sheet, so the user picks the app they
   /// already use rather than being sent somewhere we chose for them.
+  /// Runs one of the user's own Shortcuts by name.
+  ///
+  /// The only way an app can toggle iOS's colour filter: Shortcuts has an
+  /// action for it, and an app may ask Shortcuts to run one. There is a brief
+  /// hop into Shortcuts and back — unavoidable, and worth saying rather than
+  /// hiding, because a user who is not expecting it thinks something broke.
+  ///
+  /// Returns false when Shortcuts does not answer, usually because no shortcut
+  /// by that name exists.
+  static Future<bool> runShortcut(String name) async {
+    final uri = Uri.parse(
+      'shortcuts://x-callback-url/run-shortcut'
+      '?name=${Uri.encodeComponent(name)}',
+    );
+
+    try {
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<void> share(String message) async {
     if (!_isMobile) return;
     try {

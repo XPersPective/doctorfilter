@@ -919,9 +919,18 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       7 testli (`ios_color_filter_test.dart`): sıcak hedefler turuncu bölgede kalıyor
       (20–45°), daha sıcak = daha güçlü ton, nötr uçta ton neredeyse sıfır, yoğunluk
       density ekseniyle ölçekleniyor ama hue kaymıyor.
-- [ ] **G1.2** iOS aç/kapat yolları: uygulama içi düğme (`shortcuts://x-callback-url`),
-      Erişilebilirlik Kısayolu / Arkaya Dokunma rehberi, gün batımı otomasyonu. (bkz. 7.2.3)
+- [~] 🔴 **G1.2** iOS aç/kapat yolları. `AppLinks.runShortcut` → `shortcuts://x-callback-url/run-shortcut?name=DoctorFilter`;
+      kurulum ekranında Erişilebilirlik Kısayolu / Arkaya Dokunma / gün batımı otomasyonu
+      rehberi. Kısayol bulunamazsa sessizce başarısız olmuyor, ne yapılacağını söylüyor.
+      **Kısayollar'a kısa bir geçiş olacağı metinde açıkça yazıyor** — bunu beklemeyen
+      kullanıcı bir şeyin bozulduğunu sanır; gizlemek, kullanıcıyı hataya inandırmaktır.
+      Kısayol adı sabit ("DoctorFilter"): metnin alıntılayabileceği tek bir ad,
+      doldurulacak bir alandan daha kolay takip edilir, kısayolu yeniden adlandırmak ise
+      iki dokunuş.
 - [ ] **G1.3** iOS 18+ Kontrol Merkezi `ControlWidget` (parlaklık + kısayol tetikleme).
+      **Engelli:** yeni bir Xcode widget uzantısı hedefi gerektiriyor. `project.pbxproj`'u
+      Xcode olmadan körlemesine düzenlemek projeyi bozma riski taşıdığı için yapılmadı;
+      macOS'lu bir makinede Xcode üzerinden hedef eklendikten sonra yazılmalı.
 - [~] 🔴 **G1.4** iOS ana ekranı. Aç/kapat düğmesi iOS'ta **hiç çizilmiyor** —
       kapatacak bir şey yok; kullanıcının kurduğu sistem filtresi kendisi kapatana kadar
       açık kalır ve bunu ima eden bir düğme, hiçbir şey yapmayan bir denetim olurdu.
