@@ -147,9 +147,6 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            if (config.isColourOnly && config.isEnabled)
-              _ColourOnlyHint(loc: loc),
-
             const SizedBox(height: 16),
 
             Padding(
@@ -200,12 +197,26 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            // Shown only to users who turned on true black, because that is the
-            // only signal the app has that the panel is OLED — Android exposes
-            // no panel type, and claiming a battery saving on an LCD would be
-            // simply false.
-            if (ref.watch(amoledProvider) && config.extraDimPercent > 0)
-              _OledEnergyNote(config: config),
+            // Both notes share one slot that is always laid out at full size.
+            // They flip as extra dim crosses zero, and a note appearing or
+            // vanishing mid-drag moved the slider out from under the finger —
+            // the drag then landed on the slider above.
+            Stack(
+              children: [
+                Visibility.maintain(
+                  visible: config.isColourOnly && config.isEnabled,
+                  child: _ColourOnlyHint(loc: loc),
+                ),
+                // Shown only to users who turned on true black, because that is
+                // the only signal the app has that the panel is OLED — Android
+                // exposes no panel type, and claiming a battery saving on an
+                // LCD would be simply false.
+                Visibility.maintain(
+                  visible: ref.watch(amoledProvider) && config.extraDimPercent > 0,
+                  child: _OledEnergyNote(config: config),
+                ),
+              ],
+            ),
           ],
         ),
       ),

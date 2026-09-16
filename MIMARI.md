@@ -1203,8 +1203,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       Ayarlardan kapatılabilir; varsayılan açık.
 
 ## FAZ I — Proje sahibinin 2. tur geri bildirimi (2026-09-16)
-- [ ] **I1.** Hata: en alttaki kaydırıcı (Ekstra Karartma) sıfıra inince parmak üstteki
-      kaydırıcıya "atlıyor". Kök neden araştırılacak ve düzeltilecek.
+- [x] **I1.** Hata: en alttaki kaydırıcı (Ekstra Karartma) sıfıra inince parmak üstteki
+      kaydırıcıya "atlıyor". **Kök neden:** ekstra karartma 0'a inince "yalnızca ısıtmak
+      pek işe yaramaz" notu **preset'lerin üstünde** beliriyor, OLED notu da en altta
+      kayboluyordu; sürükleme sürerken sayfa kayıp kaydırıcı parmağın altından çıkıyordu.
+      İki not artık son kaydırıcının altında, **her zaman tam boyutla yerleşen tek bir
+      yuvada** (`Visibility.maintain`); görünürlük değişse de hiçbir şeyin yeri oynamaz.
+      Emülatörde doğrulandı: %50 → %0 ve ötesine sürükleme, yoğunluk %60'ta kaldı.
+      **Kural:** kaydırıcıların üstünde ya da altında, kaydırıcının değerine bağlı olarak
+      beliren/kaybolan hiçbir öğe olmaz.
 - [ ] **I2.** Ayar yedeği (dışa/içe aktarma) **yalnızca Pro**. Ücretsiz kullanıcı telefonu
       sıfırlayıp/uygulamayı kaldırıp yedeği geri yükleyerek Pro özelliklerini bedava
       kullanamamalı.
