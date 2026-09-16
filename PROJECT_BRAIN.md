@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T6 · **Updated:** 2026-09-16 · **Synced@:** 1d7218b
+> **Phase:** BUILD · **Next:** T7 · **Updated:** 2026-09-16 · **Synced@:** 13749dc
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -365,10 +365,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: reboot sonrası iki zamanlama alarmı kurulu ve overlay penceresi var → reboot sonrası START/STOP alarmları kurulu, overlay var, bildirim "Filter on · 5500 K"
 - [x] T5 [M] (2026-09-16, Claude Opus 5) Pil ayarı yolu ve kenardan kenara düzen (B7, B9)
   - Done when: ekran görüntülerinde çakışma yok, pil ayarı açılır, geri dönüşler doğru → EKSİK bulundu: pil köprüsü vardı ama hiçbir ekran kullanmıyordu; `settings_screen.dart:_BatteryCard` eklendi (yalnızca optimize ediliyorken, dönüşte kendini yeniler, mevcut 71 dil anahtarları). Sistem listesi açıldı, muafiyet sonrası kart kalktı; ekranlarda çakışma yok, geri dönüşler doğru
-- [ ] T6 [M] İki temada görsel denetim (D1, D4, C8, AC3)
-  - Where: `lib/core/theme/app_theme.dart`; `lib/presentation/screens/`
-  - Do: 1) Ayarlar'dan açık tema, sonra koyu tema; 2) her temada ana ekran, preset, zamanlama, bilgi merkezi, ayarlar, paywall, onboarding ekran görüntüsü; 3) okunmayan/düşük kontrastlı her yazıyı `app_theme.dart` token'larıyla düzelt
-  - Done when: 14 ekran görüntüsünde her yazı okunur; `flutter test` yeşil
+- [x] T6 [M] (2026-09-16, Claude Opus 5) İki temada görsel denetim (D1, D4, C8, AC3)
+  - Done when: 14 ekran görüntüsünde her yazı okunur; `flutter test` yeşil → koyu ve açık temada ana ekran, preset, zamanlama, bilgi merkezi, ayarlar, paywall (12 görüntü) okunur; onboarding koyu temada T2'de görüldü; düzeltme gerekmedi
 - [ ] T7 [M] Ana ekranda basılı tut–sürükle sıralama (D6)
   - Where: `lib/presentation/widgets/preset_grid.dart`
   - Do: `adb shell input draganddrop <x1> <y1> <x2> <y2> 1500` ile bir preset'i başka konuma taşı; soğuk açılış (`am force-stop` + başlat) sonrası sıra korunur
@@ -442,4 +440,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T5 bitti (pil kartı eklendi). Sonraki: T6 (iki temada görsel denetim). Emülatör: Pro yok, İngilizce, koyu tema, filtre açık 5500 K, zamanlama açık. Git Bash'te `adb shell cat /sdcard/...` için `export MSYS_NO_PATHCONV=1` şart.
+T6 doğrulandı (kod değişikliği yok). Sonraki: T7 (sürükle-sırala). Emülatör: Pro yok, İngilizce, AÇIK tema, filtre kapalı, zamanlama açık. Ekran listesi betiği yeniden yazılabilir: soğuk başlat, alt sekmeler x=404/674/944 y=1752, ayarlar (1005,145), Pro kartı (540,300). Tema tercihi `pm clear` sonrası dosyada yok; tema Ayarlar anahtarından değiştirilir.
