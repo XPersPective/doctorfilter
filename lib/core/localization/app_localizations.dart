@@ -122,3 +122,11 @@ class _AppLocalizationsDelegate
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
+
+/// Wraps a measurement such as "2700 K" or "+120 K" in a left-to-right isolate.
+///
+/// In Arabic, Hebrew, Persian, Urdu and Pashto the paragraph runs right to
+/// left, and a bare "2700 K" came out as "K 2700" — digits and unit swap
+/// places. The isolate keeps the reading order without changing the text.
+String ltrIsolate(String text) => '\u2066$text\u2069';
+
