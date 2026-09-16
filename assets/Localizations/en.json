@@ -222,5 +222,6 @@
   "ios_toggle_title": "Turning it on and off",
   "ios_toggle_body": "The values above stay put, so all that is left is a switch. Three ways, none of which need this app open:\n\n• Triple-click the side button — set Settings → Accessibility → Accessibility Shortcut to Colour Filters.\n• Back Tap — Settings → Accessibility → Touch → Back Tap.\n• A Shortcuts automation, to switch it at sunset and back at sunrise.\n\nThe button below runs a shortcut of your own named \"DoctorFilter\". iOS briefly switches to Shortcuts and comes straight back — that flash is iOS, not a fault.",
   "ios_toggle_run": "Run my shortcut",
-  "ios_toggle_missing": "No shortcut named \"DoctorFilter\" was found. Create one in the Shortcuts app with the \"Set Colour Filters\" action."
+  "ios_toggle_missing": "No shortcut named \"DoctorFilter\" was found. Create one in the Shortcuts app with the \"Set Colour Filters\" action.",
+  "app_tagline": "Measured in kelvin. Honest about the numbers."
 }

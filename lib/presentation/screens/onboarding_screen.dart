@@ -97,6 +97,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           icon: Icons.visibility_rounded,
           title: loc?.translate('onboarding_welcome_title') ?? 'Welcome',
           body: loc?.translate('onboarding_welcome_body') ?? '',
+          // The brand line belongs on the first screen a person actually reads,
+          // not on a splash. Android's system splash cannot draw text, and
+          // holding the app back behind a Flutter one purely to make room for a
+          // strapline would be adding a delay to show marketing copy.
+          tagline: loc?.translate('app_tagline'),
         ),
         _PageData(
           icon: Icons.layers_rounded,
@@ -118,12 +123,16 @@ class _PageData {
     required this.title,
     required this.body,
     this.requestsPermission = false,
+    this.tagline,
   });
 
   final IconData icon;
   final String title;
   final String body;
   final bool requestsPermission;
+
+  /// A short line under the mark, on the first slide only.
+  final String? tagline;
 }
 
 class _Page extends StatelessWidget {
@@ -140,6 +149,17 @@ class _Page extends StatelessWidget {
         children: [
           const SizedBox(height: 24),
           Icon(page.icon, size: 84, color: context.colours.primary),
+          if (page.tagline != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              page.tagline!,
+              textAlign: TextAlign.center,
+              style: context.texts.labelMedium?.copyWith(
+                color: context.colours.primary,
+                letterSpacing: 0.4,
+              ),
+            ),
+          ],
           const SizedBox(height: 28),
           Text(
             page.title,
