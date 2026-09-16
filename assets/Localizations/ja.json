@@ -223,5 +223,15 @@
   "ios_toggle_body": "上の値はそのまま残るので、あとは切り替えるだけです。方法は三つあり、どれもこのアプリを開く必要はありません。アクセシビリティショートカット（サイドボタンを3回押す）、背面タップ、日没に切り替えるショートカットのオートメーション。下のボタンは「DoctorFilter」という名前のご自身のショートカットを実行します。iOS が一瞬ショートカットに切り替わってすぐ戻りますが、それは iOS の動作であって不具合ではありません。",
   "ios_toggle_run": "ショートカットを実行",
   "ios_toggle_missing": "「DoctorFilter」という名前のショートカットが見つかりません。ショートカットアプリで「カラーフィルタを設定」アクションを使って作成してください。",
-  "app_tagline": "ケルビンで測る。数字に正直。"
+  "app_tagline": "ケルビンで測る。数字に正直。",
+  "native_channel_name": "画面フィルター",
+  "native_channel_desc": "フィルター動作中に状態とクイック操作を表示します。",
+  "native_paused": "フィルター一時停止中",
+  "native_break_channel_desc": "フィルターがオンの間、目を休めるよう静かにお知らせします。",
+  "native_break_title": "遠くを見る時間です",
+  "native_dimmer": "暗く",
+  "native_brighter": "明るく",
+  "native_pro_required": "Pro ですべてのプロファイルと操作を解放",
+  "native_tile_on": "オン",
+  "native_tile_off": "オフ"
 }

@@ -223,5 +223,15 @@
   "ios_toggle_body": "Yllä olevat arvot pysyvät paikallaan, joten jäljelle jää vain kytkin. Kolme tapaa, eikä yksikään vaadi tätä sovellusta auki: käyttöavun oikotie (kolme painallusta sivupainikkeesta), takanaputus tai Oikotiet-automaatio auringonlaskun aikaan. Alla oleva painike suorittaa oman oikotiesi nimeltä ”DoctorFilter”; iOS pomppaa hetkeksi Oikoteihin ja heti takaisin — se välähdys on iOS, ei vika.",
   "ios_toggle_run": "Suorita oikotieni",
   "ios_toggle_missing": "Oikotietä nimeltä ”DoctorFilter” ei löytynyt. Luo sellainen Oikotiet-sovelluksessa toiminnolla ”Aseta värisuodattimet”.",
-  "app_tagline": "Mitattu kelvineinä. Rehellinen lukujen suhteen."
+  "app_tagline": "Mitattu kelvineinä. Rehellinen lukujen suhteen.",
+  "native_channel_name": "Näytön suodatin",
+  "native_channel_desc": "Näyttää suodattimen tilan ja pikasäätimet, kun suodatin on käynnissä.",
+  "native_paused": "Suodatin tauolla",
+  "native_break_channel_desc": "Hiljainen muistutus levätä silmiä, kun suodatin on päällä.",
+  "native_break_title": "Aika katsoa kauas",
+  "native_dimmer": "Tummempi",
+  "native_brighter": "Kirkkaampi",
+  "native_pro_required": "Avaa kaikki profiilit ja säätimet Prolla",
+  "native_tile_on": "Päällä",
+  "native_tile_off": "Pois"
 }

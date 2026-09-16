@@ -223,5 +223,15 @@
   "ios_toggle_body": "Nilai di atas tetap di tempatnya, jadi tinggal sakelarnya. Ada tiga cara dan tak satu pun butuh aplikasi ini terbuka: Pintasan Aksesibilitas (tekan tombol samping tiga kali), Ketuk Belakang, atau otomatisasi Pintasan saat matahari terbenam. Tombol di bawah menjalankan pintasan Anda sendiri bernama \"DoctorFilter\"; iOS sejenak berpindah ke Pintasan lalu langsung kembali — kedipan itu iOS, bukan kerusakan.",
   "ios_toggle_run": "Jalankan pintasan saya",
   "ios_toggle_missing": "Tidak ada pintasan bernama \"DoctorFilter\". Buat satu di aplikasi Pintasan dengan tindakan \"Atur Filter Warna\".",
-  "app_tagline": "Diukur dalam kelvin. Jujur soal angkanya."
+  "app_tagline": "Diukur dalam kelvin. Jujur soal angkanya.",
+  "native_channel_name": "Filter layar",
+  "native_channel_desc": "Menampilkan status filter dan kontrol cepat saat filter berjalan.",
+  "native_paused": "Filter dijeda",
+  "native_break_channel_desc": "Pengingat senyap untuk mengistirahatkan mata saat filter aktif.",
+  "native_break_title": "Saatnya melihat jauh",
+  "native_dimmer": "Lebih gelap",
+  "native_brighter": "Lebih terang",
+  "native_pro_required": "Buka semua profil dan kontrol dengan Pro",
+  "native_tile_on": "Aktif",
+  "native_tile_off": "Nonaktif"
 }

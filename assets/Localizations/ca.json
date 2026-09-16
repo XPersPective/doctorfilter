@@ -223,5 +223,15 @@
   "ios_toggle_body": "Els valors de dalt es queden, així que només falta un interruptor. Tres maneres, i cap no demana tenir aquesta aplicació oberta: la drecera d'accessibilitat (triple clic al botó lateral), Tocar el darrere, o una automatització de Dreceres a la posta de sol. El botó de sota executa una drecera teva anomenada «DoctorFilter»; l'iOS salta un instant a Dreceres i torna de seguida — aquest parpelleig és l'iOS, no una avaria.",
   "ios_toggle_run": "Executa la meva drecera",
   "ios_toggle_missing": "No s'ha trobat cap drecera anomenada «DoctorFilter». Crea'n una a l'app Dreceres amb l'acció «Configurar filtres de color».",
-  "app_tagline": "Mesurat en kelvins. Honest amb les xifres."
+  "app_tagline": "Mesurat en kelvins. Honest amb les xifres.",
+  "native_channel_name": "Filtre de pantalla",
+  "native_channel_desc": "Mostra l'estat del filtre i controls ràpids mentre està actiu.",
+  "native_paused": "Filtre en pausa",
+  "native_break_channel_desc": "Un recordatori silenciós per descansar la vista mentre el filtre és actiu.",
+  "native_break_title": "Hora de mirar lluny",
+  "native_dimmer": "Més fosc",
+  "native_brighter": "Més clar",
+  "native_pro_required": "Desbloqueja tots els perfils i controls amb Pro",
+  "native_tile_on": "Activat",
+  "native_tile_off": "Desactivat"
 }

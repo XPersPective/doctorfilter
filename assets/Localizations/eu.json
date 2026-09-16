@@ -223,5 +223,15 @@
   "ios_toggle_body": "Goiko balioak bere horretan geratzen dira, beraz etengailua besterik ez da falta. Hiru bide daude, eta batek ere ez du aplikazio hau irekita egotea eskatzen: erabilerraztasun-lasterbidea (alboko botoia hiru aldiz sakatuta), atzealdeko ukitua, edo Lasterbideak automatizazio bat ilunabarrean. Beheko botoiak zure «DoctorFilter» izeneko lasterbidea exekutatzen du; iOS unetxo batez Lasterbideetara joan eta berehala itzultzen da — distira hori iOS da, ez akats bat.",
   "ios_toggle_run": "Exekutatu nire lasterbidea",
   "ios_toggle_missing": "Ez da «DoctorFilter» izeneko lasterbiderik aurkitu. Sortu bat Lasterbideak aplikazioan «Ezarri kolore-iragazkiak» ekintzarekin.",
-  "app_tagline": "Kelvinetan neurtua. Zenbakiekin zintzoa."
+  "app_tagline": "Kelvinetan neurtua. Zenbakiekin zintzoa.",
+  "native_channel_name": "Pantaila-iragazkia",
+  "native_channel_desc": "Iragazkiaren egoera eta kontrol azkarrak erakusten ditu martxan dagoen bitartean.",
+  "native_paused": "Iragazkia pausatuta",
+  "native_break_channel_desc": "Iragazkia piztuta dagoen bitartean begiak atsedenean uzteko oroigarri isila.",
+  "native_break_title": "Urrutira begiratzeko garaia",
+  "native_dimmer": "Ilunago",
+  "native_brighter": "Argiago",
+  "native_pro_required": "Desblokeatu profil eta kontrol guztiak Pro-rekin",
+  "native_tile_on": "Piztuta",
+  "native_tile_off": "Itzalita"
 }

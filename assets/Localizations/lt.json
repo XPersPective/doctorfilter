@@ -223,5 +223,15 @@
   "ios_toggle_body": "Aukščiau esančios reikšmės lieka vietoje, tad trūksta tik jungiklio. Trys būdai ir nė vienam nereikia atverti šios programėlės: pritaikymo neįgaliesiems nuoroda (trys šoninio mygtuko paspaudimai), bakstelėjimas į nugarėlę arba „Sparčiųjų komandų“ automatizavimas saulėlydžio metu. Mygtukas apačioje paleidžia jūsų pačių sparčiąją komandą pavadinimu „DoctorFilter“; iOS akimirkai peršoka į „Sparčiąsias komandas“ ir tuoj pat grįžta — tas blyksnis yra iOS, o ne gedimas.",
   "ios_toggle_run": "Paleisti mano komandą",
   "ios_toggle_missing": "Sparčiosios komandos pavadinimu „DoctorFilter“ nerasta. Sukurkite ją programėlėje „Sparčiosios komandos“ su veiksmu „Nustatyti spalvų filtrus“.",
-  "app_tagline": "Matuojama kelvinais. Sąžininga dėl skaičių."
+  "app_tagline": "Matuojama kelvinais. Sąžininga dėl skaičių.",
+  "native_channel_name": "Ekrano filtras",
+  "native_channel_desc": "Rodo filtro būseną ir greitus valdiklius, kol filtras veikia.",
+  "native_paused": "Filtras pristabdytas",
+  "native_break_channel_desc": "Tylus priminimas pailsinti akis, kol filtras įjungtas.",
+  "native_break_title": "Laikas pažvelgti į tolį",
+  "native_dimmer": "Tamsiau",
+  "native_brighter": "Šviesiau",
+  "native_pro_required": "Atrakinkite visus profilius ir valdiklius su Pro",
+  "native_tile_on": "Įjungta",
+  "native_tile_off": "Išjungta"
 }

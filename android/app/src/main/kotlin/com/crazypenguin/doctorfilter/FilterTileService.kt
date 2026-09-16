@@ -17,6 +17,21 @@ import android.service.quicksettings.TileService
 @TargetApi(Build.VERSION_CODES.N)
 class FilterTileService : TileService() {
 
+    companion object {
+        /**
+         * The tile only redraws while the shade is listening, and onClick's own
+         * refresh runs before the service has started. So the service asks for a
+         * redraw itself whenever it starts or stops, from whatever triggered it.
+         */
+        fun requestRefresh(context: android.content.Context) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
+            requestListeningState(
+                context,
+                android.content.ComponentName(context, FilterTileService::class.java)
+            )
+        }
+    }
+
     override fun onStartListening() {
         super.onStartListening()
         refresh()
@@ -32,7 +47,8 @@ class FilterTileService : TileService() {
             return
         }
 
-        if (OverlayService.isRunning) {
+        val turningOn = !OverlayService.isRunning
+        if (!turningOn) {
             startService(
                 Intent(this, OverlayService::class.java).apply {
                     action = OverlayService.ACTION_STOP
@@ -51,19 +67,19 @@ class FilterTileService : TileService() {
             MainActivity.notifyFilterToggled(true)
         }
 
-        refresh()
+        // The service has not started (or stopped) yet, so draw the state asked for.
+        refresh(running = turningOn)
     }
 
-    private fun refresh() {
+    private fun refresh(running: Boolean = OverlayService.isRunning) {
         val tile = qsTile ?: return
-        val running = OverlayService.isRunning
         tile.state = if (running) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.label = getString(R.string.app_name)
+        tile.label = PresetCatalog.text(this, R.string.app_name)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             tile.subtitle = if (running) {
-                getString(R.string.tile_subtitle_active, OverlayService.current.kelvin)
+                PresetCatalog.text(this, R.string.tile_subtitle_active, OverlayService.current.kelvin)
             } else {
-                getString(R.string.tile_subtitle_off)
+                PresetCatalog.text(this, R.string.tile_subtitle_off)
             }
         }
         tile.updateTile()

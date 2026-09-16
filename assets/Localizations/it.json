@@ -223,5 +223,15 @@
   "ios_toggle_body": "I valori qui sopra restano, quindi manca solo un interruttore. Tre modi, nessuno dei quali richiede questa app aperta: la scorciatoia di accessibilità (triplo clic sul tasto laterale), Tocco posteriore, o un'automazione di Comandi rapidi al tramonto. Il pulsante qui sotto esegue un tuo comando rapido chiamato «DoctorFilter»; iOS passa un attimo a Comandi rapidi e torna subito — quel lampo è iOS, non un guasto.",
   "ios_toggle_run": "Esegui il mio comando",
   "ios_toggle_missing": "Nessun comando rapido chiamato «DoctorFilter». Creane uno nell'app Comandi rapidi con l'azione «Imposta filtri colore».",
-  "app_tagline": "Misurato in kelvin. Onesto sui numeri."
+  "app_tagline": "Misurato in kelvin. Onesto sui numeri.",
+  "native_channel_name": "Filtro schermo",
+  "native_channel_desc": "Mostra lo stato del filtro e i controlli rapidi mentre è attivo.",
+  "native_paused": "Filtro in pausa",
+  "native_break_channel_desc": "Un promemoria silenzioso per riposare gli occhi mentre il filtro è attivo.",
+  "native_break_title": "Guarda lontano",
+  "native_dimmer": "Più scuro",
+  "native_brighter": "Più luminoso",
+  "native_pro_required": "Sblocca tutti i profili e i controlli con Pro",
+  "native_tile_on": "Attivo",
+  "native_tile_off": "Disattivo"
 }

@@ -223,5 +223,15 @@
   "ios_toggle_body": "Os valores de arriba quedan, así que só falta un interruptor. Tres formas, e ningunha precisa esta aplicación aberta: o atallo de accesibilidade (triplo clic no botón lateral), Tocar a parte traseira, ou unha automatización de Atallos á posta do sol. O botón de abaixo executa un atallo teu chamado «DoctorFilter»; iOS salta un instante a Atallos e volve decontado — ese escintileo é iOS, non unha avaría.",
   "ios_toggle_run": "Executar o meu atallo",
   "ios_toggle_missing": "Non se atopou ningún atallo chamado «DoctorFilter». Crea un na app Atallos coa acción «Configurar filtros de cor».",
-  "app_tagline": "Medido en kelvin. Honesto coas cifras."
+  "app_tagline": "Medido en kelvin. Honesto coas cifras.",
+  "native_channel_name": "Filtro de pantalla",
+  "native_channel_desc": "Mostra o estado do filtro e controis rápidos mentres está activo.",
+  "native_paused": "Filtro en pausa",
+  "native_break_channel_desc": "Un recordatorio silencioso para descansar a vista mentres o filtro está activo.",
+  "native_break_title": "Hora de mirar lonxe",
+  "native_dimmer": "Máis escuro",
+  "native_brighter": "Máis claro",
+  "native_pro_required": "Desbloquea todos os perfís e controis con Pro",
+  "native_tile_on": "Activado",
+  "native_tile_off": "Desactivado"
 }

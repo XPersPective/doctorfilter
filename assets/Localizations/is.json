@@ -223,5 +223,15 @@
   "ios_toggle_body": "Gildin hér að ofan haldast, svo eftir stendur aðeins rofi. Þrjár leiðir og engin þeirra krefst þess að þetta forrit sé opið: aðgengisflýtileiðin (þrír smellir á hliðarhnappinn), bank aftan á símann, eða sjálfvirkni í Flýtileiðum við sólsetur. Hnappurinn hér að neðan keyrir þína eigin flýtileið sem heitir „DoctorFilter“; iOS skýst andartak yfir í Flýtileiðir og strax til baka — það blik er iOS, ekki bilun.",
   "ios_toggle_run": "Keyra flýtileiðina mína",
   "ios_toggle_missing": "Engin flýtileið að nafni „DoctorFilter“ fannst. Búðu til eina í Flýtileiðaforritinu með aðgerðinni „Stilla litasíur“.",
-  "app_tagline": "Mælt í kelvinum. Heiðarlegt um tölurnar."
+  "app_tagline": "Mælt í kelvinum. Heiðarlegt um tölurnar.",
+  "native_channel_name": "Skjásía",
+  "native_channel_desc": "Sýnir stöðu síunnar og flýtistýringar á meðan hún er virk.",
+  "native_paused": "Sía í hléi",
+  "native_break_channel_desc": "Hljóðlát áminning um að hvíla augun á meðan sían er á.",
+  "native_break_title": "Tími til að horfa í fjarska",
+  "native_dimmer": "Dekkra",
+  "native_brighter": "Bjartara",
+  "native_pro_required": "Opnaðu öll snið og stýringar með Pro",
+  "native_tile_on": "Kveikt",
+  "native_tile_off": "Slökkt"
 }

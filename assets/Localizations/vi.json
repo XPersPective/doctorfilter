@@ -223,5 +223,15 @@
   "ios_toggle_body": "Các giá trị ở trên nằm nguyên, nên chỉ còn thiếu một công tắc. Có ba cách, không cách nào cần mở ứng dụng này: Phím tắt Trợ năng (bấm nút sườn ba lần), Chạm mặt sau, hoặc một tự động hóa Phím tắt lúc hoàng hôn. Nút bên dưới chạy phím tắt của riêng bạn tên \"DoctorFilter\"; iOS nhảy sang Phím tắt trong chớp mắt rồi quay lại ngay — cái nhấp nháy đó là iOS, không phải lỗi.",
   "ios_toggle_run": "Chạy phím tắt của tôi",
   "ios_toggle_missing": "Không tìm thấy phím tắt tên \"DoctorFilter\". Hãy tạo một cái trong ứng dụng Phím tắt với hành động \"Đặt bộ lọc màu\".",
-  "app_tagline": "Đo bằng kelvin. Trung thực với các con số."
+  "app_tagline": "Đo bằng kelvin. Trung thực với các con số.",
+  "native_channel_name": "Bộ lọc màn hình",
+  "native_channel_desc": "Hiển thị trạng thái bộ lọc và điều khiển nhanh khi bộ lọc đang chạy.",
+  "native_paused": "Bộ lọc đã tạm dừng",
+  "native_break_channel_desc": "Lời nhắc im lặng để mắt nghỉ ngơi khi bộ lọc đang bật.",
+  "native_break_title": "Đến lúc nhìn ra xa",
+  "native_dimmer": "Tối hơn",
+  "native_brighter": "Sáng hơn",
+  "native_pro_required": "Mở khóa mọi hồ sơ và điều khiển với Pro",
+  "native_tile_on": "Bật",
+  "native_tile_off": "Tắt"
 }

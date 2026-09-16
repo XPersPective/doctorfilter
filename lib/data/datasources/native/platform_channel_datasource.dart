@@ -101,10 +101,12 @@ class PlatformChannelDataSource {
   Future<bool> setPresetCatalog({
     required String presetsJson,
     required bool isPro,
+    required String labelsJson,
   }) =>
       _invokeBool('setPresetCatalog', {
         'presets': presetsJson,
         'isPro': isPro,
+        'labels': labelsJson,
       });
 
   /// Minutes the filter was on, per `yyyy-MM-dd`, for the last week.

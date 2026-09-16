@@ -223,5 +223,15 @@
   "ios_toggle_body": "Thamani zilizo juu hubaki palepale, kwa hiyo kinachobaki ni swichi tu. Njia tatu, na hakuna inayohitaji programu hii iwe wazi: njia ya mkato ya ufikivu (bonyeza kitufe cha upande mara tatu), Kugonga Nyuma, au uendeshaji otomatiki wa Njia za Mkato wakati wa machweo. Kitufe kilicho hapa chini huendesha njia yako mwenyewe ya mkato yenye jina \"DoctorFilter\"; iOS huruka kwa muda mfupi hadi Njia za Mkato na kurudi mara moja — mweko huo ni iOS, si hitilafu.",
   "ios_toggle_run": "Endesha njia yangu ya mkato",
   "ios_toggle_missing": "Hakuna njia ya mkato yenye jina \"DoctorFilter\" iliyopatikana. Tengeneza moja katika programu ya Njia za Mkato ukitumia kitendo \"Weka Vichujio vya Rangi\".",
-  "app_tagline": "Hupimwa kwa kelvin. Mwaminifu kuhusu namba."
+  "app_tagline": "Hupimwa kwa kelvin. Mwaminifu kuhusu namba.",
+  "native_channel_name": "Kichujio cha skrini",
+  "native_channel_desc": "Huonyesha hali ya kichujio na vidhibiti vya haraka kinapofanya kazi.",
+  "native_paused": "Kichujio kimesitishwa",
+  "native_break_channel_desc": "Kikumbusho kimya cha kupumzisha macho kichujio kikiwa kimewashwa.",
+  "native_break_title": "Wakati wa kutazama mbali",
+  "native_dimmer": "Giza zaidi",
+  "native_brighter": "Angavu zaidi",
+  "native_pro_required": "Fungua wasifu na vidhibiti vyote kwa Pro",
+  "native_tile_on": "Imewashwa",
+  "native_tile_off": "Imezimwa"
 }

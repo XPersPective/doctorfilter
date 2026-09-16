@@ -19,6 +19,7 @@ object PresetCatalog {
     private const val PREFS = "doctorfilter_presets"
     private const val KEY_JSON = "catalog"
     private const val KEY_IS_PRO = "is_pro"
+    private const val KEY_LABELS = "labels"
 
     /**
      * [locked] is decided by Dart, not here: entitlement is a domain concept and
@@ -31,11 +32,37 @@ object PresetCatalog {
         val locked: Boolean
     )
 
-    fun save(context: Context, json: String, isPro: Boolean) {
+    fun save(context: Context, json: String, isPro: Boolean, labels: String?) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
             .putString(KEY_JSON, json)
             .putBoolean(KEY_IS_PRO, isPro)
+            .apply { if (labels != null) putString(KEY_LABELS, labels) }
             .apply()
+    }
+
+    /**
+     * A native string in the language the app is showing.
+     *
+     * Dart pushes its translations of these strings keyed by resource name, so the
+     * notification, tile and widget follow the in-app language choice across all
+     * the locales the app ships. strings.xml is the fallback until the first push,
+     * and for anything a translation gets wrong.
+     */
+    fun text(context: Context, id: Int, vararg args: Any): String {
+        val template = try {
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_LABELS, null)
+                ?.let { JSONObject(it).optString(context.resources.getResourceEntryName(id)) }
+        } catch (e: Exception) {
+            null
+        }
+        if (template.isNullOrEmpty()) return context.getString(id, *args)
+
+        return try {
+            String.format(template, *args)
+        } catch (e: java.util.IllegalFormatException) {
+            context.getString(id, *args)
+        }
     }
 
     fun isPro(context: Context): Boolean =

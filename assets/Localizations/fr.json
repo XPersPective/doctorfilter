@@ -223,5 +223,15 @@
   "ios_toggle_body": "Les valeurs ci-dessus restent en place : il ne manque qu'un interrupteur. Trois façons, dont aucune ne demande d'ouvrir cette appli : le raccourci d'accessibilité (triple clic sur le bouton latéral), le toucher au dos, ou une automatisation Raccourcis au coucher du soleil. Le bouton ci-dessous exécute un raccourci à vous nommé « DoctorFilter » ; iOS bascule un instant vers Raccourcis et revient aussitôt — ce clignotement, c'est iOS, pas une panne.",
   "ios_toggle_run": "Exécuter mon raccourci",
   "ios_toggle_missing": "Aucun raccourci nommé « DoctorFilter » n'a été trouvé. Créez-en un dans l'app Raccourcis avec l'action « Régler les filtres de couleur ».",
-  "app_tagline": "Mesuré en kelvins. Honnête sur les chiffres."
+  "app_tagline": "Mesuré en kelvins. Honnête sur les chiffres.",
+  "native_channel_name": "Filtre d'écran",
+  "native_channel_desc": "Affiche l'état du filtre et des commandes rapides pendant qu'il est actif.",
+  "native_paused": "Filtre en pause",
+  "native_break_channel_desc": "Un rappel silencieux pour reposer vos yeux quand le filtre est actif.",
+  "native_break_title": "Regardez au loin",
+  "native_dimmer": "Plus sombre",
+  "native_brighter": "Plus clair",
+  "native_pro_required": "Débloquez tous les profils et réglages avec Pro",
+  "native_tile_on": "Activé",
+  "native_tile_off": "Désactivé"
 }

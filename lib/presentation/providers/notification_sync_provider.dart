@@ -66,8 +66,44 @@ Future<void> _pushCatalog(
   await ref.read(platformChannelDataSourceProvider).setPresetCatalog(
         presetsJson: jsonEncode(entries),
         isPro: isPro,
+        labelsJson: jsonEncode(
+          // Escaped because the native side formats these with String.format.
+          nativeLabels((key) => translations.translate(key).replaceAll('%', '%%')),
+        ),
       );
 }
+
+/// The notification, tile and widget text, keyed by Android resource name.
+///
+/// Values are `String.format` templates, so a literal percent sign is `%%`.
+/// Built from existing app strings wherever one says the same thing, so a
+/// translator never sees the same sentence twice.
+Map<String, String> nativeLabels(String Function(String key) t) => {
+      'notification_channel_name': t('native_channel_name'),
+      'notification_channel_description': t('native_channel_desc'),
+      'notification_title_active': '${t('filter_active')} · %1\$d K',
+      'notification_title_paused': t('native_paused'),
+      'notification_summary':
+          '${t('density_label')} %1\$d%% · ${t('extra_dim_label')} %2\$d%%',
+      'break_channel_name': t('settings_breaks'),
+      'break_channel_description': t('native_break_channel_desc'),
+      'break_title': t('native_break_title'),
+      'break_body': t('settings_breaks_desc'),
+      'shortcut_needs_permission': t('permission_overlay_required'),
+      'notification_action_on': t('filter_turn_on'),
+      'notification_action_off': t('filter_turn_off'),
+      'notification_action_dimmer': t('native_dimmer'),
+      'notification_action_brighter': t('native_brighter'),
+      'notification_action_next_preset': t('onboarding_next'),
+      'notification_pro_required': t('native_pro_required'),
+      'axis_kelvin': t('kelvin_label'),
+      'axis_density': t('density_label'),
+      'axis_dim': t('extra_dim_label'),
+      'tile_subtitle_active': '${t('native_tile_on')} · %1\$d K',
+      'tile_subtitle_off': t('native_tile_off'),
+      'widget_on': t('filter_active'),
+      'widget_off': t('filter_inactive'),
+    };
 
 /// Opaque ARGB, sign-extended the way a Kotlin `Int` colour is.
 int _argb(int r, int g, int b) {

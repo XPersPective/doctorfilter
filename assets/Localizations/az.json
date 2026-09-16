@@ -223,5 +223,15 @@
   "ios_toggle_body": "Yuxarıdakı dəyərlər yerində qalır, deməli yalnız açar qalıb. Üç yol var və heç biri bu tətbiqin açıq olmasını tələb etmir: əlçatanlıq qısayolu (yan düyməyə üç dəfə basmaq), arxaya toxunma, ya da gün batımında Qısayollar avtomatlaşdırması. Aşağıdakı düymə sizin «DoctorFilter» adlı öz qısayolunuzu işə salır; iOS bir anlığa Qısayollara keçib dərhal geri dönür — o çaxma iOS-un özüdür, nasazlıq deyil.",
   "ios_toggle_run": "Qısayolumu işə sal",
   "ios_toggle_missing": "«DoctorFilter» adlı qısayol tapılmadı. Qısayollar tətbiqində «Rəng Filtrlərini Ayarla» əməliyyatı ilə bir dənə yaradın.",
-  "app_tagline": "Kelvinlə ölçülür. Rəqəmlərində dürüstdür."
+  "app_tagline": "Kelvinlə ölçülür. Rəqəmlərində dürüstdür.",
+  "native_channel_name": "Ekran filtri",
+  "native_channel_desc": "Filtr işləyərkən onun vəziyyətini və sürətli idarəetmələri göstərir.",
+  "native_paused": "Filtr dayandırılıb",
+  "native_break_channel_desc": "Filtr açıq olarkən gözlərinizi dincəltmək üçün səssiz xatırlatma.",
+  "native_break_title": "Uzağa baxmaq vaxtıdır",
+  "native_dimmer": "Daha tünd",
+  "native_brighter": "Daha parlaq",
+  "native_pro_required": "Bütün profilləri və idarəetmələri Pro ilə açın",
+  "native_tile_on": "Açıq",
+  "native_tile_off": "Bağlı"
 }

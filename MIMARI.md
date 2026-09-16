@@ -1218,8 +1218,38 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       PRO, altında slogan. Ana ekranda; splash'ta mümkün değilse yalnızca ikon.
 - [ ] **I7.** (Bulgu) Windows uygulama ikonu ve MSIX Store logosu hâlâ **Flutter'ın varsayılan
       logosu** — DoctorFilter ikonu ile değiştirilecek.
-- [ ] **I8.** Bildirim kokpiti ve sistem entegrasyonları (Hızlı Ayarlar kutucuğu, widget,
-      kısayollar, zamanlayıcı) **yereldeki Android emülatöründe** çalıştırılıp doğrulanacak.
+- [x] **I8.** Bildirim kokpiti ve sistem entegrasyonları **emülatörde (Android 16, API 36)**
+      tek tek çalıştırıldı. Bulunan ve düzeltilen hatalar:
+      * **Kokpit hiç çalışmıyordu — uygulama çöküyordu.** `notification_cockpit.xml` ve
+        `widget_filter.xml` renk kutuları için düz `<View>` kullanıyordu; RemoteViews buna
+        izin vermez ("Class not allowed to be inflated android.view.View"). Ön plan
+        servisinin bildirimi reddedilince sistem uygulamayı öldürüyordu
+        (`BadForegroundServiceNotificationException`). Sahibin kokpiti hiç görmemesinin
+        sebebi buydu. `ImageView` ile değiştirildi (`setBackgroundColor` aynen çalışır).
+        **Kural:** RemoteViews layout'unda yalnızca izinli sınıflar (FrameLayout,
+        LinearLayout, RelativeLayout, TextView, ImageView, Button…) — düz `View` asla.
+      * **Kutucuk durumu geride kalıyordu.** `onClick` sonrası `refresh()` servis daha
+        başlamadan `isRunning` okuyordu; uygulama/bildirim/widget'tan açıp kapatınca da
+        kutucuk hiç yenilenmiyordu. Artık `onClick` istenen durumu çizer ve
+        `OverlayService` başlarken/dururken `TileService.requestListeningState` ister.
+      * **Bildirim, kutucuk ve widget yazıları yalnızca İngilizceydi.** `strings.xml`'in
+        çevirisi hiç yoktu. Dart, preset adlarını zaten native'e gönderiyordu; aynı
+        çağrıyla bu yazıları da (kaynak adına göre) uygulamanın dilinde gönderiyor
+        (`nativeLabels`), native `PresetCatalog.text` ile okuyor, `strings.xml` yalnızca
+        ilk gönderimden önceki yedek. Uygulama içi dil seçimini de izler. 10 yeni anahtar
+        71 dile eklendi; `native_labels_test` her dilde eksik anahtar ve `String.format`'ı
+        kıracak başıboş `%` olmadığını doğrular. Sınır: erişilebilirlik açıklamaları
+        (contentDescription) ve widget seçicideki açıklama hâlâ cihaz dilinde.
+      * **Zamanlama ekranda kapalı, alarmlar kuruluydu.** Native kopya yalnızca kullanıcı
+        bir şeyi değiştirince güncelleniyordu; iki kopya ayrışmıştı. Kural uygulama
+        açılışında yüklenir ve native'e yeniden gönderilir — ekranda görünen kazanır.
+      * **Yatma saati geçişi 3 saat, native 60 dakikada kesiyordu.** `ScheduleReceiver`
+        artık `ScheduleRule.maxTransitionMinutes` (180) ile aynı sınırı kullanır.
+      Doğrulananlar: kokpit (preset çipleri, eksen ±, Kapat/Daha karanlık/Daha parlak),
+      Hızlı Ayarlar kutucuğu (aç/kapa + alt yazı), ana ekran widget'ı (ekleme + dokunma),
+      preset kısayolu, zamanlama alarmı (gerçek saatte tetiklendi, preset uygulandı,
+      ertesi güne yeniden kuruldu). Mola hatırlatıcısı alarmı gerçek aralıkta (20 dk)
+      beklenmedi; shell dışa kapalı receiver'a yayın gönderemediği için elle tetiklenemedi.
 
 
 ---
