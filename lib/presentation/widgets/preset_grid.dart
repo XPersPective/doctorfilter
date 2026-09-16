@@ -162,7 +162,10 @@ class _Draggable extends StatelessWidget {
           data: index,
           feedback: Material(
             color: Colors.transparent,
-            child: Opacity(opacity: 0.85, child: SizedBox(width: 84, child: child)),
+            child: Opacity(
+              opacity: 0.85,
+              child: SizedBox(width: 84, child: child),
+            ),
           ),
           childWhenDragging: Opacity(opacity: 0.3, child: child),
           child: AnimatedScale(
@@ -203,7 +206,9 @@ class _PresetTile extends StatelessWidget {
     return Semantics(
       button: true,
       selected: isActive,
-      label: '$name, ${preset.kelvin} kelvin',
+      label: '$name, ${preset.kelvin} K',
+      excludeSemantics: true,
+      onTap: onTap,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
@@ -213,10 +218,14 @@ class _PresetTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: isActive
                 ? context.colours.primary.withValues(alpha: 0.14)
-                : context.colours.surfaceContainerHighest.withValues(alpha: 0.5),
+                : context.colours.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isActive ? context.colours.primary : context.colours.outlineVariant,
+              color: isActive
+                  ? context.colours.primary
+                  : context.colours.outlineVariant,
               width: isActive ? 2 : 1,
             ),
           ),
@@ -232,16 +241,16 @@ class _PresetTile extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: tint.withValues(alpha: isLocked ? 0.35 : 1),
-                      border: Border.all(
-                        color: context.colours.outlineVariant,
-                      ),
+                      border: Border.all(color: context.colours.outlineVariant),
                     ),
                     child: Icon(
                       kPresetIcons[preset.iconIdentifier] ?? Icons.tune_rounded,
                       size: 18,
                       // Dark ink on the swatch: every tint on the Planckian
                       // locus is light, so black is always the readable choice.
-                      color: Colors.black.withValues(alpha: isLocked ? 0.35 : 0.72),
+                      color: Colors.black.withValues(
+                        alpha: isLocked ? 0.35 : 0.72,
+                      ),
                     ),
                   ),
                   if (isLocked)
@@ -264,7 +273,9 @@ class _PresetTile extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: context.texts.labelMedium?.copyWith(
                   fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-                  color: isActive ? context.colours.primary : context.colours.onSurface,
+                  color: isActive
+                      ? context.colours.primary
+                      : context.colours.onSurface,
                 ),
               ),
               Text(

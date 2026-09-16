@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T8 · **Updated:** 2026-09-16 · **Synced@:** ec91a8f
+> **Phase:** BUILD · **Next:** T9 · **Updated:** 2026-09-16 · **Synced@:** a6d683d
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -369,11 +369,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: 14 ekran görüntüsünde her yazı okunur; `flutter test` yeşil → koyu ve açık temada ana ekran, preset, zamanlama, bilgi merkezi, ayarlar, paywall (12 görüntü) okunur; onboarding koyu temada T2'de görüldü; düzeltme gerekmedi
 - [x] T7 [M] (2026-09-16, Claude Opus 5) Ana ekranda basılı tut–sürükle sıralama (D6)
   - Done when: sürükleme sonrası ve yeniden açılışta ekran görüntüsünde yeni sıra → Daylight 4. sıraya taşındı, soğuk açılışta korundu, sonra geri alındı. Not: `input draganddrop` basılı tutmadığı için çalışmaz; `input motionevent DOWN`, 1 sn, `MOVE` adımları, `UP` kullan
-- [ ] T8 [M] Erişilebilirlik etiketleri ve büyük yazı (D16, AC9)
-  - Where: `lib/presentation/widgets/power_button.dart`, `preset_grid.dart`, `axis_slider.dart`, `spectrum_slider.dart`
-  - Do: 1) `adb shell uiautomator dump /sdcard/ui.xml` + `adb pull`; 2) güç anahtarı, preset kartları, kaydırıcılar ve app bar düğmelerinin `content-desc` veya metni anlamlı ve uygulama dilinde; 3) `adb shell settings put system font_scale 1.3`, ana ekran ve ayarlar ekran görüntüsü; 4) eksikleri düzelt; 5) `font_scale 1.0`
-  - Note: T5'te görüldü — güç anahtarının etiketi ekran okuyucuda iki kez okunuyor (`content-desc="Filter on&#10;Filter on"`), düzeltilecek
-  - Done when: dump'ta tüm etkileşimli öğelerin etiketi var; 1.3 ölçekte taşma yok; ölçek 1.0'a döndü
+- [x] T8 [M] (2026-09-16, Claude Opus 5) Erişilebilirlik etiketleri ve büyük yazı (D16, AC9)
+  - Done when: dump'ta tüm etkileşimli öğelerin etiketi var; 1.3 ölçekte taşma yok; ölçek 1.0'a döndü → HATALAR düzeltildi: güç anahtarı, preset kartları ve melanopik halka etiketi iki kez okunuyordu (`excludeSemantics` + `onTap` yeniden bildirildi); kaydırıcılar hangi eksen olduklarını söylemiyordu (`MergeSemantics` + eksen adı); "percent"/"kelvin" İngilizce sabitleri %/K oldu. Yeni widget testi (düzeltme geri alınınca başarısız). 1.3 yazı ölçeğinde taşma yok
 - [ ] T9 [M] Tablet ve yatay düzen (D17)
   - Where: `lib/presentation/widgets/preset_grid.dart`, `lib/presentation/screens/home_screen.dart`
   - Do: `adb shell wm size 1600x2560` + `wm density 320` → ana ekran ve ayarlar ekran görüntüsü; `settings put system accelerometer_rotation 0` + `user_rotation 1` → aynı; sonunda `wm size reset`, `wm density reset`, `user_rotation 0`
@@ -438,4 +435,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T7 doğrulandı (kod değişikliği yok). Sonraki: T8 (erişilebilirlik; güç anahtarı etiketi iki kez okunuyor, düzeltilecek). Emülatör: Pro yok, İngilizce, açık tema, filtre kapalı. Sürükleme için `input motionevent` dizisi gerekir.
+T8 bitti (ekran okuyucu etiketleri). Sonraki: T9 (tablet/yatay). Emülatör: Pro yok, İngilizce, açık tema, font_scale 1.0. Widget testlerinde preset'ler yüklenmez (veritabanı yok); erişilebilirlik testleri güç anahtarı gibi preset'siz öğelerle yazılmalı.

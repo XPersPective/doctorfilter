@@ -64,19 +64,25 @@ class AxisSlider extends StatelessWidget {
               ),
             ),
           ),
-        Slider(
-          value: value.toDouble().clamp(0, max.toDouble()),
-          max: max.toDouble(),
-          // Steps of 5: finer than anyone can perceive in one drag, and it keeps
-          // the haptic from firing on every pixel.
-          divisions: max ~/ 5,
-          label: '$value%',
-          semanticFormatterCallback: (value) => '${value.round()} percent',
-          onChanged: (raw) {
-            final next = raw.round();
-            if (next != value) HapticFeedback.selectionClick();
-            onChanged(next);
-          },
+        // Named, so a screen reader says which of the three sliders this is.
+        MergeSemantics(
+          child: Semantics(
+            label: label,
+            child: Slider(
+              value: value.toDouble().clamp(0, max.toDouble()),
+              max: max.toDouble(),
+              // Steps of 5: finer than anyone can perceive in one drag, and it keeps
+              // the haptic from firing on every pixel.
+              divisions: max ~/ 5,
+              label: '$value%',
+              semanticFormatterCallback: (value) => '${value.round()}%',
+              onChanged: (raw) {
+                final next = raw.round();
+                if (next != value) HapticFeedback.selectionClick();
+                onChanged(next);
+              },
+            ),
+          ),
         ),
       ],
     );

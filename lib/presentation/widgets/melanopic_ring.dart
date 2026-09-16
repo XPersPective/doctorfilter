@@ -51,22 +51,28 @@ class MelanopicRing extends StatelessWidget {
               Text(
                 reached
                     ? loc?.translate('melanopic_target_reached') ??
-                        'At the evening guidance'
+                          'At the evening guidance'
                     : loc?.translate('melanopic_target_progress') ??
-                        'Towards the evening guidance',
+                          'Towards the evening guidance',
                 textAlign: TextAlign.end,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: context.texts.bodySmall
-                    ?.copyWith(color: context.colours.onSurfaceVariant),
+                style: context.texts.bodySmall?.copyWith(
+                  color: context.colours.onSurfaceVariant,
+                ),
               ),
             ],
           ),
         ),
         const SizedBox(width: 10),
         Semantics(
-          label: loc?.translate('melanopic_reduction', args: {'percent': '$percent'}),
+          label: loc?.translate(
+            'melanopic_reduction',
+            args: {'percent': '$percent'},
+          ),
           button: true,
+          excludeSemantics: true,
+          onTap: () => _explain(context),
           child: InkWell(
             borderRadius: BorderRadius.circular(_size),
             onTap: () => _explain(context),

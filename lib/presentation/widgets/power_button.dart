@@ -31,6 +31,11 @@ class PowerButton extends StatelessWidget {
       button: true,
       toggled: isActive,
       label: label,
+      // The visible label is the same words; without this TalkBack reads them
+      // twice. Excluding the children also drops the InkWell's tap action, so
+      // it is declared again here.
+      excludeSemantics: true,
+      onTap: isLoading ? null : onTap,
       child: InkWell(
         onTap: isLoading
             ? null
