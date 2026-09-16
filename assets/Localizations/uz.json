@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Ilovalar roʻyxatini oʻqib boʻlmadi.",
   "exclusions_permission_title": "Avval bitta ruxsat",
   "exclusions_permission_body": "Kamerangizga yoʻl boʻshatish uchun ilova qaysi ilova oldinda ekanini bilishi kerak. Android buni foydalanish maʼlumotlariga kirish deb ataydi va siz uni tizim sozlamalarida berasiz. DoctorFilter faqat oʻsha paytda ochiq ilovaning nomini oʻqiydi, tarixingizni hech qachon oʻqimaydi va hech narsa telefoningizdan chiqmaydi.",
-  "exclusions_permission_action": "Sozlamalarni ochish"
+  "exclusions_permission_action": "Sozlamalarni ochish",
+  "app_tagline": "Kelvinda oʻlchanadi. Raqamlarda halol."
 }

@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Lista de aplicații nu a putut fi citită.",
   "exclusions_permission_title": "Mai întâi o permisiune",
   "exclusions_permission_body": "Ca să se dea la o parte pentru cameră, aplicația trebuie să știe care aplicație este în față. Android numește asta acces la utilizare și o acorzi din setările sistemului. DoctorFilter citește doar numele aplicației deschise în acel moment, niciodată istoricul tău, și nimic nu părăsește telefonul.",
-  "exclusions_permission_action": "Deschide setările"
+  "exclusions_permission_action": "Deschide setările",
+  "app_tagline": "Măsurat în kelvini. Onest cu cifrele."
 }

@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Non se puido ler a lista de aplicacións.",
   "exclusions_permission_title": "Primeiro un permiso",
   "exclusions_permission_body": "Para apartarse ante a túa cámara, a aplicación precisa saber que aplicación está en primeiro plano. Android chámalle acceso ao uso e concédelo nos axustes do sistema. DoctorFilter só le o nome da aplicación aberta nese momento, nunca o teu historial, e nada sae do teu teléfono.",
-  "exclusions_permission_action": "Abrir os axustes"
+  "exclusions_permission_action": "Abrir os axustes",
+  "app_tagline": "Medido en kelvin. Honesto coas cifras."
 }

@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Die programlys kon nie gelees word nie.",
   "exclusions_permission_title": "Eers een toestemming",
   "exclusions_permission_body": "Om vir jou kamera opsy te staan, moet die program weet watter program voor is. Android noem dit gebruikstoegang en jy verleen dit in die stelselinstellings. DoctorFilter lees net die naam van die program wat op daardie oomblik oop is, nooit jou geskiedenis nie, en niks verlaat jou foon nie.",
-  "exclusions_permission_action": "Maak instellings oop"
+  "exclusions_permission_action": "Maak instellings oop",
+  "app_tagline": "Gemeet in kelvin. Eerlik oor die syfers."
 }

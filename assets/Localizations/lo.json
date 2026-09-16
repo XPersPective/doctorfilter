@@ -205,5 +205,6 @@
   "exclusions_list_failed": "ບໍ່ສາມາດອ່ານລາຍຊື່ແອັບໄດ້.",
   "exclusions_permission_title": "ກ່ອນອື່ນ ການອະນຸຍາດໜຶ່ງຢ່າງ",
   "exclusions_permission_body": "ເພື່ອຫຼີກທາງໃຫ້ກ້ອງຖ່າຍຮູບ ແອັບຕ້ອງຮູ້ວ່າແອັບໃດຢູ່ດ້ານໜ້າ. Android ເອີ້ນສິ່ງນີ້ວ່າ usage access ແລະທ່ານໃຫ້ມັນໃນການຕັ້ງຄ່າລະບົບ. DoctorFilter ອ່ານພຽງແຕ່ຊື່ຂອງແອັບທີ່ເປີດຢູ່ໃນຂະນະນັ້ນ ບໍ່ເຄີຍອ່ານປະຫວັດຂອງທ່ານ ແລະບໍ່ມີຫຍັງອອກຈາກໂທລະສັບຂອງທ່ານ.",
-  "exclusions_permission_action": "ເປີດການຕັ້ງຄ່າ"
+  "exclusions_permission_action": "ເປີດການຕັ້ງຄ່າ",
+  "app_tagline": "ວັດເປັນເກວິນ. ຊື່ສັດຕໍ່ຕົວເລກ."
 }

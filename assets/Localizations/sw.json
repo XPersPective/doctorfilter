@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Orodha ya programu haikuweza kusomwa.",
   "exclusions_permission_title": "Kwanza ruhusa moja",
   "exclusions_permission_body": "Ili kupisha kamera yako, programu inahitaji kujua ni programu ipi iliyo mbele. Android huita hii ufikiaji wa matumizi na unaitoa katika mipangilio ya mfumo. DoctorFilter husoma tu jina la programu iliyofunguliwa wakati huo, kamwe si historia yako, na hakuna kinachotoka kwenye simu yako.",
-  "exclusions_permission_action": "Fungua mipangilio"
+  "exclusions_permission_action": "Fungua mipangilio",
+  "app_tagline": "Hupimwa kwa kelvin. Mwaminifu kuhusu namba."
 }

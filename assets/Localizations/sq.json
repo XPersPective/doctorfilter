@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Lista e aplikacioneve nuk u lexua dot.",
   "exclusions_permission_title": "Së pari një leje",
   "exclusions_permission_body": "Që t'i lërë vend kamerës, aplikacioni duhet të dijë cili aplikacion është përpara. Android e quan këtë qasje në përdorim dhe ti e jep në cilësimet e sistemit. DoctorFilter lexon vetëm emrin e aplikacionit të hapur në atë çast, kurrë historikun tënd, dhe asgjë nuk del nga telefoni yt.",
-  "exclusions_permission_action": "Hap cilësimet"
+  "exclusions_permission_action": "Hap cilësimet",
+  "app_tagline": "Matur në kelvin. I ndershëm me shifrat."
 }

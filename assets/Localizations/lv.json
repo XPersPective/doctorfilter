@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Lietotņu sarakstu neizdevās nolasīt.",
   "exclusions_permission_title": "Vispirms viena atļauja",
   "exclusions_permission_body": "Lai dotu ceļu jūsu kamerai, lietotnei jāzina, kura lietotne ir priekšplānā. Android to sauc par piekļuvi lietojuma datiem, un jūs to piešķirat sistēmas iestatījumos. DoctorFilter nolasa tikai tobrīd atvērtās lietotnes nosaukumu, nekad jūsu vēsturi, un nekas neatstāj jūsu tālruni.",
-  "exclusions_permission_action": "Atvērt iestatījumus"
+  "exclusions_permission_action": "Atvērt iestatījumus",
+  "app_tagline": "Mērīts kelvinos. Godīgs pret skaitļiem."
 }

@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Uhlu lwezinhlelo alukwazanga ukufundwa.",
   "exclusions_permission_title": "Kuqala imvume eyodwa",
   "exclusions_permission_body": "Ukuze idedele ikhamera yakho, uhlelo ludinga ukwazi ukuthi yiluphi uhlelo oluphambili. I-Android ibiza lokhu ngokuthi ukufinyelela kokusebenzisa futhi uyakunikeza ezilungiselelweni zesistimu. I-DoctorFilter ifunda kuphela igama lohlelo oluvulekile ngaleso sikhathi, akukaze kube umlando wakho, futhi akukho okuphuma efonini yakho.",
-  "exclusions_permission_action": "Vula izilungiselelo"
+  "exclusions_permission_action": "Vula izilungiselelo",
+  "app_tagline": "Kukalwa nge-kelvin. Kuqotho ngezinombolo."
 }

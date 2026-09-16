@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Zoznam aplikácií sa nepodarilo prečítať.",
   "exclusions_permission_title": "Najprv jedno povolenie",
   "exclusions_permission_body": "Aby aplikácia ustúpila vášmu fotoaparátu, musí vedieť, ktorá aplikácia je vpredu. Android to nazýva prístup k údajom o používaní a udeľujete ho v nastaveniach systému. DoctorFilter číta len názov práve otvorenej aplikácie, nikdy vašu históriu, a nič neopúšťa váš telefón.",
-  "exclusions_permission_action": "Otvoriť nastavenia"
+  "exclusions_permission_action": "Otvoriť nastavenia",
+  "app_tagline": "Merané v kelvinoch. Čestné k číslam."
 }

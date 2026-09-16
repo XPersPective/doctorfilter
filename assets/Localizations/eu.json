@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Ezin izan da aplikazioen zerrenda irakurri.",
   "exclusions_permission_title": "Lehenik baimen bat",
   "exclusions_permission_body": "Zure kamerari bidea uzteko, aplikazioak jakin behar du zein aplikazio dagoen aurrean. Android-ek erabilera-sarbidea deitzen dio horri, eta sistemaren ezarpenetan ematen duzu. DoctorFilter-ek une horretan irekita dagoen aplikazioaren izena bakarrik irakurtzen du, inoiz ez zure historia, eta ezer ez da zure telefonotik ateratzen.",
-  "exclusions_permission_action": "Ireki ezarpenak"
+  "exclusions_permission_action": "Ireki ezarpenak",
+  "app_tagline": "Kelvinetan neurtua. Zenbakiekin zintzoa."
 }

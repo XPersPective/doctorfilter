@@ -205,5 +205,6 @@
   "exclusions_list_failed": "Popis aplikacija nije bilo moguće pročitati.",
   "exclusions_permission_title": "Najprije jedno dopuštenje",
   "exclusions_permission_body": "Da bi se sklonila vašoj kameri, aplikacija mora znati koja je aplikacija sprijeda. Android to naziva pristupom podacima o upotrebi i dajete ga u postavkama sustava. DoctorFilter čita samo naziv aplikacije koja je trenutačno otvorena, nikad vašu povijest, i ništa ne napušta vaš telefon.",
-  "exclusions_permission_action": "Otvori postavke"
+  "exclusions_permission_action": "Otvori postavke",
+  "app_tagline": "Mjereno u kelvinima. Pošteno prema brojkama."
 }

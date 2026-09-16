@@ -205,5 +205,6 @@
   "exclusions_list_failed": "एपहरूको सूची पढ्न सकिएन।",
   "exclusions_permission_title": "पहिले एउटा अनुमति",
   "exclusions_permission_body": "तपाईंको क्यामेरालाई बाटो दिन एपले कुन एप अगाडि छ भन्ने थाहा पाउनुपर्छ। Android ले यसलाई usage access भन्छ र तपाईं यो प्रणाली सेटिङमा दिनुहुन्छ। DoctorFilter ले त्यस बेला खुला रहेको एपको नाम मात्र पढ्छ, तपाईंको इतिहास कहिल्यै होइन, र केही पनि तपाईंको फोनबाट बाहिर जाँदैन।",
-  "exclusions_permission_action": "सेटिङ खोल्नुहोस्"
+  "exclusions_permission_action": "सेटिङ खोल्नुहोस्",
+  "app_tagline": "केल्भिनमा नापिएको। सङ्ख्याबारे इमानदार।"
 }
