@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T9 · **Updated:** 2026-09-16 · **Synced@:** a6d683d
+> **Phase:** BUILD · **Next:** T10 · **Updated:** 2026-09-16 · **Synced@:** e36b740
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -371,10 +371,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Done when: sürükleme sonrası ve yeniden açılışta ekran görüntüsünde yeni sıra → Daylight 4. sıraya taşındı, soğuk açılışta korundu, sonra geri alındı. Not: `input draganddrop` basılı tutmadığı için çalışmaz; `input motionevent DOWN`, 1 sn, `MOVE` adımları, `UP` kullan
 - [x] T8 [M] (2026-09-16, Claude Opus 5) Erişilebilirlik etiketleri ve büyük yazı (D16, AC9)
   - Done when: dump'ta tüm etkileşimli öğelerin etiketi var; 1.3 ölçekte taşma yok; ölçek 1.0'a döndü → HATALAR düzeltildi: güç anahtarı, preset kartları ve melanopik halka etiketi iki kez okunuyordu (`excludeSemantics` + `onTap` yeniden bildirildi); kaydırıcılar hangi eksen olduklarını söylemiyordu (`MergeSemantics` + eksen adı); "percent"/"kelvin" İngilizce sabitleri %/K oldu. Yeni widget testi (düzeltme geri alınınca başarısız). 1.3 yazı ölçeğinde taşma yok
-- [ ] T9 [M] Tablet ve yatay düzen (D17)
-  - Where: `lib/presentation/widgets/preset_grid.dart`, `lib/presentation/screens/home_screen.dart`
-  - Do: `adb shell wm size 1600x2560` + `wm density 320` → ana ekran ve ayarlar ekran görüntüsü; `settings put system accelerometer_rotation 0` + `user_rotation 1` → aynı; sonunda `wm size reset`, `wm density reset`, `user_rotation 0`
-  - Done when: iki düzende taşma şeridi yok; emülatör ayarları sıfırlandı
+- [x] T9 [M] (2026-09-16, Claude Opus 5) Tablet ve yatay düzen (D17)
+  - Done when: iki düzende taşma şeridi yok; emülatör ayarları sıfırlandı → taşma yok. İyileştirme: tablette içerik ekranı boydan boya kaplıyordu; ana ekran gövdesi 720dp ile sınırlandı ve ortalandı. Yatayda banner+gezinme çubuğu içeriğin çoğunu kaplıyor ama kaydırılabilir (ASSUMPTION §6)
 - [ ] T10 [M] Arapça RTL düzeni (E4, AC2)
   - Where: `lib/presentation/screens/language_screen.dart`, `lib/core/localization/supported_languages.dart`
   - Do: dil ekranından العربية seç; ana ekran, zamanlama, ayarlar ve genişletilmiş bildirim ekran görüntüsü; sonra Türkçe'ye dön
@@ -424,6 +422,7 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 | Date | Type | What | Why / evidence |
 |---|---|---|---|
+| 2026-09-16 | ASSUMPTION | Yatay telefonda NavigationRail'e geçilmedi; ana ekran kaydırılarak kullanılabiliyor. Filtre uygulaması yatay kullanımı nadir | T9 ekran görüntüsü |
 | 2026-09-16 | AUDIT | A0: `brain.py check` FAIL yok; §3 iddiaları kodda açıldı (`schedule_provider.dart:25`, `PresetCatalog.kt:51 text`, `ad_consent.dart:40 sdkReady`); her GAP görevli; AC1–AC11 görevlere/T0 testlerine bağlı; ilk 5 açık görev yeniden okundu, T2 (temiz durum) ve T3 (süreç öldürme) belirsizlikleri giderildi; `flutter test` 194 yeşil | Görev yok |
 | 2026-09-16 | DECISION | MIMARI.md benimsendi ve kaldırıldı (73 bitti; 1 açık + cihaz doğrulaması bekleyen `[~]` maddeler) | Tek plan dosyası PROJECT_BRAIN.md; eski gerekçeler `git show 5453c2b:MIMARI.md` |
 | 2026-09-16 | ASSUMPTION | MIMARI `[~] 🔴` maddelerinden bugün emülatörde doğrulananlar (B1, B2, B8, C7, D10→I5) T0'a kapatıldı; emülatörde doğrulanabilenler T2–T15, doğrulanamayanlar `[!]` T16–T21 oldu | 2026-09-16 emülatör oturumu (commit 1861618, d46040e, f793ec6, 5453c2b) |
@@ -435,4 +434,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T8 bitti (ekran okuyucu etiketleri). Sonraki: T9 (tablet/yatay). Emülatör: Pro yok, İngilizce, açık tema, font_scale 1.0. Widget testlerinde preset'ler yüklenmez (veritabanı yok); erişilebilirlik testleri güç anahtarı gibi preset'siz öğelerle yazılmalı.
+T9 bitti (tablette ana ekran genişlik sınırı). Sonraki: T10 (Arapça RTL). Emülatör: boyut/yoğunluk/dönüş sıfırlandı, Pro yok, İngilizce, açık tema.
