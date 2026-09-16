@@ -1244,13 +1244,22 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       * **İzlenen reklam ödül vermiyordu.** `show()` reklam **açılınca** dönüyor,
         `earned` o an hep false'tu; reklam "Reward granted" dese de Pro açılmıyordu.
         Sonuç artık reklam **kapanınca** verilir.
-- [ ] **I5.** Splash ikonu uygulama ikonuyla aynı değil. Orijinal ikon kullanılacak, şekli ve
-      rengi bozulmadan hafif gölgeyle profesyonelleştirilecek.
+- [x] **I5.** Splash ikonu uygulama ikonuyla aynı değil. Orijinal ikon kullanılacak, şekli ve
+      rengi bozulmadan hafif gölgeyle profesyonelleştirilecek. Tek orijinal 192 px
+      olduğundan işaret yeniden kuruldu (`tool/brand/generate_icons.py`, kaynak
+      `tool/brand/source_icon_192.png`): mavi daire ve halka ölçülüp gerçek daire olarak
+      (<1 px hata), turuncu dış hat orijinalden büyütülüp yumuşatılarak; renkler aynı, tek
+      ekleme yumuşak gölge. Android 12+ splash ve eski splash artık bu işaret
+      (`brand_mark`); uyarlanabilir ikon (beyaz zemin, Android 13 temalı ikon için
+      monochrome) eklendi. Kullanılmayan 1.x çizimleri (alpha.png, power_on.png…) silindi.
+      Emülatörde splash ve başlatıcı ikonu doğrulandı.
 - [ ] **I6.** Marka logosu: solda ikon, sağda iki renkli "doctorFilter" yazısı (orijinal 1.x
       yazısı: eğik, "doctor" sarı-turuncu, "Filter" mavi), Pro ise sonunda küçük üst simge
       PRO, altında slogan. Ana ekranda; splash'ta mümkün değilse yalnızca ikon.
-- [ ] **I7.** (Bulgu) Windows uygulama ikonu ve MSIX Store logosu hâlâ **Flutter'ın varsayılan
-      logosu** — DoctorFilter ikonu ile değiştirilecek.
+- [x] **I7.** (Bulgu) Windows uygulama ikonu ve MSIX Store logosu hâlâ **Flutter'ın varsayılan
+      logosu** — DoctorFilter ikonu ile değiştirilecek. Aynı sorun **iOS, macOS ve web**
+      ikonlarında da vardı; hepsi aynı üreticiden (iOS opak beyaz zemin). Windows
+      derlemesinden çıkarılan exe ikonu doğrulandı; web manifest adı/açıklaması düzeltildi.
 - [x] **I8.** Bildirim kokpiti ve sistem entegrasyonları **emülatörde (Android 16, API 36)**
       tek tek çalıştırıldı. Bulunan ve düzeltilen hatalar:
       * **Kokpit hiç çalışmıyordu — uygulama çöküyordu.** `notification_cockpit.xml` ve

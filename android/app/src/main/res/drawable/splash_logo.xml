@@ -1,28 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The mark: an eye whose iris is split between the two brand colours — blue for
-    the light being filtered, amber for what comes through.
-
-    A vector so it stays sharp at every density and adds nothing to the download.
+    Android 12+ splash icon: the launcher mark itself, so the app opens with the
+    icon the user just tapped. The system draws this in a 288 dp box and only
+    guarantees the centre 192 dp circle, hence the inset.
 -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="144dp"
-    android:height="144dp"
-    android:viewportWidth="96"
-    android:viewportHeight="96">
-
-    <!-- Eye outline -->
-    <path
-        android:pathData="M48,22C29,22 13,34 6,48c7,14 23,26 42,26s34,-12 42,-26C83,34 67,22 48,22zM48,66c-9.9,0 -18,-8.1 -18,-18s8.1,-18 18,-18 18,8.1 18,18 -8.1,18 -18,18z"
-        android:fillColor="@color/brand_blue" />
-
-    <!-- Iris, cool half -->
-    <path
-        android:pathData="M48,32c-8.8,0 -16,7.2 -16,16s7.2,16 16,16V32z"
-        android:fillColor="@color/brand_blue" />
-
-    <!-- Iris, warm half -->
-    <path
-        android:pathData="M48,32c8.8,0 16,7.2 16,16s-7.2,16 -16,16V32z"
-        android:fillColor="@color/brand_orange" />
-</vector>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/brand_mark"
+    android:inset="26%" />
