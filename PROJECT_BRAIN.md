@@ -1,8 +1,8 @@
 <!-- project-brain:v1 -->
 # PROJECT BRAIN — DoctorFilter
 
-> **Status:** Android 2.0 özellik-tamam; FAZ A–I (I6 hariç) kapandı. Sırada marka logosu (T1), emülatör doğrulamaları, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T1 · **Updated:** 2026-09-16 · **Synced@:** none
+> **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
+> **Phase:** BUILD · **Next:** T2 · **Updated:** 2026-09-16 · **Synced@:** 10d4034
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -170,10 +170,9 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 - Ana ekran kaydırıcı notları sabit yuvada (`home_screen.dart` `Visibility.maintain`).
 - iOS: `ios/Runner/AppDelegate.swift`, `lib/core/math/ios_color_filter.dart`, `lib/presentation/screens/ios_setup_screen.dart`, `ios/DoctorFilterControl/` (hedef olarak eklenmedi). Mac'te derlenmedi.
 - Windows: `windows/runner/overlay_window.cpp`, MSIX `pubspec.yaml:msix_config` (publisher yer tutucu); `flutter build windows` geçiyor.
-- Marka ikonları: `tool/brand/generate_icons.py` → Android uyarlanabilir ikon + splash (`res/drawable/splash_logo.xml`), iOS, macOS, web, Windows ico, `assets/images/brand_mark.png`. Ana ekran başlığı hâlâ düz metin `lib/presentation/screens/home_screen.dart:_Title`.
+- Marka ikonları: `tool/brand/generate_icons.py` → Android uyarlanabilir ikon + splash (`res/drawable/splash_logo.xml`), iOS, macOS, web, Windows ico, `assets/images/brand_mark.png`. Ana ekran başlığı `lib/presentation/widgets/brand_lockup.dart:BrandLockup` (Audiowide `assets/fonts/Audiowide-Regular.ttf`).
 - Yerelleştirme: `assets/Localizations/*.json` (71), `lib/core/localization/app_localizations.dart`.
 
-GAP: Ana ekran marka logosu (AC11) → T1
 GAP: Android özellikleri için kalan emülatör doğrulamaları (paywall çipi, izin akışı, boot, tema, RTL, erişilebilirlik, tablet, sürükleme, istisnalar, mola) → T2–T12
 GAP: README ekran görüntüleri yok → T13
 GAP: Bildirim contentDescription'ları cihaz dilinde → T14
@@ -202,6 +201,7 @@ doctorfilter/
     settings.gradle.kts
   assets/
     fonts/
+      Audiowide-Regular.ttf  # yalnızca wordmark
       Orbitron-VariableFont_wght.ttf
     images/
       brand_mark.png
@@ -352,10 +352,8 @@ doctorfilter/
   - Done when: `flutter analyze` temiz, `flutter test` 194 test yeşil
 
 ### Marka
-- [ ] T1 [H] Ana ekran marka logosu (I6)
-  - Where: yeni `lib/presentation/widgets/brand_lockup.dart`; `lib/presentation/screens/home_screen.dart:_Title` yerine; `pubspec.yaml` `fonts:`; `THIRD_PARTY_LICENSES.md`; font kaynağı tam yol `migrate_working_dir/local_archive/assets/fonts/Audiowide-Regular.ttf` (yalnızca bu dosya kopyalanır)
-  - Do: 1) fontu `assets/fonts/Audiowide-Regular.ttf` olarak kopyala, pubspec'e `family: Audiowide`, THIRD_PARTY_LICENSES'e SIL OFL 1.1 satırı; 2) `BrandLockup({required bool isPro})`: solda `assets/images/brand_mark.png` 36dp, sağda ~0.22 yatay eğimli (`Transform(transform: Matrix4.skewX(-0.22))`) `Text.rich`: "doctor" + "Filter" — koyu tema #FFD200 / #00BCFF, açık tema #E08600 / #0077E0; Pro ise sonda üst simge küçük "PRO"; altında `app_tagline` (bodySmall, onSurfaceVariant, maxLines 1, ellipsis); 3) `_Title` sınıfını sil, AppBar `title:` olarak `BrandLockup` kullan, gerekirse `toolbarHeight: 64`; 4) `test/widget_test.dart`'a Pro değilken "PRO" metni yok testi; 5) emülatörde iki temada ekran görüntüsü
-  - Done when: `flutter analyze` temiz; `flutter test` yeşil (yeni test dahil, mevcut 360dp taşma testi geçer); emülatör ekran görüntüsünde logo ve slogan okunur
+- [x] T1 [H] (2026-09-16, Claude Opus 5) Ana ekran marka logosu (I6)
+  - Done when: `flutter analyze` temiz; `flutter test` yeşil (yeni test dahil, mevcut 360dp taşma testi geçer); emülatör ekran görüntüsünde logo ve slogan okunur → `lib/presentation/widgets/brand_lockup.dart`; 2 yeni widget testi; emülatörde iki temada doğrulandı
 
 ### Android emülatör doğrulamaları
 Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk --debug`; `adb -s emulator-5554 install -r build/app/outputs/flutter-apk/app-debug.apk`; adb = `C:/Users/rubicon/AppData/Local/Android/Sdk/platform-tools/adb.exe`; Git Bash'te cihaz yolları için `export MSYS_NO_PATHCONV=1`; shell dışa kapalı receiver'lara yayın gönderemez (gerçek kullanıcı yolunu kullan). Bulunan her hata o görevin alt görevi olarak düzeltilir.
@@ -441,4 +439,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-Brain MIMARI.md'den oluşturuldu; son kod commit'i 5453c2b (ikonlar I5/I7). Sonraki adım: T1 marka logosu. Emülatör uygulama verisi testte değiştirildi (ilk açılış 10 gün geri, ödüllü Pro geçişi aktif) — T13/T6 için uygun; grace davranışı test edilecekse `pm clear` gerekir. Emülatörde zamanlama 10:17–07:00 açık kaldı.
+T1 bitti (marka logosu, ekstra commit yok). Sonraki: T2 — `pm clear` ile Pro olmayan temiz durum kurar; bu, emülatördeki test verisini (Pro geçişi, geri alınmış ilk açılış) siler, T13 ekran görüntüleri için Pro geçişi yeniden alınmalı. Emülatör uygulaması şu an açık temada.

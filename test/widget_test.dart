@@ -7,6 +7,7 @@ import 'package:doctorfilter/main.dart';
 import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/screens/home_screen.dart';
 import 'package:doctorfilter/presentation/screens/onboarding_screen.dart';
+import 'package:doctorfilter/presentation/widgets/brand_lockup.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -115,5 +116,40 @@ void main() {
     expect(find.byType(HomeScreen), findsOneWidget);
     expect(Directionality.of(tester.element(find.byType(HomeScreen))),
         TextDirection.rtl);
+  });
+
+  Finder proBadge() => find.descendant(
+        of: find.byType(BrandLockup),
+        matching: find.text('PRO'),
+      );
+
+  testWidgets('a free user sees the logo without PRO', (tester) async {
+
+    await pumpApp(tester, prefs: {'flutter.df_onboarding_done': true});
+    expect(find.byType(BrandLockup), findsOneWidget);
+    expect(proBadge(), findsNothing);
+  });
+
+  testWidgets('an owner sees PRO on the logo', (tester) async {
+    await pumpApp(tester, prefs: {
+      'flutter.df_onboarding_done': true,
+      'flutter.df_pro_lifetime': true,
+    });
+    expect(proBadge(), findsOneWidget);
+  });
+
+  testWidgets('the Pro logo fits a small phone beside the app bar actions',
+      (tester) async {
+    tester.view.physicalSize = const Size(360 * 3, 640 * 3);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await pumpApp(tester, prefs: {
+      'flutter.df_onboarding_done': true,
+      'flutter.df_pro_lifetime': true,
+    });
+
+    expect(tester.takeException(), isNull);
   });
 }

@@ -42,9 +42,10 @@ which permits redistribution inside an application.
 | Font | Used for |
 |---|---|
 | Orbitron | Numeric readouts (Kelvin, percentages) |
+| Audiowide | The "doctorFilter" wordmark, as in the original logo |
 
-Four further families shipped with the 1.x design (Audiowide, Tomorrow, Turret
-Road, Kodchasan) and were removed: nothing referenced them, and a font nobody
+Three further families shipped with the 1.x design (Tomorrow, Turret Road,
+Kodchasan) and were removed: nothing referenced them, and a font nobody
 uses is bytes in every download plus one more licence to keep track of.
 
 ## Scientific sources

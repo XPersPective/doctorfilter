@@ -85,14 +85,18 @@ flutter:
 
   assets:
     - assets/Localizations/
+    - assets/images/brand_mark.png
 
-  # Orbitron only, for numeric readouts. The other four families shipped with
-  # the 1.x design and nothing referenced them; a font nobody uses is bytes in
-  # every download and one more licence to account for.
+  # Orbitron for numeric readouts, Audiowide for the wordmark only. The other
+  # 1.x families (Tomorrow, Turret Road, Kodchasan) are not shipped: nothing
+  # uses them, and a font nobody uses is bytes in every download.
   fonts:
     - family: Orbitron
       fonts:
         - asset: assets/fonts/Orbitron-VariableFont_wght.ttf
+    - family: Audiowide
+      fonts:
+        - asset: assets/fonts/Audiowide-Regular.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

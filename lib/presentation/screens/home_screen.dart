@@ -20,6 +20,7 @@ import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
 import 'package:doctorfilter/presentation/widgets/axis_slider.dart';
 import 'package:doctorfilter/presentation/widgets/band_style.dart';
+import 'package:doctorfilter/presentation/widgets/brand_lockup.dart';
 import 'package:doctorfilter/presentation/widgets/melanopic_ring.dart';
 import 'package:doctorfilter/presentation/widgets/overlay_permission_banner.dart';
 import 'package:doctorfilter/presentation/widgets/power_button.dart';
@@ -73,7 +74,8 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 16,
-        title: _Title(isPro: isPro),
+        title: BrandLockup(isPro: isPro),
+        toolbarHeight: 64,
         actions: [
           if (config.isEnabled)
             _BypassAction(
@@ -356,57 +358,6 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-class _Title extends StatelessWidget {
-  const _Title({required this.isPro});
-
-  final bool isPro;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'DoctorFilter',
-          style: context.texts.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        if (isPro) ...[
-          const SizedBox(width: 4),
-          // Superscript, the way a trademark sits: a badge the owner notices and
-          // nobody else has to read.
-          Transform.translate(
-            offset: const Offset(0, -2),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-              decoration: BoxDecoration(
-                color: context.colours.primary,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Text(
-                'PRO',
-                style: context.texts.labelSmall?.copyWith(
-                  color: context.colours.onPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-}
-
-/// What the dimming is doing to the panel's power draw, stated carefully.
-///
-/// On an OLED panel each pixel emits its own light, so darker pixels draw less
-/// current — the overlay is composited into the frame, so the pixels really do
-/// end up darker. The relationship is not one-for-one (driver and controller
-/// power do not scale with brightness), which is why this says "roughly" and
-/// gives no figure it cannot stand behind.
 class _OledEnergyNote extends StatelessWidget {
   const _OledEnergyNote({required this.config});
 
