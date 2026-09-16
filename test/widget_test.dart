@@ -60,6 +60,12 @@ void main() {
     await pumpApp(tester);
     expect(find.byType(OnboardingScreen), findsOneWidget);
     expect(find.byType(HomeScreen), findsNothing);
+    // The brand mark, not a generic icon: the first thing a new user sees
+    // should be the icon they just tapped.
+    expect(
+      find.image(const AssetImage('assets/images/brand_mark.png')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a returning user goes straight to the app', (tester) async {
