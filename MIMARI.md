@@ -821,8 +821,14 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       için `values-v31` platform splash öznitelikleri (o sürümlerde `windowBackground`
       yok sayılır — koyu uygulamadan önce beyaz parlama buradan geliyordu). Splash rengi
       `AppTheme` zeminleriyle eşleştirildi. — **cihazda iki temada bakılmalı**
-  - [ ] **D10.1** Splash altına tek satır açıklama: Android'in sistem splash'i metin
-        desteklemiyor; gerekirse ilk kareyi çizen kısa bir Flutter splash'i olarak yapılmalı.
+  - [x] **D10.1** Bilimsel tek satır (`app_tagline`) **onboarding'in ilk ekranına**
+        kondu, splash'e değil.
+        **Gerekçe:** Android'in sistem splash'i metin çizemez. Kalan seçenek, yalnızca
+        bu satıra yer açmak için uygulamayı kısa bir Flutter splash'inin arkasında
+        tutmaktı — yani **tanıtım metni göstermek için açılışa gecikme eklemek**.
+        Marka satırı, kişinin ilk açılışta zaten okuduğu ekranda duruyor; splash hızlı
+        kalıyor. Proje sahibi yine de splash'te isterse bu madde yeniden açılsın:
+        maliyeti, her açılışta ~600 ms.
 - [x] **D11.** Pro rozeti: satın alındığında başlıktaki "DoctorFilter" yanında üst simge
       gibi duran küçük **PRO** etiketi — sahibinin fark ettiği, başkasının okumak zorunda
       olmadığı bir işaret.
