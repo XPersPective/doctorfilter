@@ -45,6 +45,12 @@ android {
 
     buildTypes {
         release {
+            // R8 runs in release only, so this is where reflection-only classes
+            // disappear. See proguard-rules.pro.
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
             } else {
