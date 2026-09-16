@@ -26,7 +26,7 @@ import 'package:flutter/foundation.dart';
 /// flutter build appbundle --release \
 ///   --dart-define=ADMOB_ANDROID_BANNER_UNIT_ID=ca-app-pub-…/… \
 ///   --dart-define=ADMOB_ANDROID_INTERSTITIAL_UNIT_ID=ca-app-pub-…/… \
-///   --dart-define=ADMOB_ANDROID_REWARDED_UNIT_ID=ca-app-pub-…/…
+///   --dart-define=ADMOB_ANDROID_REWARDED_UNIT_ID=ca-app-pub-…/… ///   --dart-define=ADMOB_ANDROID_APP_OPEN_UNIT_ID=ca-app-pub-…/…
 /// ```
 abstract final class EnvConfig {
   /// Kept so callers need not care whether configuration is async.
@@ -74,6 +74,16 @@ abstract final class EnvConfig {
       : const String.fromEnvironment(
           'ADMOB_ANDROID_INTERSTITIAL_UNIT_ID',
           defaultValue: 'ca-app-pub-3940256099942544/1033173712',
+        );
+
+  static String get adMobAppOpenUnitId => _isIos
+      ? const String.fromEnvironment(
+          'ADMOB_IOS_APP_OPEN_UNIT_ID',
+          defaultValue: 'ca-app-pub-3940256099942544/5575463023',
+        )
+      : const String.fromEnvironment(
+          'ADMOB_ANDROID_APP_OPEN_UNIT_ID',
+          defaultValue: 'ca-app-pub-3940256099942544/9257395921',
         );
 
   static String get adMobRewardedUnitId => _isIos

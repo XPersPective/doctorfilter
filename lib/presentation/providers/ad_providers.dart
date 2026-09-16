@@ -43,6 +43,24 @@ class AdPolicyNotifier extends StateNotifier<AdPolicyState> {
     _persist();
   }
 
+  bool get mayShowAppOpen => AdPolicy.mayShowAppOpen(
+        state: state,
+        isPro: _ref.read(isProProvider),
+        now: DateTime.now(),
+      );
+
+  /// Records an app-open ad that appeared. It also spends the session's
+  /// full-screen budget, so the user is not shown another on the way out.
+  void recordAppOpenShown() {
+    final now = DateTime.now();
+    state = state.copyWith(
+      lastAppOpenAt: now,
+      lastInterstitialAt: now,
+      interstitialsThisSession: state.interstitialsThisSession + 1,
+    );
+    _persist();
+  }
+
   void recordPresetChange() {
     state = state.copyWith(
       presetChangesThisSession: state.presetChangesThisSession + 1,

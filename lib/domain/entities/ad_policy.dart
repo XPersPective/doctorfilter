@@ -10,6 +10,7 @@ final class AdPolicyState {
     this.presetChangesThisSession = 0,
     this.rewardedViewsToday = 0,
     this.rewardedDay,
+    this.lastAppOpenAt,
   });
 
   /// When the app was first opened. The grace period counts from here.
@@ -26,6 +27,9 @@ final class AdPolicyState {
   final int rewardedViewsToday;
   final DateTime? rewardedDay;
 
+  /// When an app-open ad last appeared, across sessions.
+  final DateTime? lastAppOpenAt;
+
   AdPolicyState copyWith({
     DateTime? firstLaunch,
     int? sessionCount,
@@ -34,6 +38,7 @@ final class AdPolicyState {
     int? presetChangesThisSession,
     int? rewardedViewsToday,
     DateTime? rewardedDay,
+    DateTime? lastAppOpenAt,
   }) {
     return AdPolicyState(
       firstLaunch: firstLaunch ?? this.firstLaunch,
@@ -45,6 +50,7 @@ final class AdPolicyState {
           presetChangesThisSession ?? this.presetChangesThisSession,
       rewardedViewsToday: rewardedViewsToday ?? this.rewardedViewsToday,
       rewardedDay: rewardedDay ?? this.rewardedDay,
+      lastAppOpenAt: lastAppOpenAt ?? this.lastAppOpenAt,
     );
   }
 }
@@ -98,6 +104,18 @@ abstract final class AdPolicy {
   /// past that the user should be buying rather than grinding.
   static const int maxRewardedPerDay = 2;
 
+  /// Rewarded ads are not offered before this long after install.
+  ///
+  /// A free day of Pro on day one teaches that Pro is something you watch ads
+  /// for. A week in, the user knows what the free version does and whether
+  /// the rest is worth trying.
+  static const Duration rewardedUnlockAfter = Duration(days: 7);
+
+  /// Least time between two app-open ads. The app is opened most at bedtime,
+  /// often more than once; an ad at every opening would be the one people
+  /// remember.
+  static const Duration appOpenGap = Duration(hours: 4);
+
   /// How long a rewarded ad buys.
   static const Duration rewardedPassDuration = Duration(hours: 24);
 
@@ -128,6 +146,33 @@ abstract final class AdPolicy {
     };
   }
 
+  /// Whether an app-open ad may be shown as the app starts.
+  ///
+  /// Same grace period as interstitials, and it spends the session's one
+  /// full-screen ad: a user who saw one on the way in does not get another on
+  /// the way out.
+  static bool mayShowAppOpen({
+    required AdPolicyState state,
+    required bool isPro,
+    required DateTime now,
+  }) {
+    if (isPro) return false;
+
+    if (now.difference(state.firstLaunch) < gracePeriod) return false;
+    if (state.sessionCount <= graceSessions) return false;
+
+    if (state.interstitialsThisSession >= maxPerSession) return false;
+
+    final lastInterstitial = state.lastInterstitialAt;
+    if (lastInterstitial != null &&
+        now.difference(lastInterstitial) < minimumGap) {
+      return false;
+    }
+
+    final lastAppOpen = state.lastAppOpenAt;
+    return lastAppOpen == null || now.difference(lastAppOpen) >= appOpenGap;
+  }
+
   /// Whether the user may watch another rewarded ad today.
   static bool mayWatchRewarded({
     required AdPolicyState state,
@@ -136,6 +181,7 @@ abstract final class AdPolicy {
   }) {
     // Nothing to earn — they already own everything.
     if (isPro) return false;
+    if (now.difference(state.firstLaunch) < rewardedUnlockAfter) return false;
     if (!_isSameDay(state.rewardedDay, now)) return true;
     return state.rewardedViewsToday < maxRewardedPerDay;
   }

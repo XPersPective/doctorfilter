@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:doctorfilter/presentation/ads/rewarded_pass.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/domain/repositories/i_purchase_repository.dart';
 import 'package:doctorfilter/domain/entities/ad_policy.dart';
@@ -178,25 +179,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   /// that, and granting it to someone who closed the ad early would make the
   /// button a lie.
   Future<void> _watchForPass() async {
-    final policy = ref.read(adPolicyProvider.notifier);
-    if (!policy.mayWatchRewarded) return;
-
     setState(() => _busy = true);
-    final ads = ref.read(rewardedAdManagerProvider);
-    await ads.preload();
-    final earned = await ads.showForReward();
+    final granted = await watchAdForProPass(context, ref);
     if (!mounted) return;
     setState(() => _busy = false);
-
-    if (!earned) {
-      _say('reward_not_earned', 'The ad was not finished, so no pass was given.');
-      return;
-    }
-
-    await policy.recordRewardedWatched();
-    if (!mounted) return;
-    _say('reward_granted', 'Pro is unlocked for 24 hours. Enjoy.');
-    Navigator.pop(context);
+    if (granted) Navigator.pop(context);
   }
 
   void _say(String key, String fallback) {
