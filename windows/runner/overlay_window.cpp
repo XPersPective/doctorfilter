@@ -11,13 +11,23 @@ constexpr wchar_t kWindowClass[] = L"DoctorFilterOverlay";
 // is no notification shade to rescue them from it.
 constexpr BYTE kMaxAlpha = 235;
 
+// The overlay is removed only by the app (stopOverlay, or the app closing).
+// A stray WM_CLOSE — from a window-management tool, or anything that picks this
+// as the process's "main" window — would otherwise destroy it while the app
+// still says the filter is on.
+LRESULT CALLBACK OverlayWndProc(HWND window, UINT message, WPARAM wparam,
+                                LPARAM lparam) {
+  if (message == WM_CLOSE) return 0;
+  return DefWindowProcW(window, message, wparam, lparam);
+}
+
 bool EnsureClassRegistered() {
   static bool registered = false;
   if (registered) return true;
 
   WNDCLASSEXW window_class{};
   window_class.cbSize = sizeof(WNDCLASSEXW);
-  window_class.lpfnWndProc = DefWindowProcW;
+  window_class.lpfnWndProc = OverlayWndProc;
   window_class.hInstance = GetModuleHandleW(nullptr);
   window_class.lpszClassName = kWindowClass;
   window_class.hbrBackground = nullptr;
