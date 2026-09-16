@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T3 · **Updated:** 2026-09-16 · **Synced@:** bb231b1
+> **Phase:** BUILD · **Next:** T4 · **Updated:** 2026-09-16 · **Synced@:** b725961
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -164,7 +164,7 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 
 - Kelvin motoru ve eksenler: `lib/core/math/kelvin_engine.dart`, `lib/domain/entities/filter_config.dart` (testler `test/core/math`, `test/domain/entities`).
 - Kalıcılık: `lib/data/datasources/local/preferences_datasource.dart`, `lib/presentation/providers/filter_provider.dart`; zamanlama native'e açılışta yeniden gönderilir `lib/presentation/providers/schedule_provider.dart:loadSchedule` (başlatma `home_screen.dart` `ref.listen(scheduleProvider)`).
-- Android native emülatörde doğrulandı (2026-09-16): kokpit `kt/FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml` (düz `View` yok), kutucuk `kt/FilterTileService.kt:requestRefresh`, widget `kt/FilterWidgetProvider.kt`, kısayol `kt/ShortcutActivity.kt`, zamanlayıcı `kt/ScheduleReceiver.kt` (gerçek alarm tetiklendi, geçiş tavanı 180 dk). Native metinler `kt/PresetCatalog.kt:text` ← `lib/presentation/providers/notification_sync_provider.dart:nativeLabels`.
+- Android native emülatörde doğrulandı (2026-09-16): overlay izni alınınca servis kendini durdurur `kt/OverlayService.kt:watchOverlayPermission`; kokpit `kt/FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml` (düz `View` yok), kutucuk `kt/FilterTileService.kt:requestRefresh`, widget `kt/FilterWidgetProvider.kt`, kısayol `kt/ShortcutActivity.kt`, zamanlayıcı `kt/ScheduleReceiver.kt` (gerçek alarm tetiklendi, geçiş tavanı 180 dk). Native metinler `kt/PresetCatalog.kt:text` ← `lib/presentation/providers/notification_sync_provider.dart:nativeLabels`.
 - Reklam: `lib/domain/entities/ad_policy.dart`, `lib/presentation/ads/` (`AdConsent.sdkReady`, `AppOpenAdManager`, `watchAdForProPass`), tetik `lib/main.dart:_initialiseAds`, üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`; emülatörde app-open, banner, ödüllü → Pro doğrulandı.
 - Pro: `lib/presentation/providers/pro_provider.dart`, `lib/data/repositories/store_purchase_repository.dart`, `lib/data/repositories/microsoft_store_purchase_repository.dart`, `windows/runner/store_purchases.cpp`. Ayar yedeği Pro'ya kilitli `lib/presentation/screens/settings_screen.dart`.
 - Ana ekran kaydırıcı notları sabit yuvada (`home_screen.dart` `Visibility.maintain`).
@@ -359,10 +359,8 @@ doctorfilter/
 Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk --debug`; `adb -s emulator-5554 install -r build/app/outputs/flutter-apk/app-debug.apk`; adb = `C:/Users/rubicon/AppData/Local/Android/Sdk/platform-tools/adb.exe`; Git Bash'te cihaz yolları için `export MSYS_NO_PATHCONV=1`; shell dışa kapalı receiver'lara yayın gönderemez (gerçek kullanıcı yolunu kullan). Bulunan her hata o görevin alt görevi olarak düzeltilir.
 - [x] T2 [M] (2026-09-16, Claude Opus 5) Bildirimde kilitli çip → paywall (B3, B3.1)
   - Done when: üç senaryonun ekran görüntüsünde paywall; `logcat -d | grep FATAL` boş → arka planda, ikinci çip ve etkinlik kapalıyken (soğuk başlatma) üçü de paywall açtı; FATAL yok
-- [ ] T3 [M] Overlay izni geri alma/verme ve servis yeniden başlatma (B5, B6)
-  - Where: `lib/presentation/widgets/overlay_permission_banner.dart`, `lib/presentation/providers/filter_provider.dart:didChangeAppLifecycleState`, `kt/OverlayService.kt`
-  - Do: 1) filtre açıkken `adb shell appops set com.crazypenguin.doctorfilter SYSTEM_ALERT_WINDOW deny`, uygulamaya dön → banner görünür, çökme yok; 2) `allow`, uygulamaya dön → banner kendiliğinden kalkar; 3) filtre açıkken `adb shell am crash com.crazypenguin.doctorfilter` (süreci öldürür; servis START_STICKY ile yeniden başlar), 10 sn bekle → bildirim başlığındaki K değeri öncekiyle aynı
-  - Done when: üç adımın ekran görüntüsü/`dumpsys notification` çıktısı beklenen durumu gösterir; FATAL yok
+- [x] T3 [M] (2026-09-16, Claude Opus 5) Overlay izni geri alma/verme ve servis yeniden başlatma (B5, B6)
+  - Done when: üç adımın ekran görüntüsü/`dumpsys notification` çıktısı beklenen durumu gösterir; FATAL yok → HATA bulundu ve düzeltildi: izin alınınca sistem pencereyi gizliyor ama servis çalışmaya ve her yerde "Filtre açık" demeye devam ediyordu; `OverlayService.watchOverlayPermission` (AppOps izleme) filtreyi durdurur. İzin geri verilince kart kalktı; süreç `run-as kill -9` ile öldürülünce servis aynı değerlerle döndü
 - [ ] T4 [M] Yeniden başlatma sonrası zamanlayıcı ve filtre geri yükleme (B4, AC7)
   - Where: `kt/ScheduleReceiver.kt:onReceive` BOOT_COMPLETED
   - Do: 1) zamanlamayı aç, filtreyi aç; 2) `adb -s emulator-5554 reboot`, `adb wait-for-device`, `getprop sys.boot_completed` 1 olana kadar bekle, +30 sn; 3) `dumpsys alarm | grep doctorfilter.ACTION_SCHEDULE` ve `dumpsys window windows | grep "u0 com.crazypenguin.doctorfilter}"`
@@ -447,4 +445,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T2 doğrulandı (kod değişikliği yok); yeni görevler T22 (onboarding göz simgesi), T23 (izin kartı yanıp sönmesi). Sonraki: T3. Emülatör: `pm clear` sonrası temiz, Pro yok, İngilizce (cihaz dili), filtre açık.
+T3 bitti (izin geri alınınca filtre artık duruyor). Sonraki: T4 (emülatör reboot). Emülatör: Pro yok, İngilizce, filtre açık 5500 K, izinler verili. Süreç öldürmek için `am crash` işe yaramıyor; `adb shell "run-as com.crazypenguin.doctorfilter kill -9 <pid>"` kullan.
