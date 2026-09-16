@@ -223,5 +223,15 @@
   "ios_toggle_body": "Die waardes hierbo bly staan, so al wat oorbly is 'n skakelaar. Drie maniere, en nie een het hierdie program oop nodig nie: die toeganklikheidskortpad (druk die sykapie drie keer), Tik op die agterkant, of 'n Kortpaaie-outomatisering met sononder. Die knoppie hieronder loop 'n kortpad van jou eie met die naam “DoctorFilter”; iOS spring 'n oomblik na Kortpaaie en dadelik terug — daardie flits is iOS, nie 'n fout nie.",
   "ios_toggle_run": "Loop my kortpad",
   "ios_toggle_missing": "Geen kortpad met die naam “DoctorFilter” is gevind nie. Skep een in die Kortpaaie-program met die aksie “Stel kleurfilters”.",
-  "app_tagline": "Gemeet in kelvin. Eerlik oor die syfers."
+  "app_tagline": "Gemeet in kelvin. Eerlik oor die syfers.",
+  "native_channel_name": "Skermfilter",
+  "native_channel_desc": "Wys die filter se status en vinnige kontroles terwyl die filter aan is.",
+  "native_paused": "Filter onderbreek",
+  "native_break_channel_desc": "'n Stil herinnering om jou oë te laat rus terwyl die filter aan is.",
+  "native_break_title": "Tyd om ver weg te kyk",
+  "native_dimmer": "Donkerder",
+  "native_brighter": "Helderder",
+  "native_pro_required": "Ontsluit alle profiele en kontroles met Pro",
+  "native_tile_on": "Aan",
+  "native_tile_off": "Af"
 }

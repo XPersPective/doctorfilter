@@ -223,5 +223,15 @@
   "ios_toggle_body": "Yuqoridagi qiymatlar joyida qoladi, demak faqat kalit qoldi. Uch yoʻl bor va hech biri bu ilovani ochishni talab qilmaydi: maxsus imkoniyatlar yorligʻi (yon tugmani uch marta bosish), orqa tomonga tegish yoki quyosh botganda «Yorliqlar» avtomatlashtiruvi. Quyidagi tugma sizning «DoctorFilter» nomli oʻz yorligʻingizni ishga tushiradi; iOS bir lahzaga «Yorliqlar»ga oʻtib darhol qaytadi — bu yaltirash iOS-ning ishi, nosozlik emas.",
   "ios_toggle_run": "Yorligʻimni ishga tushirish",
   "ios_toggle_missing": "«DoctorFilter» nomli yorliq topilmadi. «Yorliqlar» ilovasida «Rang filtrlarini sozlash» amali bilan bittasini yarating.",
-  "app_tagline": "Kelvinda oʻlchanadi. Raqamlarda halol."
+  "app_tagline": "Kelvinda oʻlchanadi. Raqamlarda halol.",
+  "native_channel_name": "Ekran filtri",
+  "native_channel_desc": "Filtr ishlayotganda uning holati va tezkor boshqaruvlarni ko'rsatadi.",
+  "native_paused": "Filtr pauzada",
+  "native_break_channel_desc": "Filtr yoniq paytda ko'zlarga dam berish uchun ovozsiz eslatma.",
+  "native_break_title": "Uzoqqa qarash vaqti",
+  "native_dimmer": "Qoraroq",
+  "native_brighter": "Yorqinroq",
+  "native_pro_required": "Barcha profillar va boshqaruvlarni Pro bilan oching",
+  "native_tile_on": "Yoniq",
+  "native_tile_off": "O'chiq"
 }

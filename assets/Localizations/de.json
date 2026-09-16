@@ -223,5 +223,15 @@
   "ios_toggle_body": "Die Werte oben bleiben stehen, es fehlt also nur noch ein Schalter. Drei Wege, keiner davon braucht diese App: der Bedienungshilfen-Kurzbefehl (dreimal die Seitentaste), Tippen auf die Rückseite, oder eine Kurzbefehle-Automation zum Sonnenuntergang. Die Taste unten führt einen eigenen Kurzbefehl namens „DoctorFilter“ aus; iOS springt kurz zu Kurzbefehlen und sofort zurück — das ist iOS, kein Fehler.",
   "ios_toggle_run": "Meinen Kurzbefehl ausführen",
   "ios_toggle_missing": "Kein Kurzbefehl namens „DoctorFilter“ gefunden. Legen Sie in der App Kurzbefehle einen an, mit der Aktion „Farbfilter einstellen“.",
-  "app_tagline": "In Kelvin gemessen. Ehrlich bei den Zahlen."
+  "app_tagline": "In Kelvin gemessen. Ehrlich bei den Zahlen.",
+  "native_channel_name": "Bildschirmfilter",
+  "native_channel_desc": "Zeigt den Filterstatus und Schnellsteuerungen, solange der Filter läuft.",
+  "native_paused": "Filter pausiert",
+  "native_break_channel_desc": "Eine stille Erinnerung, die Augen auszuruhen, während der Filter an ist.",
+  "native_break_title": "Zeit, in die Ferne zu schauen",
+  "native_dimmer": "Dunkler",
+  "native_brighter": "Heller",
+  "native_pro_required": "Alle Profile und Regler mit Pro freischalten",
+  "native_tile_on": "An",
+  "native_tile_off": "Aus"
 }

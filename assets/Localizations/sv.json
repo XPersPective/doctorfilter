@@ -223,5 +223,15 @@
   "ios_toggle_body": "Värdena ovan ligger kvar, så det som återstår är en strömbrytare. Tre sätt, inget av dem kräver att appen är öppen: tillgänglighetsgenvägen (tryck tre gånger på sidoknappen), Knacka på baksidan, eller en Genvägar-automatisering vid solnedgången. Knappen nedan kör en egen genväg som heter ”DoctorFilter”; iOS hoppar ett ögonblick över till Genvägar och tillbaka — den blinkningen är iOS, inte ett fel.",
   "ios_toggle_run": "Kör min genväg",
   "ios_toggle_missing": "Ingen genväg som heter ”DoctorFilter” hittades. Skapa en i appen Genvägar med åtgärden ”Ställ in färgfilter”.",
-  "app_tagline": "Mätt i kelvin. Ärlig med siffrorna."
+  "app_tagline": "Mätt i kelvin. Ärlig med siffrorna.",
+  "native_channel_name": "Skärmfilter",
+  "native_channel_desc": "Visar filtrets status och snabbkontroller medan filtret är på.",
+  "native_paused": "Filtret pausat",
+  "native_break_channel_desc": "En tyst påminnelse om att vila ögonen medan filtret är på.",
+  "native_break_title": "Dags att titta bort",
+  "native_dimmer": "Mörkare",
+  "native_brighter": "Ljusare",
+  "native_pro_required": "Lås upp alla profiler och reglage med Pro",
+  "native_tile_on": "På",
+  "native_tile_off": "Av"
 }

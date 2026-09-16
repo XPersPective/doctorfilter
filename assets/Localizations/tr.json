@@ -223,5 +223,15 @@
   "ios_toggle_body": "Yukarıdaki değerler yerinde kalır, geriye yalnızca açıp kapatmak kalır. Üç yol var ve hiçbiri bu uygulamanın açık olmasını gerektirmiyor:\n\n• Yan tuşa üç kez basma — Ayarlar → Erişilebilirlik → Erişilebilirlik Kısayolu'nu Renk Filtreleri olarak ayarlayın.\n• Arkaya Dokunma — Ayarlar → Erişilebilirlik → Dokunma → Arkaya Dokunma.\n• Kısayollar otomasyonu — gün batımında açsın, gün doğumunda kapatsın.\n\nAşağıdaki düğme, sizin \"DoctorFilter\" adlı kısayolunuzu çalıştırır. iOS kısa bir an Kısayollar'a geçip hemen geri döner — o kısa geçiş iOS'un kendisi, arıza değil.",
   "ios_toggle_run": "Kısayolumu çalıştır",
   "ios_toggle_missing": "\"DoctorFilter\" adlı bir kısayol bulunamadı. Kısayollar uygulamasında \"Renk Filtrelerini Ayarla\" eylemiyle bir tane oluşturun.",
-  "app_tagline": "Kelvin ile ölçülür. Sayılar konusunda dürüsttür."
+  "app_tagline": "Kelvin ile ölçülür. Sayılar konusunda dürüsttür.",
+  "native_channel_name": "Ekran filtresi",
+  "native_channel_desc": "Filtre çalışırken durumunu ve hızlı kontrolleri gösterir.",
+  "native_paused": "Filtre duraklatıldı",
+  "native_break_channel_desc": "Filtre açıkken gözlerinizi dinlendirmeniz için sessiz bir hatırlatma.",
+  "native_break_title": "Uzağa bakma zamanı",
+  "native_dimmer": "Daha karanlık",
+  "native_brighter": "Daha parlak",
+  "native_pro_required": "Tüm ön ayarlar ve kontroller için Pro'ya geçin",
+  "native_tile_on": "Açık",
+  "native_tile_off": "Kapalı"
 }

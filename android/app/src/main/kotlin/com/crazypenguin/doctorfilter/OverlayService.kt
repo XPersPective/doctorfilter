@@ -209,6 +209,7 @@ class OverlayService : Service() {
         }
         isRunning = true
         FilterWidgetProvider.refreshAll(this)
+        FilterTileService.requestRefresh(this)
     }
 
     /**
@@ -402,6 +403,7 @@ class OverlayService : Service() {
         FilterState.setWasRunning(this, false)
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         FilterWidgetProvider.refreshAll(this)
+        FilterTileService.requestRefresh(this)
     }
 
     /**

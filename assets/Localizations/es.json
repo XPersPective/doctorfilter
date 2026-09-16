@@ -223,5 +223,15 @@
   "ios_toggle_body": "Los valores de arriba se quedan puestos, así que solo falta un interruptor. Tres formas, ninguna necesita esta app abierta: la función rápida de accesibilidad (triple clic en el botón lateral), Tocar atrás, o una automatización de Atajos al atardecer. El botón de abajo ejecuta un atajo tuyo llamado «DoctorFilter»; iOS salta un instante a Atajos y vuelve — ese parpadeo es iOS, no un fallo.",
   "ios_toggle_run": "Ejecutar mi atajo",
   "ios_toggle_missing": "No se encontró ningún atajo llamado «DoctorFilter». Crea uno en la app Atajos con la acción «Ajustar filtros de color».",
-  "app_tagline": "Medido en kelvin. Honesto con las cifras."
+  "app_tagline": "Medido en kelvin. Honesto con las cifras.",
+  "native_channel_name": "Filtro de pantalla",
+  "native_channel_desc": "Muestra el estado del filtro y controles rápidos mientras está activo.",
+  "native_paused": "Filtro en pausa",
+  "native_break_channel_desc": "Un aviso silencioso para descansar la vista mientras el filtro está activo.",
+  "native_break_title": "Hora de mirar a lo lejos",
+  "native_dimmer": "Más oscuro",
+  "native_brighter": "Más brillante",
+  "native_pro_required": "Desbloquea todos los perfiles y controles con Pro",
+  "native_tile_on": "Activado",
+  "native_tile_off": "Desactivado"
 }

@@ -18,6 +18,11 @@ class ScheduleNotifier extends StateNotifier<ScheduleRule> {
     final result = await _manageScheduleUseCase.getSchedule();
     if (result is Success<ScheduleRule>) {
       state = result.data;
+      // Re-sent on every load. The native copy only exists so alarms survive a
+      // reboot; if it ever drifts from what the app shows (a restored backup, a
+      // cleared prefs file), the alarms would fire for a schedule the screen
+      // says is off. The app's copy is the one the user can see, so it wins.
+      await _manageScheduleUseCase.updateSchedule(result.data);
     }
   }
 

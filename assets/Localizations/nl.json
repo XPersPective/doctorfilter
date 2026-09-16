@@ -223,5 +223,15 @@
   "ios_toggle_body": "De waarden hierboven blijven staan, dus er ontbreekt alleen nog een schakelaar. Drie manieren, geen ervan heeft deze app nodig: de toegankelijkheidssnelkoppeling (driemaal op de zijknop), Tik op achterkant, of een Opdrachten-automatisering bij zonsondergang. De knop hieronder voert een eigen opdracht uit met de naam 'DoctorFilter'; iOS springt even naar Opdrachten en meteen terug — die flits is iOS, geen storing.",
   "ios_toggle_run": "Mijn opdracht uitvoeren",
   "ios_toggle_missing": "Geen opdracht met de naam 'DoctorFilter' gevonden. Maak er een in de app Opdrachten met de actie 'Stel kleurfilters in'.",
-  "app_tagline": "Gemeten in kelvin. Eerlijk over de cijfers."
+  "app_tagline": "Gemeten in kelvin. Eerlijk over de cijfers.",
+  "native_channel_name": "Schermfilter",
+  "native_channel_desc": "Toont de filterstatus en snelle bediening zolang het filter actief is.",
+  "native_paused": "Filter gepauzeerd",
+  "native_break_channel_desc": "Een stille herinnering om je ogen rust te geven terwijl het filter aan staat.",
+  "native_break_title": "Tijd om in de verte te kijken",
+  "native_dimmer": "Donkerder",
+  "native_brighter": "Lichter",
+  "native_pro_required": "Ontgrendel alle profielen en regelaars met Pro",
+  "native_tile_on": "Aan",
+  "native_tile_off": "Uit"
 }

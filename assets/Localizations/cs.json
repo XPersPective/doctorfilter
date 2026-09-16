@@ -223,5 +223,15 @@
   "ios_toggle_body": "Hodnoty výše zůstávají, takže chybí už jen vypínač. Tři cesty a žádná nepotřebuje tuhle aplikaci otevřenou: zkratka zpřístupnění (trojí stisk bočního tlačítka), poklepání na záda, nebo automatizace Zkratek při západu slunce. Tlačítko níž spustí vaši vlastní zkratku jménem „DoctorFilter“; iOS na okamžik přeskočí do Zkratek a hned se vrátí — to bliknutí je iOS, ne závada.",
   "ios_toggle_run": "Spustit mou zkratku",
   "ios_toggle_missing": "Zkratka jménem „DoctorFilter“ nebyla nalezena. Vytvořte ji v aplikaci Zkratky s akcí „Nastavit barevné filtry“.",
-  "app_tagline": "Měřeno v kelvinech. Čestné k číslům."
+  "app_tagline": "Měřeno v kelvinech. Čestné k číslům.",
+  "native_channel_name": "Filtr obrazovky",
+  "native_channel_desc": "Zobrazuje stav filtru a rychlé ovládání, dokud filtr běží.",
+  "native_paused": "Filtr pozastaven",
+  "native_break_channel_desc": "Tiché připomenutí, abyste si odpočinuli očima, když je filtr zapnutý.",
+  "native_break_title": "Čas podívat se do dálky",
+  "native_dimmer": "Tmavší",
+  "native_brighter": "Světlejší",
+  "native_pro_required": "Všechny profily a ovládání odemknete s Pro",
+  "native_tile_on": "Zap.",
+  "native_tile_off": "Vyp."
 }

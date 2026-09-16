@@ -223,5 +223,15 @@
   "ios_toggle_body": "Ülemised väärtused jäävad paigale, seega puudub ainult lüliti. Kolm võimalust ja ükski ei nõua selle rakenduse avamist: juurdepääsetavuse otsetee (kolm vajutust külgnupule), koputus tagaküljele või Käskude automatiseering päikeseloojangul. Allolev nupp käivitab sinu enda „DoctorFilter” nimelise käsu; iOS hüppab hetkeks Käskudesse ja kohe tagasi — see välgatus on iOS, mitte viga.",
   "ios_toggle_run": "Käivita minu käsk",
   "ios_toggle_missing": "Käsku nimega „DoctorFilter” ei leitud. Loo see rakenduses Käsud toiminguga „Määra värvifiltrid”.",
-  "app_tagline": "Mõõdetud kelvinites. Aus numbrite suhtes."
+  "app_tagline": "Mõõdetud kelvinites. Aus numbrite suhtes.",
+  "native_channel_name": "Ekraanifilter",
+  "native_channel_desc": "Näitab filtri olekut ja kiirjuhtelemente, kuni filter töötab.",
+  "native_paused": "Filter peatatud",
+  "native_break_channel_desc": "Vaikne meeldetuletus silmi puhata, kui filter on sees.",
+  "native_break_title": "Aeg vaadata kaugusse",
+  "native_dimmer": "Tumedam",
+  "native_brighter": "Heledam",
+  "native_pro_required": "Ava kõik profiilid ja juhtelemendid Pro-ga",
+  "native_tile_on": "Sees",
+  "native_tile_off": "Väljas"
 }

@@ -74,12 +74,12 @@ object FilterNotificationManager {
 
         val channel = NotificationChannel(
             CHANNEL_ID,
-            context.getString(R.string.notification_channel_name),
+            PresetCatalog.text(context, R.string.notification_channel_name),
             // The filter runs all evening; this must never make a sound, vibrate
             // or peek over whatever the user is doing.
             NotificationManager.IMPORTANCE_LOW
         ).apply {
-            description = context.getString(R.string.notification_channel_description)
+            description = PresetCatalog.text(context, R.string.notification_channel_description)
             setShowBadge(false)
             enableVibration(false)
             enableLights(false)
@@ -98,11 +98,11 @@ object FilterNotificationManager {
         createNotificationChannel(context)
 
         val title = if (isActive) {
-            context.getString(R.string.notification_title_active, values.kelvin)
+            PresetCatalog.text(context, R.string.notification_title_active, values.kelvin)
         } else {
-            context.getString(R.string.notification_title_paused)
+            PresetCatalog.text(context, R.string.notification_title_paused)
         }
-        val summary = context.getString(
+        val summary = PresetCatalog.text(context,
             R.string.notification_summary,
             values.densityPercent,
             values.extraDimPercent
@@ -123,7 +123,7 @@ object FilterNotificationManager {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .addAction(
                 R.drawable.ic_power,
-                context.getString(
+                PresetCatalog.text(context,
                     if (isActive) R.string.notification_action_off
                     else R.string.notification_action_on
                 ),
@@ -131,17 +131,17 @@ object FilterNotificationManager {
             )
             .addAction(
                 R.drawable.ic_dimmer,
-                context.getString(R.string.notification_action_dimmer),
+                PresetCatalog.text(context, R.string.notification_action_dimmer),
                 broadcast(context, ACTION_DIM_MORE, REQUEST_DIM_MORE)
             )
             .addAction(
                 R.drawable.ic_brighter,
-                context.getString(R.string.notification_action_brighter),
+                PresetCatalog.text(context, R.string.notification_action_brighter),
                 broadcast(context, ACTION_DIM_LESS, REQUEST_DIM_LESS)
             )
             .addAction(
                 R.drawable.ic_next_preset,
-                context.getString(R.string.notification_action_next_preset),
+                PresetCatalog.text(context, R.string.notification_action_next_preset),
                 broadcast(context, ACTION_NEXT_PRESET, REQUEST_NEXT_PRESET)
             )
             .build()
@@ -225,8 +225,8 @@ object FilterNotificationManager {
             valueId = R.id.axis_value_kelvin,
             minusId = R.id.axis_minus_kelvin,
             plusId = R.id.axis_plus_kelvin,
-            label = context.getString(R.string.axis_kelvin),
-            value = context.getString(R.string.axis_value_kelvin, values.kelvin),
+            label = PresetCatalog.text(context, R.string.axis_kelvin),
+            value = PresetCatalog.text(context, R.string.axis_value_kelvin, values.kelvin),
             step = KELVIN_STEP,
             requestBase = REQUEST_AXIS_KELVIN,
             enabled = isPro
@@ -238,8 +238,8 @@ object FilterNotificationManager {
             valueId = R.id.axis_value_density,
             minusId = R.id.axis_minus_density,
             plusId = R.id.axis_plus_density,
-            label = context.getString(R.string.axis_density),
-            value = context.getString(R.string.axis_value_percent, values.densityPercent),
+            label = PresetCatalog.text(context, R.string.axis_density),
+            value = PresetCatalog.text(context, R.string.axis_value_percent, values.densityPercent),
             step = PERCENT_STEP,
             requestBase = REQUEST_AXIS_DENSITY,
             enabled = isPro
@@ -254,14 +254,18 @@ object FilterNotificationManager {
             valueId = R.id.axis_value_dim,
             minusId = R.id.axis_minus_dim,
             plusId = R.id.axis_plus_dim,
-            label = context.getString(R.string.axis_dim),
-            value = context.getString(R.string.axis_value_percent, values.extraDimPercent),
+            label = PresetCatalog.text(context, R.string.axis_dim),
+            value = PresetCatalog.text(context, R.string.axis_value_percent, values.extraDimPercent),
             step = PERCENT_STEP,
             requestBase = REQUEST_AXIS_DIM,
             enabled = true
         )
 
         setViewVisibility(R.id.cockpit_pro_hint, if (isPro) View.GONE else View.VISIBLE)
+        setTextViewText(
+            R.id.cockpit_pro_hint,
+            PresetCatalog.text(context, R.string.notification_pro_required)
+        )
         if (!isPro) {
             setOnClickPendingIntent(R.id.cockpit_pro_hint, paywall(context, REQUEST_PAYWALL))
         }

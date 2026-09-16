@@ -223,5 +223,15 @@
   "ios_toggle_body": "A fenti értékek a helyükön maradnak, így már csak egy kapcsoló hiányzik. Három út van, és egyikhez sem kell megnyitni ezt az alkalmazást: a kisegítő gyorsparancs (az oldalsó gomb háromszori megnyomása), a hátlap megérintése, vagy egy Parancsok-automatizálás napnyugtakor. Az alábbi gomb a saját, „DoctorFilter” nevű parancsodat futtatja; az iOS egy pillanatra átugrik a Parancsokba, majd rögtön vissza — ez a villanás az iOS, nem hiba.",
   "ios_toggle_run": "Parancsom futtatása",
   "ios_toggle_missing": "Nem található „DoctorFilter” nevű parancs. Hozz létre egyet a Parancsok alkalmazásban a „Színszűrők beállítása” művelettel.",
-  "app_tagline": "Kelvinben mérve. Őszinte a számokkal."
+  "app_tagline": "Kelvinben mérve. Őszinte a számokkal.",
+  "native_channel_name": "Képernyőszűrő",
+  "native_channel_desc": "Mutatja a szűrő állapotát és a gyors vezérlőket, amíg a szűrő fut.",
+  "native_paused": "Szűrő szüneteltetve",
+  "native_break_channel_desc": "Csendes emlékeztető, hogy pihentesse a szemét, amíg a szűrő be van kapcsolva.",
+  "native_break_title": "Ideje a távolba nézni",
+  "native_dimmer": "Sötétebb",
+  "native_brighter": "Világosabb",
+  "native_pro_required": "Minden profil és vezérlő a Pro-val",
+  "native_tile_on": "Be",
+  "native_tile_off": "Ki"
 }

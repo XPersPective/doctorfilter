@@ -223,5 +223,15 @@
   "ios_toggle_body": "Vrednosti zgoraj ostanejo, zato manjka le še stikalo. Trije načini in nobeden ne zahteva, da je ta aplikacija odprta: bližnjica za dostopnost (trikratni pritisk stranske tipke), dotik hrbtne strani ali avtomatizacija Bližnjic ob sončnem zahodu. Gumb spodaj zažene vašo lastno bližnjico z imenom »DoctorFilter«; iOS za hip skoči v Bližnjice in se takoj vrne — ta preblisk je iOS, ne napaka.",
   "ios_toggle_run": "Zaženi mojo bližnjico",
   "ios_toggle_missing": "Bližnjice z imenom »DoctorFilter« ni bilo mogoče najti. Ustvarite jo v aplikaciji Bližnjice z dejanjem »Nastavi barvne filtre«.",
-  "app_tagline": "Merjeno v kelvinih. Pošteno do številk."
+  "app_tagline": "Merjeno v kelvinih. Pošteno do številk.",
+  "native_channel_name": "Zaslonski filter",
+  "native_channel_desc": "Prikazuje stanje filtra in hitre kontrole, ko filter deluje.",
+  "native_paused": "Filter zaustavljen",
+  "native_break_channel_desc": "Tih opomnik, da spočijete oči, ko je filter vklopljen.",
+  "native_break_title": "Čas je, da pogledate v daljavo",
+  "native_dimmer": "Temneje",
+  "native_brighter": "Svetleje",
+  "native_pro_required": "Odklenite vse profile in kontrole s Pro",
+  "native_tile_on": "Vklop",
+  "native_tile_off": "Izklop"
 }

@@ -137,8 +137,11 @@ class MainActivity : FlutterActivity() {
                     PresetCatalog.save(
                         context = this,
                         json = call.argument<String>("presets") ?: "[]",
-                        isPro = call.argument<Boolean>("isPro") ?: false
+                        isPro = call.argument<Boolean>("isPro") ?: false,
+                        labels = call.argument<String>("labels")
                     )
+                    FilterTileService.requestRefresh(this)
+                    FilterWidgetProvider.refreshAll(this)
                     refreshNotification()
                     AppShortcuts.refresh(this)
                     result.success(true)

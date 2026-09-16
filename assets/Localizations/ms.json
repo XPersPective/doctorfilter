@@ -223,5 +223,15 @@
   "ios_toggle_body": "Nilai di atas kekal, jadi tinggal suisnya sahaja. Tiga cara, tiada satu pun memerlukan aplikasi ini dibuka: Pintasan Kebolehaksesan (tekan butang sisi tiga kali), Ketik Belakang, atau automasi Pintasan pada waktu matahari terbenam. Butang di bawah menjalankan pintasan anda sendiri bernama \"DoctorFilter\"; iOS beralih sekejap ke Pintasan dan terus kembali — kelipan itu iOS, bukan kerosakan.",
   "ios_toggle_run": "Jalankan pintasan saya",
   "ios_toggle_missing": "Tiada pintasan bernama \"DoctorFilter\" ditemui. Cipta satu dalam aplikasi Pintasan dengan tindakan \"Tetapkan Penapis Warna\".",
-  "app_tagline": "Diukur dalam kelvin. Jujur tentang angkanya."
+  "app_tagline": "Diukur dalam kelvin. Jujur tentang angkanya.",
+  "native_channel_name": "Penapis skrin",
+  "native_channel_desc": "Menunjukkan status penapis dan kawalan pantas semasa penapis berjalan.",
+  "native_paused": "Penapis dijeda",
+  "native_break_channel_desc": "Peringatan senyap untuk merehatkan mata semasa penapis dihidupkan.",
+  "native_break_title": "Masa untuk melihat jauh",
+  "native_dimmer": "Lebih gelap",
+  "native_brighter": "Lebih cerah",
+  "native_pro_required": "Buka semua profil dan kawalan dengan Pro",
+  "native_tile_on": "Hidup",
+  "native_tile_off": "Mati"
 }

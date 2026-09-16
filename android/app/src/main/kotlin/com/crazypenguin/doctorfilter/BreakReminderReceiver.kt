@@ -92,12 +92,12 @@ class BreakReminderReceiver : BroadcastReceiver() {
 
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                context.getString(R.string.break_channel_name),
+                PresetCatalog.text(context, R.string.break_channel_name),
                 // Silent. A reminder that startles the user is worse than none,
                 // and this one arrives every twenty minutes.
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = context.getString(R.string.break_channel_description)
+                description = PresetCatalog.text(context, R.string.break_channel_description)
                 setShowBadge(false)
                 enableVibration(false)
                 enableLights(false)
@@ -120,11 +120,11 @@ class BreakReminderReceiver : BroadcastReceiver() {
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(context.getString(R.string.break_title))
-            .setContentText(context.getString(R.string.break_body))
+            .setContentTitle(PresetCatalog.text(context, R.string.break_title))
+            .setContentText(PresetCatalog.text(context, R.string.break_body))
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(context.getString(R.string.break_body))
+                    .bigText(PresetCatalog.text(context, R.string.break_body))
             )
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setSilent(true)

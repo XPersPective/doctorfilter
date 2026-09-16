@@ -223,5 +223,15 @@
   "ios_toggle_body": "Valorile de mai sus rămân pe loc, așa că mai lipsește doar un comutator. Trei căi, niciuna nu cere aplicația deschisă: scurtătura de accesibilitate (triplu clic pe butonul lateral), Atingere pe spate sau o automatizare Comenzi rapide la apus. Butonul de mai jos rulează o comandă rapidă a ta numită „DoctorFilter”; iOS sare o clipă în Comenzi rapide și revine imediat — licărirea aceea e iOS, nu o defecțiune.",
   "ios_toggle_run": "Rulează comanda mea",
   "ios_toggle_missing": "Nu s-a găsit nicio comandă rapidă numită „DoctorFilter”. Creează una în aplicația Comenzi rapide cu acțiunea „Setează filtrele de culoare”.",
-  "app_tagline": "Măsurat în kelvini. Onest cu cifrele."
+  "app_tagline": "Măsurat în kelvini. Onest cu cifrele.",
+  "native_channel_name": "Filtru de ecran",
+  "native_channel_desc": "Afișează starea filtrului și comenzi rapide cât timp rulează.",
+  "native_paused": "Filtru întrerupt",
+  "native_break_channel_desc": "Un memento discret să vă odihniți ochii cât filtrul este pornit.",
+  "native_break_title": "E timpul să priviți în depărtare",
+  "native_dimmer": "Mai întunecat",
+  "native_brighter": "Mai luminos",
+  "native_pro_required": "Deblocați toate profilurile și comenzile cu Pro",
+  "native_tile_on": "Pornit",
+  "native_tile_off": "Oprit"
 }

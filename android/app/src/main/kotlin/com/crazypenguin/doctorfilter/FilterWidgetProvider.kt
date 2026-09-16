@@ -46,16 +46,16 @@ class FilterWidgetProvider : AppWidgetProvider() {
             return RemoteViews(context.packageName, R.layout.widget_filter).apply {
                 setTextViewText(
                     R.id.widget_status,
-                    context.getString(
+                    PresetCatalog.text(context,
                         if (running) R.string.widget_on else R.string.widget_off
                     )
                 )
                 setTextViewText(
                     R.id.widget_detail,
                     if (running) {
-                        context.getString(R.string.axis_value_kelvin, values.kelvin)
+                        PresetCatalog.text(context, R.string.axis_value_kelvin, values.kelvin)
                     } else {
-                        context.getString(R.string.app_name)
+                        PresetCatalog.text(context, R.string.app_name)
                     }
                 )
                 setInt(

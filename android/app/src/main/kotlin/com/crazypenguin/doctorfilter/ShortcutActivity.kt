@@ -27,7 +27,7 @@ class ShortcutActivity : Activity() {
         // Without the overlay permission there is nothing to start, and a
         // shortcut that silently does nothing is worse than one that explains.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, getString(R.string.shortcut_needs_permission), Toast.LENGTH_LONG)
+            Toast.makeText(this, PresetCatalog.text(this, R.string.shortcut_needs_permission), Toast.LENGTH_LONG)
                 .show()
             startActivity(
                 Intent(this, MainActivity::class.java)

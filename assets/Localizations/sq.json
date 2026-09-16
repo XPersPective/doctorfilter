@@ -223,5 +223,15 @@
   "ios_toggle_body": "Vlerat lart rrinë aty, prandaj mbetet vetëm një çelës. Tri rrugë, dhe asnjëra nuk kërkon këtë aplikacion të hapur: shkurtorja e qasshmërisë (tri klikime te butoni anësor), Prekja pas, ose një automatizim i Shkurtoreve në perëndim. Butoni më poshtë niset një shkurtore tënden me emrin «DoctorFilter»; iOS kalon një çast te Shkurtoret dhe kthehet menjëherë — ai xixëllim është iOS, jo defekt.",
   "ios_toggle_run": "Nis shkurtoren time",
   "ios_toggle_missing": "Nuk u gjet asnjë shkurtore me emrin «DoctorFilter». Krijo një në aplikacionin Shkurtoret me veprimin «Cakto filtrat e ngjyrave».",
-  "app_tagline": "Matur në kelvin. I ndershëm me shifrat."
+  "app_tagline": "Matur në kelvin. I ndershëm me shifrat.",
+  "native_channel_name": "Filtri i ekranit",
+  "native_channel_desc": "Tregon gjendjen e filtrit dhe kontrollet e shpejta ndërsa filtri punon.",
+  "native_paused": "Filtri në pauzë",
+  "native_break_channel_desc": "Një kujtesë e heshtur për të pushuar sytë ndërsa filtri është aktiv.",
+  "native_break_title": "Koha të shikoni larg",
+  "native_dimmer": "Më errët",
+  "native_brighter": "Më ndritshëm",
+  "native_pro_required": "Zhbllokoni të gjitha profilet dhe kontrollet me Pro",
+  "native_tile_on": "Aktiv",
+  "native_tile_off": "Joaktiv"
 }

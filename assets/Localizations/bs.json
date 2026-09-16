@@ -223,5 +223,15 @@
   "ios_toggle_body": "Vrijednosti gore ostaju, pa nedostaje samo prekidač. Tri načina i nijedan ne traži da ova aplikacija bude otvorena: prečica pristupačnosti (trostruki pritisak bočnog dugmeta), dodir poleđine, ili automatizacija Prečica pri zalasku sunca. Dugme ispod pokreće vašu vlastitu prečicu imena „DoctorFilter“; iOS na trenutak skoči u Prečice i odmah se vrati — taj bljesak je iOS, a ne kvar.",
   "ios_toggle_run": "Pokreni moju prečicu",
   "ios_toggle_missing": "Prečica imena „DoctorFilter“ nije pronađena. Napravite je u aplikaciji Prečice s radnjom „Podesi filtere boja“.",
-  "app_tagline": "Mjereno u kelvinima. Pošteno prema brojkama."
+  "app_tagline": "Mjereno u kelvinima. Pošteno prema brojkama.",
+  "native_channel_name": "Filter ekrana",
+  "native_channel_desc": "Prikazuje stanje filtera i brze kontrole dok filter radi.",
+  "native_paused": "Filter pauziran",
+  "native_break_channel_desc": "Tihi podsjetnik da odmorite oči dok je filter uključen.",
+  "native_break_title": "Vrijeme je da pogledate u daljinu",
+  "native_dimmer": "Tamnije",
+  "native_brighter": "Svjetlije",
+  "native_pro_required": "Otključajte sve profile i kontrole uz Pro",
+  "native_tile_on": "Uklj.",
+  "native_tile_off": "Isklj."
 }

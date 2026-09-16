@@ -223,5 +223,15 @@
   "ios_toggle_body": "Amanani angenhla ayahlala, ngakho okusalayo yiswishi kuphela. Zintathu izindlela, futhi akukho nolulodwa oludinga ukuthi lolu hlelo luvuliwe: isinqamuleli sokufinyeleleka (cindezela inkinobho eseceleni kathathu), ukuthepha ngemuva, noma ukuzenzakalela kwe-Shortcuts ekushoneni kwelanga. Inkinobho engezansi isebenzisa isinqamuleli sakho esibizwa ngokuthi \"DoctorFilter\"; i-iOS iyeqela ku-Shortcuts okomzuzwana bese ibuya masinyane — lokho kucwebezela yi-iOS, hhayi inkinga.",
   "ios_toggle_run": "Sebenzisa isinqamuleli sami",
   "ios_toggle_missing": "Asikho isinqamuleli esibizwa ngokuthi \"DoctorFilter\" esitholakele. Dala esisodwa ohlelweni lwe-Shortcuts ngesenzo esithi \"Set Color Filters\".",
-  "app_tagline": "Kukalwa nge-kelvin. Kuqotho ngezinombolo."
+  "app_tagline": "Kukalwa nge-kelvin. Kuqotho ngezinombolo.",
+  "native_channel_name": "Isihlungi sesikrini",
+  "native_channel_desc": "Kubonisa isimo sesihlungi nezilawuli ezisheshayo ngesikhathi sisebenza.",
+  "native_paused": "Isihlungi simisiwe",
+  "native_break_channel_desc": "Isikhumbuzi esithulile sokuphumuza amehlo ngesikhathi isihlungi sivuliwe.",
+  "native_break_title": "Isikhathi sokubheka kude",
+  "native_dimmer": "Kumnyama kakhulu",
+  "native_brighter": "Kukhanya kakhulu",
+  "native_pro_required": "Vula wonke amaphrofayela nezilawuli nge-Pro",
+  "native_tile_on": "Vuliwe",
+  "native_tile_off": "Valiwe"
 }

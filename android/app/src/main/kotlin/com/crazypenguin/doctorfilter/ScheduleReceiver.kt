@@ -35,6 +35,9 @@ class ScheduleReceiver : BroadcastReceiver() {
         private const val KEY_PRESET_ID = "preset_id"
         private const val KEY_TRANSITION = "transition_minutes"
 
+        /** Matches `ScheduleRule.maxTransitionMinutes`: the bedtime wind-down is three hours. */
+        private const val MAX_TRANSITION_MINUTES = 180
+
         fun updateSchedule(
             context: Context,
             isEnabled: Boolean,
@@ -174,7 +177,7 @@ class ScheduleReceiver : BroadcastReceiver() {
     private fun transitionMillis(context: Context): Long =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getInt(KEY_TRANSITION, 0)
-            .coerceIn(0, 60) * 60_000L
+            .coerceIn(0, MAX_TRANSITION_MINUTES) * 60_000L
 
     private fun startFilter(context: Context, rampMillis: Long = 0L) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

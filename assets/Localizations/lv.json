@@ -223,5 +223,15 @@
   "ios_toggle_body": "Vērtības augšā paliek savā vietā, tāpēc trūkst tikai slēdža. Trīs veidi, un nevienam nav vajadzīga šī lietotne atvērta: pieejamības īsceļš (trīs sānu pogas nospiešanas), pieskāriens aizmugurei vai “Saīsņu” automatizācija saulrietā. Poga zemāk palaiž jūsu pašu saīsni ar nosaukumu “DoctorFilter”; iOS uz mirkli pārlec uz “Saīsnēm” un uzreiz atgriežas — šis uzplaiksnījums ir iOS, nevis kļūme.",
   "ios_toggle_run": "Palaist manu saīsni",
   "ios_toggle_missing": "Saīsne ar nosaukumu “DoctorFilter” netika atrasta. Izveidojiet to lietotnē “Saīsnes” ar darbību “Iestatīt krāsu filtrus”.",
-  "app_tagline": "Mērīts kelvinos. Godīgs pret skaitļiem."
+  "app_tagline": "Mērīts kelvinos. Godīgs pret skaitļiem.",
+  "native_channel_name": "Ekrāna filtrs",
+  "native_channel_desc": "Rāda filtra stāvokli un ātrās vadīklas, kamēr filtrs darbojas.",
+  "native_paused": "Filtrs pauzēts",
+  "native_break_channel_desc": "Kluss atgādinājums atpūtināt acis, kamēr filtrs ir ieslēgts.",
+  "native_break_title": "Laiks paskatīties tālumā",
+  "native_dimmer": "Tumšāk",
+  "native_brighter": "Gaišāk",
+  "native_pro_required": "Atbloķējiet visus profilus un vadīklas ar Pro",
+  "native_tile_on": "Iesl.",
+  "native_tile_off": "Izsl."
 }

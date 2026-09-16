@@ -223,5 +223,15 @@
   "ios_toggle_body": "上面的数值会一直留着，剩下的只是开关。三种办法，都不需要打开这个应用：辅助功能快捷键（连按三次侧边按钮）、轻点背面，或者用「快捷指令」在日落时自动切换。下面的按钮会运行你自己创建的、名为「DoctorFilter」的快捷指令；iOS 会短暂跳到快捷指令再马上回来——那一下闪动是 iOS 的机制，不是出故障。",
   "ios_toggle_run": "运行我的快捷指令",
   "ios_toggle_missing": "没有找到名为「DoctorFilter」的快捷指令。请在「快捷指令」应用里用「设置色彩滤镜」这个操作新建一个。",
-  "app_tagline": "以开尔文计量，数字上讲实话。"
+  "app_tagline": "以开尔文计量，数字上讲实话。",
+  "native_channel_name": "屏幕滤镜",
+  "native_channel_desc": "滤镜运行时显示其状态和快捷控制。",
+  "native_paused": "滤镜已暂停",
+  "native_break_channel_desc": "滤镜开启时提醒你让眼睛休息的静默通知。",
+  "native_break_title": "该看看远处了",
+  "native_dimmer": "更暗",
+  "native_brighter": "更亮",
+  "native_pro_required": "升级 Pro 解锁全部配置和控制",
+  "native_tile_on": "开",
+  "native_tile_off": "关"
 }

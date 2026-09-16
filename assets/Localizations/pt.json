@@ -223,5 +223,15 @@
   "ios_toggle_body": "Os valores acima ficam, por isso só falta um interruptor. Três formas, nenhuma precisa desta app aberta: o atalho de acessibilidade (clique triplo no botão lateral), Tocar atrás, ou uma automatização dos Atalhos ao pôr do sol. O botão abaixo executa um atalho seu chamado «DoctorFilter»; o iOS salta um instante para os Atalhos e volta logo — esse piscar é o iOS, não uma avaria.",
   "ios_toggle_run": "Executar o meu atalho",
   "ios_toggle_missing": "Não foi encontrado nenhum atalho chamado «DoctorFilter». Crie um na app Atalhos com a ação «Definir filtros de cor».",
-  "app_tagline": "Medido em kelvin. Honesto quanto aos números."
+  "app_tagline": "Medido em kelvin. Honesto quanto aos números.",
+  "native_channel_name": "Filtro de ecrã",
+  "native_channel_desc": "Mostra o estado do filtro e controlos rápidos enquanto está ativo.",
+  "native_paused": "Filtro em pausa",
+  "native_break_channel_desc": "Um lembrete silencioso para descansar os olhos enquanto o filtro está ligado.",
+  "native_break_title": "Hora de olhar ao longe",
+  "native_dimmer": "Mais escuro",
+  "native_brighter": "Mais claro",
+  "native_pro_required": "Desbloqueie todos os perfis e controlos com o Pro",
+  "native_tile_on": "Ligado",
+  "native_tile_off": "Desligado"
 }

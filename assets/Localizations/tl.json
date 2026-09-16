@@ -223,5 +223,15 @@
   "ios_toggle_body": "Nananatili ang mga halaga sa itaas, kaya switch na lang ang kulang. Tatlong paraan, at wala ni isa ang nangangailangang bukas ang app na ito: ang Accessibility Shortcut (triple-click sa side button), Back Tap, o isang Shortcuts automation sa paglubog ng araw. Pinapatakbo ng button sa ibaba ang sarili mong shortcut na pinangalanang \"DoctorFilter\"; sandaling lilipat ang iOS sa Shortcuts at babalik agad — ang kislap na iyon ay iOS, hindi sira.",
   "ios_toggle_run": "Patakbuhin ang shortcut ko",
   "ios_toggle_missing": "Walang natagpuang shortcut na \"DoctorFilter\". Gumawa ng isa sa Shortcuts app gamit ang aksyong \"Set Color Filters\".",
-  "app_tagline": "Sinusukat sa kelvin. Tapat sa mga numero."
+  "app_tagline": "Sinusukat sa kelvin. Tapat sa mga numero.",
+  "native_channel_name": "Filter ng screen",
+  "native_channel_desc": "Ipinapakita ang status ng filter at mabilis na kontrol habang tumatakbo ito.",
+  "native_paused": "Naka-pause ang filter",
+  "native_break_channel_desc": "Isang tahimik na paalala na pahingahin ang mata habang naka-on ang filter.",
+  "native_break_title": "Oras na tumingin sa malayo",
+  "native_dimmer": "Mas madilim",
+  "native_brighter": "Mas maliwanag",
+  "native_pro_required": "I-unlock ang lahat ng profile at kontrol gamit ang Pro",
+  "native_tile_on": "Naka-on",
+  "native_tile_off": "Naka-off"
 }

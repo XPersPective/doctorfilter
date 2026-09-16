@@ -223,5 +223,15 @@
   "ios_toggle_body": "Værdierne ovenfor bliver stående, så der mangler kun en kontakt. Tre måder, og ingen af dem kræver, at appen er åben: tilgængelighedsgenvejen (tryk tre gange på sideknappen), Tryk på bagsiden, eller en Genveje-automatisering ved solnedgang. Knappen nedenfor kører din egen genvej ved navn “DoctorFilter”; iOS skifter et øjeblik til Genveje og tilbage igen — det blink er iOS, ikke en fejl.",
   "ios_toggle_run": "Kør min genvej",
   "ios_toggle_missing": "Ingen genvej ved navn “DoctorFilter” blev fundet. Opret en i appen Genveje med handlingen “Indstil farvefiltre”.",
-  "app_tagline": "Målt i kelvin. Ærlig om tallene."
+  "app_tagline": "Målt i kelvin. Ærlig om tallene.",
+  "native_channel_name": "Skærmfilter",
+  "native_channel_desc": "Viser filterets status og hurtige knapper, mens filteret kører.",
+  "native_paused": "Filter sat på pause",
+  "native_break_channel_desc": "En stille påmindelse om at hvile øjnene, mens filteret er tændt.",
+  "native_break_title": "Tid til at kigge væk",
+  "native_dimmer": "Mørkere",
+  "native_brighter": "Lysere",
+  "native_pro_required": "Lås alle profiler og knapper op med Pro",
+  "native_tile_on": "Til",
+  "native_tile_off": "Fra"
 }

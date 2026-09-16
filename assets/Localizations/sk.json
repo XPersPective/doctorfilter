@@ -223,5 +223,15 @@
   "ios_toggle_body": "Hodnoty vyššie zostávajú, takže chýba už len vypínač. Tri cesty a žiadna nepotrebuje túto aplikáciu otvorenú: skratka prístupnosti (trojité stlačenie bočného tlačidla), ťuknutie na zadnú stranu, alebo automatizácia Skratiek pri západe slnka. Tlačidlo nižšie spustí vašu vlastnú skratku s názvom „DoctorFilter“; iOS na chvíľu preskočí do Skratiek a hneď sa vráti — to bliknutie je iOS, nie porucha.",
   "ios_toggle_run": "Spustiť moju skratku",
   "ios_toggle_missing": "Skratka s názvom „DoctorFilter“ sa nenašla. Vytvorte ju v aplikácii Skratky s akciou „Nastaviť farebné filtre“.",
-  "app_tagline": "Merané v kelvinoch. Čestné k číslam."
+  "app_tagline": "Merané v kelvinoch. Čestné k číslam.",
+  "native_channel_name": "Filter obrazovky",
+  "native_channel_desc": "Zobrazuje stav filtra a rýchle ovládanie, kým filter beží.",
+  "native_paused": "Filter pozastavený",
+  "native_break_channel_desc": "Tiché pripomenutie, aby ste si oddýchli očami, keď je filter zapnutý.",
+  "native_break_title": "Čas pozrieť sa do diaľky",
+  "native_dimmer": "Tmavšie",
+  "native_brighter": "Svetlejšie",
+  "native_pro_required": "Všetky profily a ovládanie odomknete s Pro",
+  "native_tile_on": "Zap.",
+  "native_tile_off": "Vyp."
 }

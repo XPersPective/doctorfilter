@@ -8,6 +8,7 @@ import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/domain/entities/ad_policy.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/presentation/ads/banner_ad_widget.dart';
+import 'package:doctorfilter/presentation/providers/schedule_provider.dart';
 import 'package:doctorfilter/presentation/providers/ad_providers.dart';
 import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/providers/bypass_provider.dart';
@@ -51,6 +52,10 @@ class HomeScreen extends ConsumerWidget {
 
     // Keeps the notification's copy of the preset list current.
     ref.watch(notificationCatalogSyncProvider);
+
+    // Created at launch rather than when the scheduler is first opened: loading
+    // it re-sends the schedule to the native alarms, which must match the app.
+    ref.listen(scheduleProvider, (_, _) {});
 
     // The locked chips in the notification launch the app asking for the
     // paywall; without this the tap only brought the app forward, which reads

@@ -223,5 +223,15 @@
   "ios_toggle_body": "The values above stay put, so all that is left is a switch. Three ways, none of which need this app open:\n\n• Triple-click the side button — set Settings → Accessibility → Accessibility Shortcut to Colour Filters.\n• Back Tap — Settings → Accessibility → Touch → Back Tap.\n• A Shortcuts automation, to switch it at sunset and back at sunrise.\n\nThe button below runs a shortcut of your own named \"DoctorFilter\". iOS briefly switches to Shortcuts and comes straight back — that flash is iOS, not a fault.",
   "ios_toggle_run": "Run my shortcut",
   "ios_toggle_missing": "No shortcut named \"DoctorFilter\" was found. Create one in the Shortcuts app with the \"Set Colour Filters\" action.",
-  "app_tagline": "Measured in kelvin. Honest about the numbers."
+  "app_tagline": "Measured in kelvin. Honest about the numbers.",
+  "native_channel_name": "Screen filter",
+  "native_channel_desc": "Shows filter status and quick controls while the filter is running.",
+  "native_paused": "Filter paused",
+  "native_break_channel_desc": "A silent reminder to rest your eyes while the filter is on.",
+  "native_break_title": "Time to look away",
+  "native_dimmer": "Dimmer",
+  "native_brighter": "Brighter",
+  "native_pro_required": "Unlock all presets and controls with Pro",
+  "native_tile_on": "On",
+  "native_tile_off": "Off"
 }

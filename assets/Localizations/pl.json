@@ -223,5 +223,15 @@
   "ios_toggle_body": "Wartości powyżej zostają, więc brakuje już tylko przełącznika. Trzy sposoby, żaden nie wymaga otwierania tej aplikacji: skrót dostępności (trzykrotne naciśnięcie przycisku bocznego), stuknięcie w tył obudowy albo automatyzacja Skrótów o zachodzie słońca. Przycisk poniżej uruchamia twój własny skrót o nazwie „DoctorFilter”; iOS na moment przeskoczy do Skrótów i od razu wróci — ten błysk to iOS, nie usterka.",
   "ios_toggle_run": "Uruchom mój skrót",
   "ios_toggle_missing": "Nie znaleziono skrótu o nazwie „DoctorFilter”. Utwórz go w aplikacji Skróty z akcją „Ustaw filtry kolorów”.",
-  "app_tagline": "Mierzone w kelwinach. Uczciwe wobec liczb."
+  "app_tagline": "Mierzone w kelwinach. Uczciwe wobec liczb.",
+  "native_channel_name": "Filtr ekranu",
+  "native_channel_desc": "Pokazuje stan filtra i szybkie sterowanie, gdy filtr działa.",
+  "native_paused": "Filtr wstrzymany",
+  "native_break_channel_desc": "Ciche przypomnienie, by dać oczom odpocząć, gdy filtr jest włączony.",
+  "native_break_title": "Czas spojrzeć w dal",
+  "native_dimmer": "Ciemniej",
+  "native_brighter": "Jaśniej",
+  "native_pro_required": "Odblokuj wszystkie profile i ustawienia z Pro",
+  "native_tile_on": "Wł.",
+  "native_tile_off": "Wył."
 }
