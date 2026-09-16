@@ -1,7 +1,10 @@
 # Screenshots
 
-Empty on purpose. The README links here, and the files go in once the app has
-been run on a real device.
+Captured from the running app on the Android emulator (API 36, 1080×1920) with
+the filter on at the Evening preset, English, dark theme. The tint in the shots is
+the app's real overlay, not an edit. A temporary Pro pass was active so that
+Google's test ads do not appear in them. The notification shade is drawn above
+app overlays by Android, so that one shot is untinted.
 
 They are not generated. Rendering the widgets headlessly would produce pictures
 of the layout rather than of the app — no real panel, no real tint, and the
