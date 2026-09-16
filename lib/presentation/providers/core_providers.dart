@@ -9,6 +9,7 @@ import 'package:doctorfilter/data/datasources/native/platform_channel_datasource
 import 'package:doctorfilter/data/repositories/filter_repository_impl.dart';
 import 'package:doctorfilter/data/repositories/preset_repository_impl.dart';
 import 'package:doctorfilter/data/repositories/store_purchase_repository.dart';
+import 'package:doctorfilter/data/repositories/microsoft_store_purchase_repository.dart';
 import 'package:doctorfilter/data/repositories/unsupported_purchase_repository.dart';
 import 'package:doctorfilter/data/repositories/schedule_repository_impl.dart';
 import 'package:doctorfilter/domain/repositories/i_filter_repository.dart';
@@ -61,7 +62,7 @@ final scheduleRepositoryProvider = Provider<IScheduleRepository>((ref) {
 /// Picks the store for the platform the app is running on.
 ///
 /// Android and iOS share one implementation because `in_app_purchase` covers
-/// both. Everything else gets the no-store stand-in, which hides the purchase UI
+/// both; Windows goes through the Microsoft Store. Linux gets the no-store stand-in, which hides the purchase UI
 /// rather than offering a button that cannot work.
 final purchaseRepositoryProvider = Provider<IPurchaseRepository>((ref) {
   final repository = _buildPurchaseRepository();
@@ -74,8 +75,7 @@ IPurchaseRepository _buildPurchaseRepository() {
   if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
     return StorePurchaseRepository();
   }
-  // Windows lands here until the Microsoft Store integration is written; see
-  // MIMARI.md G2.
+  if (Platform.isWindows) return MicrosoftStorePurchaseRepository();
   return const UnsupportedPurchaseRepository();
 }
 
