@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T23 · **Updated:** 2026-09-16 · **Synced@:** 4d254e9
+> **Phase:** BUILD · **Next:** T26 · **Updated:** 2026-09-16 · **Synced@:** 7844d78
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -385,10 +385,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
 - [x] T22 [L] (2026-09-16, Claude Opus 5) Onboarding'deki eski göz simgesini marka işaretiyle değiştir
   - Done when: `flutter analyze` temiz, `flutter test` yeşil; emülatörde `pm clear` sonrası ilk ekran görüntüsünde marka işareti → ilk sayfada `brand_mark.png`; widget testi `find.image` ile doğruluyor; emülatörde görüldü
   - Note: from T2 (discovery)
-- [ ] T23 [M] Soğuk açılışta "izin gerekli" kartının anlık yanıp sönmesi
-  - Where: `lib/presentation/providers/filter_provider.dart` (`FilterState.hasOverlayPermission` başlangıç değeri), `lib/presentation/screens/home_screen.dart` (`!filterState.hasOverlayPermission` koşulu)
-  - Do: 1) izin durumunu üç değerli yap (`bool?`, null = henüz sorulmadı) ya da ayrı `permissionChecked` bayrağı ekle; 2) ana ekranda kart yalnızca kontrol tamamlanıp izin yoksa gösterilsin; 3) `test/widget_test.dart`'a mock `checkOverlayPermission` gecikmeli true dönerken ilk karede `OverlayPermissionBanner` bulunmadığını doğrulayan test
-  - Done when: yeni test ve tüm `flutter test` yeşil; emülatörde izin verilmişken soğuk açılışın ilk saniyesinde kart görünmez (açılıştan 0,5 sn sonra ekran görüntüsü)
+- [x] T23 [M] (2026-09-16, Claude Opus 5) Soğuk açılışta "izin gerekli" kartının anlık yanıp sönmesi
+  - Done when: yeni test ve tüm `flutter test` yeşil; emülatörde izin verilmişken soğuk açılışın ilk saniyesinde kart görünmez (açılıştan 0,5 sn sonra ekran görüntüsü) → `FilterState.permissionChecked`; kart yalnızca kontrol bitip izin yoksa. Gecikmeli izin yanıtıyla kare kare widget testi (düzeltme geri alınınca başarısız); emülatörde soğuk açılışın 16 karesinde kart yok
   - Note: from T2 (discovery)
 - [x] T24 [M] (2026-09-16, Claude Opus 5) Windows'ta tek örnek: ikinci açılış ikinci overlay'i üst üste bindirmesin
   - Done when: exe iki kez başlatılınca `Get-Process doctorfilter` tek süreç gösterir ve ekranda tek `DoctorFilterOverlay` penceresi vardır (T15'teki `wincheck.ps1` benzeri EnumWindows sayımı) → `main.cpp` adlı mutex; exe iki kez başlatılınca 1 süreç, 1 overlay. Pencere başlığı "doctorfilter" → "DoctorFilter" (FindWindow bununla eşleşiyor)
@@ -396,6 +394,11 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
 - [x] T25 [M] (2026-09-16, Claude Opus 5) Windows overlay penceresi WM_CLOSE ile kapatılamasın
   - Done when: filtre açıkken overlay HWND'ye `SendMessage(WM_CLOSE)` sonrası pencere hâlâ var ve ekran tonlu; uygulama ana penceresi kapatılınca ton kalkar → `OverlayWndProc` WM_CLOSE'u yutuyor; overlay HWND'ye WM_CLOSE sonrası `IsWindow` true, ekran ortalaması 104,83,62 (tonlu) kaldı; ana pencere kapanınca 31,31,31
   - Note: from T15 (discovery: `Process.CloseMainWindow` overlay'i kapattı, uygulama "Filtre açık" demeye devam etti)
+- [ ] T26 [M] Android'de uygulama açılışında filtre durumunu native servisten al
+  - Where: `lib/domain/repositories/i_filter_repository.dart` (yeni `isFilterRunning`), `lib/data/repositories/filter_repository_impl.dart`, `lib/presentation/providers/filter_provider.dart:_init`, `test/presentation/providers/filter_provider_test.dart` (sahte depo)
+  - Do: 1) depoya `Future<Result<bool>> isFilterRunning()` ekle (`_native.isFilterRunning()`); 2) `_init`'te Android'de (Windows dışında, iOS hariç) servis cevabı saklı `isEnabled`'dan farklıysa `config.copyWith(isEnabled: running)` kullan ve kalıcı yap; 3) iki test: saklı kapalı + servis açık → açık; saklı açık + servis kapalı → kapalı
+  - Done when: yeni testler ve `flutter test` yeşil; emülatörde uygulama kapalıyken kutucukla filtre açılıp uygulama açılınca "Filter on" görünür
+  - Note: from T23 (discovery: servis "Filter on · 3400 K" çalışırken uygulama "Filter off" gösterdi; kutucuk/bildirim değişikliği uygulama kapalıyken Dart'a ulaşmıyor)
 
 ### İnsan gerektirenler
 - [!] T16 [M] Play gerçek satın alma (C2) — Play Console'da `doctorfilter_pro_lifetime` ürünü ve lisanslı test hesabı gerekir (sahip)
@@ -424,4 +427,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T13 bitti. Sonraki: T23 (izin kartı yanıp sönmesi), ardından tüm açık görevler bitince A3/A4. Emülatör: İngilizce, koyu tema, filtre açık Evening, geçici Pro geçişi (`df_pro_pass_expiry`, ~24 saat).
+T23 bitti. Sonraki: T26 (Android açılışında filtre durumu servisten). Emülatör şu an tam o hatalı durumda: servis açık 3400 K, uygulama "Filter off" — T26 doğrulaması için hazır. İngilizce, koyu tema, geçici Pro geçişi.

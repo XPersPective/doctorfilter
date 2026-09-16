@@ -8,6 +8,7 @@ import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/screens/home_screen.dart';
 import 'package:doctorfilter/presentation/screens/onboarding_screen.dart';
 import 'package:doctorfilter/presentation/widgets/brand_lockup.dart';
+import 'package:doctorfilter/presentation/widgets/overlay_permission_banner.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -182,4 +183,37 @@ void main() {
     );
     semantics.dispose();
   });
+
+  testWidgets('the permission card does not flash while the check is pending',
+      (tester) async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+      if (call.method == 'checkOverlayPermission') {
+        await Future<void>.delayed(const Duration(milliseconds: 800));
+        return true;
+      }
+      if (call.method == 'isFilterRunning') return false;
+      return true;
+    });
+
+    rootBundle.clear();
+    SharedPreferences.resetStatic();
+    SharedPreferences.setMockInitialValues({'flutter.df_onboarding_done': true});
+    final preferences = await SharedPreferences.getInstance();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(preferences)],
+        child: DoctorFilterApp(key: UniqueKey()),
+      ),
+    );
+
+    // Frame by frame through the pending check: granted users must never see it.
+    for (var i = 0; i < 12; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byType(OverlayPermissionBanner), findsNothing, reason: 'frame $i');
+    }
+    await tester.pumpAndSettle();
+    expect(find.byType(OverlayPermissionBanner), findsNothing);
+  });
 }
+

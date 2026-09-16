@@ -125,7 +125,9 @@ class HomeScreen extends ConsumerWidget {
           children: [
             // iOS cannot draw over other apps at all, so the permission banner
             // would be asking for something that does not exist there.
-            if (!_isIos && !filterState.hasOverlayPermission)
+            if (!_isIos &&
+                filterState.permissionChecked &&
+                !filterState.hasOverlayPermission)
               OverlayPermissionBanner(
                 onGrantPressed: filter.requestPermission,
               ),

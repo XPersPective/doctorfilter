@@ -14,6 +14,7 @@ final class FilterState {
   const FilterState({
     required this.config,
     required this.hasOverlayPermission,
+    this.permissionChecked = true,
     this.isBusy = false,
     this.canUndo = false,
     this.errorKey,
@@ -21,6 +22,12 @@ final class FilterState {
 
   final FilterConfig config;
   final bool hasOverlayPermission;
+
+  /// False until the platform has answered. Before that, [hasOverlayPermission]
+  /// is a placeholder, and showing "permission needed" on it flashed the card
+  /// on every cold start for users who had long since granted it.
+  final bool permissionChecked;
+
   final bool isBusy;
 
   /// Whether there is a previous configuration to step back to.
@@ -41,6 +48,8 @@ final class FilterState {
     return FilterState(
       config: config ?? this.config,
       hasOverlayPermission: hasOverlayPermission ?? this.hasOverlayPermission,
+      // Any caller that supplies the permission has asked the platform for it.
+      permissionChecked: permissionChecked || hasOverlayPermission != null,
       isBusy: isBusy ?? this.isBusy,
       canUndo: canUndo ?? this.canUndo,
       errorKey: clearError ? null : (errorKey ?? this.errorKey),
@@ -63,6 +72,7 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
       : super(FilterState(
           config: FilterConfig.initial(),
           hasOverlayPermission: false,
+          permissionChecked: false,
           isBusy: true,
         )) {
     WidgetsBinding.instance.addObserver(this);
