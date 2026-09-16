@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T26 · **Updated:** 2026-09-16 · **Synced@:** 7844d78
+> **Phase:** BUILD · **Next:** A3 · **Updated:** 2026-09-16 · **Synced@:** 0f6d4cb
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -164,7 +164,7 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 
 - Kelvin motoru ve eksenler: `lib/core/math/kelvin_engine.dart`, `lib/domain/entities/filter_config.dart` (testler `test/core/math`, `test/domain/entities`).
 - Kalıcılık: `lib/data/datasources/local/preferences_datasource.dart`, `lib/presentation/providers/filter_provider.dart`; zamanlama native'e açılışta yeniden gönderilir `lib/presentation/providers/schedule_provider.dart:loadSchedule` (başlatma `home_screen.dart` `ref.listen(scheduleProvider)`).
-- Android native emülatörde doğrulandı (2026-09-16): overlay izni alınınca servis kendini durdurur `kt/OverlayService.kt:watchOverlayPermission`; kokpit `kt/FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml` (düz `View` yok), kutucuk `kt/FilterTileService.kt:requestRefresh`, widget `kt/FilterWidgetProvider.kt`, kısayol `kt/ShortcutActivity.kt`, zamanlayıcı `kt/ScheduleReceiver.kt` (gerçek alarm tetiklendi, geçiş tavanı 180 dk). Native metinler `kt/PresetCatalog.kt:text` ← `lib/presentation/providers/notification_sync_provider.dart:nativeLabels`.
+- Android native emülatörde doğrulandı (2026-09-16): servis başlatmaları tek korumalı yoldan `kt/OverlayService.kt:start`; uygulama açılışta durumu servisten alır `filter_provider.dart:_init`; overlay izni alınınca servis kendini durdurur `kt/OverlayService.kt:watchOverlayPermission`; kokpit `kt/FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml` (düz `View` yok), kutucuk `kt/FilterTileService.kt:requestRefresh`, widget `kt/FilterWidgetProvider.kt`, kısayol `kt/ShortcutActivity.kt`, zamanlayıcı `kt/ScheduleReceiver.kt` (gerçek alarm tetiklendi, geçiş tavanı 180 dk). Native metinler `kt/PresetCatalog.kt:text` ← `lib/presentation/providers/notification_sync_provider.dart:nativeLabels`.
 - Reklam: `lib/domain/entities/ad_policy.dart`, `lib/presentation/ads/` (`AdConsent.sdkReady`, `AppOpenAdManager`, `watchAdForProPass`), tetik `lib/main.dart:_initialiseAds`, üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`; emülatörde app-open, banner, ödüllü → Pro doğrulandı.
 - Pro: `lib/presentation/providers/pro_provider.dart`, `lib/data/repositories/store_purchase_repository.dart`, `lib/data/repositories/microsoft_store_purchase_repository.dart`, `windows/runner/store_purchases.cpp`. Ayar yedeği Pro'ya kilitli ve pil optimizasyonu kartı `lib/presentation/screens/settings_screen.dart`.
 - Ana ekran kaydırıcı notları sabit yuvada (`home_screen.dart` `Visibility.maintain`).
@@ -394,10 +394,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
 - [x] T25 [M] (2026-09-16, Claude Opus 5) Windows overlay penceresi WM_CLOSE ile kapatılamasın
   - Done when: filtre açıkken overlay HWND'ye `SendMessage(WM_CLOSE)` sonrası pencere hâlâ var ve ekran tonlu; uygulama ana penceresi kapatılınca ton kalkar → `OverlayWndProc` WM_CLOSE'u yutuyor; overlay HWND'ye WM_CLOSE sonrası `IsWindow` true, ekran ortalaması 104,83,62 (tonlu) kaldı; ana pencere kapanınca 31,31,31
   - Note: from T15 (discovery: `Process.CloseMainWindow` overlay'i kapattı, uygulama "Filtre açık" demeye devam etti)
-- [ ] T26 [M] Android'de uygulama açılışında filtre durumunu native servisten al
-  - Where: `lib/domain/repositories/i_filter_repository.dart` (yeni `isFilterRunning`), `lib/data/repositories/filter_repository_impl.dart`, `lib/presentation/providers/filter_provider.dart:_init`, `test/presentation/providers/filter_provider_test.dart` (sahte depo)
-  - Do: 1) depoya `Future<Result<bool>> isFilterRunning()` ekle (`_native.isFilterRunning()`); 2) `_init`'te Android'de (Windows dışında, iOS hariç) servis cevabı saklı `isEnabled`'dan farklıysa `config.copyWith(isEnabled: running)` kullan ve kalıcı yap; 3) iki test: saklı kapalı + servis açık → açık; saklı açık + servis kapalı → kapalı
-  - Done when: yeni testler ve `flutter test` yeşil; emülatörde uygulama kapalıyken kutucukla filtre açılıp uygulama açılınca "Filter on" görünür
+- [x] T26 [M] (2026-09-16, Claude Opus 5) Android'de uygulama açılışında filtre durumunu native servisten al
+  - Done when: yeni testler ve `flutter test` yeşil; emülatörde uygulama kapalıyken kutucukla filtre açılıp uygulama açılınca "Filter on" görünür → `_init` olaylara abone olduktan SONRA `isFilterRunning` sorar (önce sormak, abonelikten önce gelen kutucuk olayını kaçırıyordu); 3 yeni test. Gerçek QS dokunuşuyla: uygulama kapalı/arka planda/zorla durdurulmuşken kutucuk → uygulama doğru durumu gösterdi. ÇÖKME de bulundu ve düzeltildi: arka plandan `startForegroundService` Android 12+'da istisna atıp süreci öldürüyordu (`ScheduleReceiver` geri yükleme yolu); tüm başlatmalar `OverlayService.start` üzerinden, reddedilirse çökmek yerine false. Not: `cmd statusbar click-tile` güvenilir değil, gerçek dokunuş kullanıldı
   - Note: from T23 (discovery: servis "Filter on · 3400 K" çalışırken uygulama "Filter off" gösterdi; kutucuk/bildirim değişikliği uygulama kapalıyken Dart'a ulaşmıyor)
 
 ### İnsan gerektirenler
@@ -427,4 +425,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-T23 bitti. Sonraki: T26 (Android açılışında filtre durumu servisten). Emülatör şu an tam o hatalı durumda: servis açık 3400 K, uygulama "Filter off" — T26 doğrulaması için hazır. İngilizce, koyu tema, geçici Pro geçişi.
+T26 bitti (durum uyumu + arka plan FGS çökmesi). Açık `[ ]` görev kalmadı; kalanlar `[!]` T16–T21. Sonraki: A3/A4 denetimi (tam test, derlemeler, AC kanıtları, tüm değişikliğin gözden geçirilmesi). Emülatör: İngilizce, koyu tema, filtre açık, geçici Pro geçişi.

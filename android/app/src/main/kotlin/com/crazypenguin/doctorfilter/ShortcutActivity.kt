@@ -41,11 +41,7 @@ class ShortcutActivity : Activity() {
             action = OverlayService.ACTION_START
             if (presetId >= 0) putExtra(OverlayService.EXTRA_PRESET_ID, presetId)
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(service)
-        } else {
-            startService(service)
-        }
+        OverlayService.start(this, service)
 
         // Dart resolves the preset to exact values the next time it runs; until
         // then the overlay shows the last-known composite.

@@ -119,12 +119,7 @@ class FilterWidgetProvider : AppWidgetProvider() {
             val start = Intent(context, OverlayService::class.java).apply {
                 action = OverlayService.ACTION_START
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(start)
-            } else {
-                context.startService(start)
-            }
-            MainActivity.notifyFilterToggled(true)
+            if (OverlayService.start(context, start)) MainActivity.notifyFilterToggled(true)
         }
 
         refreshAll(context)

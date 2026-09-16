@@ -67,6 +67,26 @@ class OverlayService : Service() {
     private var suspendedForApp = false
 
     companion object {
+        /**
+         * Starts the service in the foreground, or reports that Android refused.
+         *
+         * Android 12+ refuses foreground starts from the background except in
+         * listed cases, and throws rather than returning. Uncaught, that took the
+         * whole process down — a filter that could not be restored after an app
+         * update crashed instead. Every caller goes through here.
+         */
+        fun start(context: Context, intent: Intent): Boolean = try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
+            true
+        } catch (e: IllegalStateException) {
+            // ForegroundServiceStartNotAllowedException (API 31) extends this.
+            false
+        }
+
         const val ACTION_START = "com.crazypenguin.doctorfilter.action.START"
         const val ACTION_STOP = "com.crazypenguin.doctorfilter.action.STOP"
         const val ACTION_UPDATE = "com.crazypenguin.doctorfilter.action.UPDATE"

@@ -75,6 +75,15 @@ class FilterRepositoryImpl implements IFilterRepository {
   }
 
   @override
+  Future<Result<bool>> isFilterRunning() async {
+    try {
+      return Result.success(await _native.isFilterRunning());
+    } catch (e) {
+      return Result.failure(PlatformFailure('Could not read the filter state', cause: e));
+    }
+  }
+
+  @override
   Future<Result<bool>> checkOverlayPermission() async {
     try {
       return Result.success(await _native.checkOverlayPermission());

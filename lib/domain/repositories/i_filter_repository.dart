@@ -28,6 +28,11 @@ abstract interface class IFilterRepository {
   /// stopping it according to [FilterConfig.isEnabled].
   Future<Result<void>> applyToPlatform(FilterConfig config);
 
+  /// Whether the native overlay is running right now, which can differ from the
+  /// saved configuration when the tile, notification or schedule changed it
+  /// while the app was closed.
+  Future<Result<bool>> isFilterRunning();
+
   /// Whether Android's `SYSTEM_ALERT_WINDOW` permission is currently granted.
   Future<Result<bool>> checkOverlayPermission();
 

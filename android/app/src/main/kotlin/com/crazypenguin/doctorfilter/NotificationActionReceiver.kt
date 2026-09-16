@@ -91,11 +91,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         val intent = Intent(context, OverlayService::class.java).apply {
             action = OverlayService.ACTION_START
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
-        }
+        OverlayService.start(context, intent)
     }
 
     private companion object {

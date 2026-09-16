@@ -263,11 +263,7 @@ class MainActivity : FlutterActivity() {
             putExtra(OverlayService.EXTRA_PRESET_ID, values.presetId)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
+        OverlayService.start(this, intent)
     }
 
     /**
