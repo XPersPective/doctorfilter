@@ -1212,9 +1212,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       Emülatörde doğrulandı: %50 → %0 ve ötesine sürükleme, yoğunluk %60'ta kaldı.
       **Kural:** kaydırıcıların üstünde ya da altında, kaydırıcının değerine bağlı olarak
       beliren/kaybolan hiçbir öğe olmaz.
-- [ ] **I2.** Ayar yedeği (dışa/içe aktarma) **yalnızca Pro**. Ücretsiz kullanıcı telefonu
+- [x] **I2.** Ayar yedeği (dışa/içe aktarma) **yalnızca Pro**. Ücretsiz kullanıcı telefonu
       sıfırlayıp/uygulamayı kaldırıp yedeği geri yükleyerek Pro özelliklerini bedava
-      kullanamamalı.
+      kullanamamalı. Ayarlar'da iki satır Pro değilse kilit simgesi ve "Pro ile birlikte
+      gelir" gösterir; dokunmak **paywall'u açar** (boş dokunuş bozuk düğme gibi okunur).
+      Emülatörde doğrulandı. **Tavan:** Android Otomatik Yedekleme (`allowBackup`
+      varsayılan açık) SharedPreferences'ı yeniden kurulumda geri getirir — bu kötüye
+      kullanıma değil tersine yarar: ilk açılış tarihi (reklam grace süresi, 7 günlük ödül
+      kilidi) de geri gelir, sayaçlar sıfırlanmaz. "Verileri temizle" ise sunucusuz
+      engellenemez; hesap/sunucu yok ilkesi (§5) gereği kabul edilen sınır.
 - [ ] **I3.** Açılış (app-open) reklamı: ilk günlerde **kesinlikle gösterilmez**; banner kalır.
 - [ ] **I4.** 24 saatlik ödüllü Pro geçişi: **kurulumdan 7 gün sonra** açılır; Pro değilse
       üst çubukta ayarların yanında **görünür** bir düğme.
