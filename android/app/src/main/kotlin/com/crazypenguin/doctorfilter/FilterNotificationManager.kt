@@ -113,8 +113,8 @@ object FilterNotificationManager {
             .setContentTitle(title)
             .setContentText(summary)
             .setContentIntent(openApp(context))
-            .setCustomContentView(collapsedView(context, title, summary))
-            .setCustomBigContentView(cockpitView(context, title, summary, values))
+            .setCustomContentView(collapsedView(context, title, summary, isActive))
+            .setCustomBigContentView(cockpitView(context, title, summary, values, isActive))
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setOngoing(isActive)
             .setSilent(true)
@@ -147,10 +147,16 @@ object FilterNotificationManager {
             .build()
     }
 
-    private fun collapsedView(context: Context, title: String, summary: String) =
+    private fun collapsedView(
+        context: Context,
+        title: String,
+        summary: String,
+        isActive: Boolean
+    ) =
         RemoteViews(context.packageName, R.layout.notification_collapsed).apply {
             setTextViewText(R.id.collapsed_title, title)
             setTextViewText(R.id.collapsed_summary, summary)
+            setContentDescription(R.id.collapsed_power, powerDescription(context, isActive))
             setOnClickPendingIntent(
                 R.id.collapsed_power,
                 broadcast(context, ACTION_TOGGLE, REQUEST_TOGGLE)
@@ -161,10 +167,12 @@ object FilterNotificationManager {
         context: Context,
         title: String,
         summary: String,
-        values: FilterState.Values
+        values: FilterState.Values,
+        isActive: Boolean
     ) = RemoteViews(context.packageName, R.layout.notification_cockpit).apply {
         setTextViewText(R.id.cockpit_title, title)
         setTextViewText(R.id.cockpit_summary, summary)
+        setContentDescription(R.id.cockpit_power, powerDescription(context, isActive))
         setOnClickPendingIntent(
             R.id.cockpit_power,
             broadcast(context, ACTION_TOGGLE, REQUEST_TOGGLE)
@@ -187,6 +195,10 @@ object FilterNotificationManager {
             setViewVisibility(chipRoots[slot], View.VISIBLE)
             setTextViewText(chipLabels[slot], preset.name)
             setViewVisibility(chipLocks[slot], if (preset.locked) View.VISIBLE else View.GONE)
+            setContentDescription(
+                chipLocks[slot],
+                PresetCatalog.text(context, R.string.notification_pro_required)
+            )
 
             // A locked preset is shown rather than hidden: the point is that the
             // user can see what Pro would give them.
@@ -287,6 +299,25 @@ object FilterNotificationManager {
         setTextViewText(labelId, label)
         setTextViewText(valueId, value)
 
+        // Spoken labels in the app's language (the layout's are the device
+        // language). "Brighter"/"Dimmer" only fit the extra-dim row; the other
+        // two rows are named after their axis instead.
+        if (!enabled) {
+            val locked = PresetCatalog.text(context, R.string.notification_pro_required)
+            setContentDescription(minusId, locked)
+            setContentDescription(plusId, locked)
+        } else if (axis == AXIS_DIM) {
+            setContentDescription(
+                minusId, PresetCatalog.text(context, R.string.notification_action_brighter)
+            )
+            setContentDescription(
+                plusId, PresetCatalog.text(context, R.string.notification_action_dimmer)
+            )
+        } else {
+            setContentDescription(minusId, "$label −")
+            setContentDescription(plusId, "$label +")
+        }
+
         if (!enabled) {
             // Visible but inert, with the lock explained once at the bottom of
             // the panel rather than repeated on every row.
@@ -311,6 +342,11 @@ object FilterNotificationManager {
             }
         )
     }
+
+    private fun powerDescription(context: Context, isActive: Boolean) = PresetCatalog.text(
+        context,
+        if (isActive) R.string.notification_action_off else R.string.notification_action_on
+    )
 
     private fun dim(colour: Int) = Color.argb(
         90, Color.red(colour), Color.green(colour), Color.blue(colour)

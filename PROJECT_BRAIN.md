@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Android 2.0 özellik-tamam; FAZ A–I kapandı (marka logosu dahil). Sırada emülatör doğrulamaları T2–T15, sonra insan gerektirenler.
-> **Phase:** BUILD · **Next:** T13 · **Updated:** 2026-09-16 · **Synced@:** 83c64b9
+> **Phase:** BUILD · **Next:** T13 · **Updated:** 2026-09-16 · **Synced@:** 230292c
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -175,7 +175,6 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 
 GAP: Android özellikleri için kalan emülatör doğrulamaları (paywall çipi, izin akışı, boot, tema, RTL, erişilebilirlik, tablet, sürükleme, istisnalar, mola) → T2–T12
 GAP: README ekran görüntüleri yok → T13
-GAP: Bildirim contentDescription'ları cihaz dilinde → T14
 GAP: Gerçek mağaza satın alma, eski ürün kimliği, Partner Center, iOS/macOS/Linux derleme, AB onayı → T16–T21 (insan gerekir)
 
 ## 4. FILE MAP
@@ -382,10 +381,8 @@ Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk
   - Where: `docs/screenshots/README.md` (5 ekran, ayarları ve dosya adları orada), `README.md` "## Screenshots"
   - Do: `docs/screenshots/README.md` listesine göre emülatörden `adb exec-out screencap -p` ile 5 PNG çek, orada yazan dosya adlarıyla `docs/screenshots/` içine kaydet, PIL ile genişliği 540'a küçült; test reklamı görünmesin (Pro geçişi aktifken çek)
   - Done when: README'deki her `docs/screenshots/...png` bağlantısı var olan dosyaya işaret eder (`grep -o 'docs/screenshots/[^)]*png' README.md | xargs ls`)
-- [ ] T14 [M] Bildirim erişilebilirlik açıklamaları uygulama dilinde
-  - Where: `kt/FilterNotificationManager.kt` (cockpitView, collapsedView, bindPresets, bindAxis), `res/layout/notification_cockpit.xml`, `res/layout/notification_collapsed.xml`
-  - Do: layout'lardaki `android:contentDescription="@string/..."` değerlerini koddan `setContentDescription(<id>, PresetCatalog.text(context, R.string.<ad>))` ile ata (güç düğmesi, eksen artır/azalt, kilit rozetleri); layout'taki öznitelikler yedek olarak kalabilir
-  - Done when: uygulama dili Türkçe iken bildirim gölgesinde `uiautomator dump` bu düğmelerin content-desc'ini Türkçe gösterir; `flutter build apk --debug` geçer
+- [x] T14 [M] (2026-09-16, Claude Opus 5) Bildirim erişilebilirlik açıklamaları uygulama dilinde
+  - Done when: uygulama dili Türkçe iken bildirim gölgesinde `uiautomator dump` bu düğmelerin content-desc'ini Türkçe gösterir; `flutter build apk --debug` geçer → uygulama dili Türkçe iken dump: "Kapat", "Daha karanlık", "Daha parlak", kilitler "Tüm ön ayarlar ve kontroller için Pro'ya geçin". Ayrıca yanlış etiket düzeltildi: Kelvin/yoğunluk satırlarının −/+ düğmeleri "Brighter/Dimmer" diye okunuyordu; artık "<eksen adı> −/+"
 - [x] T15 [M] (2026-09-16, Claude Opus 5) Windows overlay elle doğrulama (G2)
   - Done when: ekran görüntüleri her adımı gösterir → HATA düzeltildi: açık kaydedilmiş filtre Windows'ta yeniden açılışta çizilmiyordu ("Filtre açık" ama ton yok); `filter_provider.dart:_init` Windows'ta yeniden uygular (+2 test). Win32 ile doğrulandı: overlay layered/transparent/topmost/toolwindow/noactivate; WindowFromPoint alttaki pencereyi buluyor (tıklama geçer); ekran ortalaması 31→104,83,62 (tüm ekran tonlu); uygulama kapanınca tam 31,31,31'e döndü; en koyu ayarda (1700 K, %100/%100) ekran ortalaması 73,36,2, içerik seçilebilir. Tek monitör var (adım 4 yapılamadı, §6)
 - [ ] T22 [L] Onboarding'deki eski göz simgesini marka işaretiyle değiştir
