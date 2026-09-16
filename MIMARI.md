@@ -931,7 +931,27 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       vermiyor. Bu yüzden durum **kullanıcının beyanı**, tespit değil — ve uygulama
       hangisi olduğunu söylüyor. Kontrol edemediği bir şeyi kontrol etmiş gibi yapmak,
       çizemediği overlay'i vaat etmekle aynı sahtelik olurdu.
-- [ ] **G2.** Windows: katman penceresi + MSIX + Microsoft Store satın alma.
+- [~] **G2.** Windows. **Katman penceresi yazıldı ve derlendi** (`flutter build windows`
+      başarılı — bu makine Windows olduğu için tek *gerçekten doğrulanabilen* platform).
+      MSIX paketleme ve Microsoft Store satın alma hâlâ açık (G2.1).
+      `OverlayWindow`: `WS_EX_LAYERED | TRANSPARENT | TOPMOST | NOACTIVATE | TOOLWINDOW`.
+      `TRANSPARENT` bunu duvar değil **filtre** yapan şey — fare tıklamaları altındakine
+      geçer. `NOACTIVATE` odağı çalmasını, `TOOLWINDOW` görev çubuğunda ve Alt-Tab'da
+      görünmesini engeller (tam ekran bir renk tonunun orada çıkması kafa karıştırırdı).
+      **Sanal ekranın tamamını** kaplar ve **her boyamada yeniden ölçülür**: sonradan
+      takılan bir monitör ya da değişen çözünürlük, aksi hâlde bir kenarda filtresiz
+      parlak bir şerit bırakırdı.
+      `kMaxAlpha = 235`, `FilterConfig.maxCompositeAlpha` ile aynı tavan — Windows'ta
+      kullanıcıyı kurtaracak bir bildirim gölgesi yok, %100'de katman penceresi
+      görülemeyen ve tıklanamayan düz bir levha olurdu.
+      `OnDestroy` önce overlay'i kaldırır: uygulama kapandıktan sonra masaüstünde kalan
+      bir renk tonu bu pencerenin yapabileceği en kötü hata olurdu ve onu kaldıracak
+      hiçbir şey kalmazdı.
+      Kanal Android ile aynı sözleşmeyi kullanır (Dart birleşik renk + alfa gönderir);
+      eksenler ve tavanlar birim testli tek yerde kalır, platform başına yeniden
+      hesaplanmaz. Karşılığı olmayan yöntemler `NotImplemented` döner, sahte `true` değil.
+- [ ] **G2.1** Windows paketleme ve satın alma: MSIX + Microsoft Store API.
+      Store'da uygulama kaydı proje sahibini gerektiriyor (Bölüm 12.1).
 - [ ] **G3.** Linux/macOS: derlenebilirlik ve çekirdek özellikler.
 
 ## FAZ H — Büyüme özellikleri (kullanıcıyı tutan, sıkmayan)
@@ -1155,6 +1175,15 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
 
 > Ajan buraya, tamamladığı ama cihazda test edilmesi gereken işleri **test adımlarıyla**
 > yazar. Proje sahibi onaylayınca ilgili madde `[x]` olur ve satır buradan silinir.
+
+**G2 — Windows katman penceresi**
+1. `flutter run -d windows` → filtreyi aç: **tüm ekran** ısınmalı, uygulamanın kendi
+   penceresi dâhil.
+2. Başka bir pencereye tıkla → tıklama **geçmeli** (filtre tıklamayı yutmamalı).
+3. Alt-Tab ve görev çubuğu → overlay **görünmemeli**.
+4. İkinci monitör tak / çözünürlük değiştir → filtre yeni alanı da kaplamalı.
+5. Uygulamayı kapat → masaüstünde **hiç renk tonu kalmamalı**.
+6. Ekstra karartmayı sonuna kadar aç → ekran hâlâ okunabilir olmalı (alfa tavanı).
 
 **G1 — iOS (🔴 macOS + Xcode gerektirir; bu makinede doğrulanamadı)**
 1. `flutter build ios` derlenmeli.
