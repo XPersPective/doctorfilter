@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
@@ -6,6 +9,7 @@ import 'package:doctorfilter/domain/entities/ad_policy.dart';
 import 'package:doctorfilter/domain/entities/filter_config.dart';
 import 'package:doctorfilter/presentation/ads/banner_ad_widget.dart';
 import 'package:doctorfilter/presentation/providers/ad_providers.dart';
+import 'package:doctorfilter/presentation/providers/core_providers.dart';
 import 'package:doctorfilter/presentation/providers/bypass_provider.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/notification_sync_provider.dart';
@@ -20,6 +24,7 @@ import 'package:doctorfilter/presentation/widgets/power_button.dart';
 import 'package:doctorfilter/presentation/widgets/preset_grid.dart';
 import 'package:doctorfilter/presentation/widgets/spectrum_slider.dart';
 import 'education_screen.dart';
+import 'ios_setup_screen.dart';
 import 'presets_screen.dart';
 import 'scheduler_screen.dart';
 import 'settings_screen.dart';
@@ -76,24 +81,38 @@ class HomeScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.only(bottom: 16),
           children: [
-            if (!filterState.hasOverlayPermission)
+            // iOS cannot draw over other apps at all, so the permission banner
+            // would be asking for something that does not exist there.
+            if (!_isIos && !filterState.hasOverlayPermission)
               OverlayPermissionBanner(
                 onGrantPressed: filter.requestPermission,
+              ),
+
+            if (_isIos)
+              _IosProtectionCard(
+                isSetUp: ref.watch(iosSetupProvider),
+                onOpenWizard: () => _open(context, const IosSetupScreen()),
               ),
 
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Row(
                 children: [
-                  PowerButton(
-                    isActive: config.isEnabled,
-                    isLoading: filterState.isBusy,
-                    label: config.isEnabled
-                        ? (loc?.translate('filter_active') ?? 'Filter on')
-                        : (loc?.translate('filter_inactive') ?? 'Filter off'),
-                    onTap: () => _toggle(context, ref),
-                  ),
-                  const SizedBox(width: 12),
+                  // No power button on iOS: there is nothing to switch. The
+                  // system filter the user set up stays on until they turn it
+                  // off themselves, and a button implying otherwise would be a
+                  // control that does nothing.
+                  if (!_isIos) ...[
+                    PowerButton(
+                      isActive: config.isEnabled,
+                      isLoading: filterState.isBusy,
+                      label: config.isEnabled
+                          ? (loc?.translate('filter_active') ?? 'Filter on')
+                          : (loc?.translate('filter_inactive') ?? 'Filter off'),
+                      onTap: () => _toggle(context, ref),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
                   // Expanded, not Spacer: the caption is a full sentence and in
                   // a longer language it will not fit beside the button.
                   Expanded(
@@ -417,6 +436,59 @@ class _BypassAction extends StatelessWidget {
       style: TextButton.styleFrom(
         foregroundColor: context.colours.primary,
         minimumSize: const Size(48, 44),
+      ),
+    );
+  }
+}
+
+/// Whether this build is running on iOS, where the whole filter model differs.
+///
+/// A plain platform check rather than an abstraction: there are three places
+/// that branch, all of them in this file, and one interface per platform for
+/// that would be more machinery than the problem has.
+bool get _isIos => !kIsWeb && Platform.isIOS;
+
+/// The iOS home state: set up, or not yet.
+///
+/// Apple gives no app a way to read whether Colour Filters is switched on, so
+/// this reflects what the user told us rather than something checked. The app
+/// says which it is instead of guessing, and the button is always there to walk
+/// through the settings again.
+class _IosProtectionCard extends StatelessWidget {
+  const _IosProtectionCard({
+    required this.isSetUp,
+    required this.onOpenWizard,
+  });
+
+  final bool isSetUp;
+  final VoidCallback onOpenWizard;
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
+    return Card(
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Icon(
+          isSetUp ? Icons.verified_rounded : Icons.tune_rounded,
+          color: isSetUp ? context.bands.sleepFriendly : context.colours.primary,
+        ),
+        title: Text(
+          isSetUp
+              ? loc?.translate('ios_protection_on') ?? 'Protection is set up'
+              : loc?.translate('ios_protection_off') ??
+                  'Protection is not set up yet',
+          style: context.texts.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        trailing: TextButton(
+          onPressed: onOpenWizard,
+          child: Text(
+            isSetUp
+                ? loc?.translate('ios_protection_redo') ?? 'Change the settings'
+                : loc?.translate('ios_protection_action') ?? 'Set it up',
+          ),
+        ),
       ),
     );
   }

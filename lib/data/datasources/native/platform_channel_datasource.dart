@@ -120,6 +120,25 @@ class PlatformChannelDataSource {
     }
   }
 
+  /// The system screen brightness, 0.0–1.0, or null where the platform does
+  /// not let an app read it.
+  ///
+  /// iOS only. `UIScreen.brightness` is the real system brightness and a change
+  /// made here outlives leaving the app, which makes it the honest counterpart
+  /// of the extra-dim axis on a platform with no overlay window.
+  Future<double?> screenBrightness() async {
+    try {
+      return await _channel.invokeMethod<double>('getScreenBrightness');
+    } on PlatformException {
+      return null;
+    } on MissingPluginException {
+      return null;
+    }
+  }
+
+  Future<bool> setScreenBrightness(double brightness) =>
+      _invokeBool('setScreenBrightness', {'brightness': brightness});
+
   /// Whether the user has granted usage access, needed to name the app in
   /// front. Revocable at any time, so it is asked rather than remembered.
   Future<bool> hasUsageAccess() => _invokeBool('hasUsageAccess');

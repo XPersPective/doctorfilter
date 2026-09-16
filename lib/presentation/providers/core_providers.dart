@@ -101,3 +101,23 @@ final manageScheduleUseCaseProvider = Provider<ManageScheduleUseCase>((ref) {
 final usageMinutesProvider = FutureProvider.autoDispose<Map<String, int>>((ref) {
   return ref.watch(platformChannelDataSourceProvider).usageMinutes();
 });
+
+/// Whether the user has told us they finished the iOS setup wizard.
+///
+/// See [PreferencesDataSource.iosSetupDone] for why this is a declaration
+/// rather than something the app detects.
+class IosSetupNotifier extends StateNotifier<bool> {
+  IosSetupNotifier(this._ref)
+      : super(_ref.read(preferencesDataSourceProvider).iosSetupDone());
+
+  final Ref _ref;
+
+  Future<void> setDone(bool isDone) async {
+    state = isDone;
+    await _ref.read(preferencesDataSourceProvider).setIosSetupDone(isDone);
+  }
+}
+
+final iosSetupProvider = StateNotifierProvider<IosSetupNotifier, bool>((ref) {
+  return IosSetupNotifier(ref);
+});

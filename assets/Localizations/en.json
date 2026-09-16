@@ -205,5 +205,17 @@
   "exclusions_list_failed": "The app list could not be read.",
   "exclusions_permission_title": "One permission first",
   "exclusions_permission_body": "To step aside for your camera, the app needs to know which app is in front. Android calls this usage access and you grant it in system settings. DoctorFilter only reads the name of the app currently open, never your history, and nothing leaves your phone.",
-  "exclusions_permission_action": "Open settings"
+  "exclusions_permission_action": "Open settings",
+  "ios_setup_title": "Set up your screen",
+  "ios_setup_intro": "iOS has its own screen filter. This app works out the right settings for it and shows you where to put them. You do this once — the values stay put afterwards.",
+  "ios_setup_step_path": "Open Settings → Accessibility → Display & Text Size → Colour Filters",
+  "ios_setup_step_path_body": "Turn Colour Filters on and choose Colour Tint.",
+  "ios_setup_hue": "Hue",
+  "ios_setup_intensity": "Intensity",
+  "ios_setup_white_point": "Accessibility → Display & Text Size → Reduce White Point",
+  "ios_setup_precision": "The iOS sliders have no numbers on them, so these are positions along each slider rather than exact values. Close is close enough — a few degrees either way is not something you can see.",
+  "ios_protection_on": "Protection is set up",
+  "ios_protection_off": "Protection is not set up yet",
+  "ios_protection_action": "Set it up",
+  "ios_protection_redo": "Change the settings"
 }
