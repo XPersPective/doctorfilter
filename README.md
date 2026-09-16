@@ -82,6 +82,10 @@ maximum revenue:
   screen.
 - A small banner at the bottom, which is the honest signal that the app is
   ad-supported from day one.
+- An ad while the app opens counts as that session's one full-screen ad, follows
+  the same grace period, and never appears more than once every **4 hours**.
+- Optional: from the **seventh day** you can watch an ad for **24 hours of Pro**
+  (at most twice a day), from the gift button next to Settings.
 - **Pro removes every ad, including the banner**, and the ad SDK is then never
   initialised at all.
 
@@ -166,14 +170,14 @@ entitlement edge cases such as an expired trial pass.
 Issues and pull requests are welcome. Two rules, both of which exist because
 this app makes claims about health:
 
-1. **No unsupported health claims.** See §5.8 of [MIMARI.md](MIMARI.md) for
-   what may and may not be said. A test enforces this across all 71 locale
-   files.
+1. **No unsupported health claims.** See the forbidden-claims row in §6 of
+   [PROJECT_BRAIN.md](PROJECT_BRAIN.md) for what may and may not be said. A test
+   enforces this across all 71 locale files.
 2. **Numbers shown to the user must be derived, not estimated.** If it cannot be
    computed, it is not displayed.
 
-[MIMARI.md](MIMARI.md) is the working document: architecture, decisions, the
-reasoning behind them, and the outstanding roadmap.
+[PROJECT_BRAIN.md](PROJECT_BRAIN.md) is the working document: goal,
+architecture, decisions and the outstanding tasks.
 
 ## Licence
 

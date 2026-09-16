@@ -36,5 +36,5 @@ minutes.
 
 It does not switch Colour Filters directly. No public API does, from a control
 or anywhere else — the control runs the user's Shortcut, and Shortcuts is what
-has the Colour Filters action. See §7.2.4 of `MIMARI.md`: nothing in this app or
+has the Colour Filters action. See the iOS-limits row in §6 of `PROJECT_BRAIN.md`: nothing in this app or
 its store listing may imply that an app can set that filter itself.
