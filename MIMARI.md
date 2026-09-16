@@ -683,8 +683,16 @@ ekran parlaklığını doğrudan yönetir." Ana ekranda aç/kapat düğmesi yeri
       benzersiz id'li slotlar üretildi. Preset listesi native'e `PresetCatalog` ile
       aktarılıyor — bildirim çoğu zaman Flutter motoru olmadan kuruluyor, veritabanına
       ve çevirilere erişemez. — **cihazda doğrulanmalı**
-  - [ ] **B3.1** Bildirimdeki kilitli çipin açtığı `ACTION_OPEN_PAYWALL` intent'ini Flutter
-        tarafında karşıla ve paywall'ı aç (şu an uygulama yalnızca öne geliyor).
+  - [~] 🔴 **B3.1** `ACTION_OPEN_PAYWALL` artık Flutter tarafında karşılanıyor ve paywall
+        açılıyor. `MainActivity` intent'i `onCreate` **ve** `onNewIntent`'te okuyor.
+        **Beklemeli gönderim:** kilitli çipe dokunmak etkinliği başlatır ve etkinlik
+        genelde henüz çalışmıyordur — istek, hiçliğe gönderilmek yerine kanalın
+        hazır olmasını bekler (`paywallPending`, `configureFlutterEngine`'de boşaltılır).
+        Bu olmadan çip yalnızca uygulamayı öne getiriyordu ki kullanıcıya düğme bozuk
+        gibi geliyordu.
+        Dart tarafında akış olarak (`nativePaywallRequestProvider`): aynı istek iki kez
+        gelebilir — kullanıcı bir kilide dokunur, almaktan vazgeçer, sonra başkasına
+        dokunur — ve bayrak olsaydı paywall yalnızca ilk seferinde açılırdı.
 - [~] 🔴 **B3.** Bildirimde Pro kilidi kuruldu: ücretsizde **1 preset açık**, diğerleri
       kilit rozetiyle **görünür** (kullanıcı ne kazanacağını görsün) ve dokununca paywall
       açılıyor. Kelvin ve Yoğunluk eksenleri Pro; **Ekstra Karartma ücretsiz kalıyor** —
