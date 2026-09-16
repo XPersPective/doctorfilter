@@ -189,11 +189,7 @@ class ScheduleReceiver : BroadcastReceiver() {
             if (rampMillis > 0) putExtra(OverlayService.EXTRA_RAMP_MILLIS, rampMillis)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
-        }
+        OverlayService.start(context, intent)
 
         // The overlay starts with the last-known values immediately; Dart, when
         // it next runs, resolves the target preset and sends the exact composite.

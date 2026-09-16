@@ -47,7 +47,7 @@ class FilterTileService : TileService() {
             return
         }
 
-        val turningOn = !OverlayService.isRunning
+        var turningOn = !OverlayService.isRunning
         if (!turningOn) {
             startService(
                 Intent(this, OverlayService::class.java).apply {
@@ -59,12 +59,8 @@ class FilterTileService : TileService() {
             val intent = Intent(this, OverlayService::class.java).apply {
                 action = OverlayService.ACTION_START
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
-            }
-            MainActivity.notifyFilterToggled(true)
+            turningOn = OverlayService.start(this, intent)
+            if (turningOn) MainActivity.notifyFilterToggled(true)
         }
 
         // The service has not started (or stopped) yet, so draw the state asked for.

@@ -103,6 +103,7 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
   Future<void> _init() async {
     final loaded = await _repository.loadConfig();
     final config = loaded.dataOrNull ?? FilterConfig.initial();
+
     final permission = await _repository.checkOverlayPermission();
 
     if (!mounted) return;
@@ -113,6 +114,20 @@ class FilterNotifier extends StateNotifier<FilterState> with WidgetsBindingObser
     );
 
     _nativeSubscription = _repository.nativeEvents.listen(_onNativeEvent);
+
+    // On Android the overlay service is the truth. The tile, notification and
+    // schedule switch it while the app is closed or still starting, and a
+    // change sent before this subscription existed was simply lost — the app
+    // said "Filter off" over a tinted screen. Asked only now, after listening,
+    // so anything earlier is in the answer and anything later is an event.
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final running = (await _repository.isFilterRunning()).dataOrNull;
+      if (mounted && running != null && running != state.config.isEnabled) {
+        final reconciled = state.config.copyWith(isEnabled: running);
+        state = state.copyWith(config: reconciled);
+        _repository.persist(reconciled);
+      }
+    }
 
     // On Windows the overlay is a window of this process and dies with it, so
     // a filter saved as on would read "Filter on" over an untinted desktop

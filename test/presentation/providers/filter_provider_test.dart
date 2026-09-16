@@ -18,6 +18,8 @@ class _FakeFilterRepository implements IFilterRepository {
 
   FilterConfig stored;
   bool permissionGranted = true;
+  /// Null mirrors the saved state, so only tests about disagreement see one.
+  bool? nativeRunning;
 
   final List<FilterConfig> persisted = [];
   final List<FilterConfig> appliedToPlatform = [];
@@ -42,6 +44,9 @@ class _FakeFilterRepository implements IFilterRepository {
     appliedToPlatform.add(config);
     return const Result.success(null);
   }
+
+  @override
+  Future<Result<bool>> isFilterRunning() async => Result.success(nativeRunning ?? stored.isEnabled);
 
   @override
   Future<Result<bool>> checkOverlayPermission() async =>
@@ -243,6 +248,31 @@ void main() {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       await ready();
       expect(repository.appliedToPlatform, isEmpty);
+    });
+  });
+
+  group('the Android service is the truth at launch', () {
+    setUp(() => debugDefaultTargetPlatformOverride = TargetPlatform.android);
+    tearDown(() => debugDefaultTargetPlatformOverride = null);
+
+    test('saved off, service on (turned on from the tile) reads on', () async {
+      repository.stored = repository.stored.copyWith(isEnabled: false);
+      repository.nativeRunning = true;
+      await ready();
+      expect(read().config.isEnabled, isTrue);
+      expect(repository.persisted.last.isEnabled, isTrue);
+    });
+
+    test('saved on, service off (stopped by the schedule) reads off', () async {
+      repository.nativeRunning = false;
+      await ready();
+      expect(read().config.isEnabled, isFalse);
+    });
+
+    test('agreement changes nothing and writes nothing', () async {
+      await ready();
+      expect(read().config.isEnabled, isTrue);
+      expect(repository.persisted, isEmpty);
     });
   });
 }
