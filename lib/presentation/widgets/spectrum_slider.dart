@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/math/kelvin_engine.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
+
 import 'band_style.dart';
 
 /// Colour temperature control.
@@ -26,8 +27,11 @@ class SpectrumSlider extends StatelessWidget {
   static List<Color> _spectrum() {
     const steps = 12;
     return List.generate(steps, (index) {
-      final temperature = KelvinEngine.minKelvin +
-          ((KelvinEngine.maxKelvin - KelvinEngine.minKelvin) * index ~/ (steps - 1));
+      final temperature =
+          KelvinEngine.minKelvin +
+          ((KelvinEngine.maxKelvin - KelvinEngine.minKelvin) *
+              index ~/
+              (steps - 1));
       final rgb = KelvinEngine.kelvinToRgb(temperature);
       return Color.fromARGB(255, rgb.r, rgb.g, rgb.b);
     });
@@ -73,20 +77,28 @@ class SpectrumSlider extends StatelessWidget {
             overlayShape: const RoundSliderOverlayShape(overlayRadius: 22),
             overlayColor: tint.withValues(alpha: 0.18),
           ),
-          child: Slider(
-            value: kelvin
-                .clamp(KelvinEngine.minKelvin, KelvinEngine.maxKelvin)
-                .toDouble(),
-            min: KelvinEngine.minKelvin.toDouble(),
-            max: KelvinEngine.maxKelvin.toDouble(),
-            divisions: (KelvinEngine.maxKelvin - KelvinEngine.minKelvin) ~/ 50,
-            label: '$kelvin K',
-            semanticFormatterCallback: (value) => '${value.round()} kelvin',
-            onChanged: (value) {
-              final next = value.round();
-              if (next != kelvin) HapticFeedback.selectionClick();
-              onChanged(next);
-            },
+          child: MergeSemantics(
+            child: Semantics(
+              label:
+                  AppLocalizations.of(context)?.translate('kelvin_label') ??
+                  'Colour temperature',
+              child: Slider(
+                value: kelvin
+                    .clamp(KelvinEngine.minKelvin, KelvinEngine.maxKelvin)
+                    .toDouble(),
+                min: KelvinEngine.minKelvin.toDouble(),
+                max: KelvinEngine.maxKelvin.toDouble(),
+                divisions:
+                    (KelvinEngine.maxKelvin - KelvinEngine.minKelvin) ~/ 50,
+                label: '$kelvin K',
+                semanticFormatterCallback: (value) => '${value.round()} K',
+                onChanged: (value) {
+                  final next = value.round();
+                  if (next != kelvin) HapticFeedback.selectionClick();
+                  onChanged(next);
+                },
+              ),
+            ),
           ),
         ),
         Align(
@@ -143,7 +155,10 @@ class _SpectrumTrackShape extends SliderTrackShape {
       offset: offset,
       sliderTheme: sliderTheme,
     );
-    final rounded = RRect.fromRectAndRadius(rect, Radius.circular(rect.height / 2));
+    final rounded = RRect.fromRectAndRadius(
+      rect,
+      Radius.circular(rect.height / 2),
+    );
 
     context.canvas.drawRRect(
       rounded,

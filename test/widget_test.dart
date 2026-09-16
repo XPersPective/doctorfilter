@@ -152,4 +152,25 @@ void main() {
 
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('the power switch reads once and stays tappable for screen readers',
+      (tester) async {
+    final semantics = tester.ensureSemantics();
+    await pumpApp(tester, prefs: {'flutter.df_onboarding_done': true});
+
+    // Exactly one node: before the fix the label was read twice, once from
+    // the Semantics wrapper and once from the visible text beneath it.
+    final power = find.bySemanticsLabel('Filter off');
+    expect(power, findsOneWidget);
+    expect(
+      tester.getSemantics(power),
+      matchesSemantics(
+        label: 'Filter off',
+        isButton: true,
+        hasTapAction: true,
+        hasToggledState: true,
+      ),
+    );
+    semantics.dispose();
+  });
 }
