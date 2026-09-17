@@ -123,9 +123,13 @@ class _ProMark extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1.5),
+      // Orange lettering on a faint orange ground with a hairline edge: part of
+      // the logo's palette without competing with the name beside it.
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [BrandLockup._orange, BrandLockup._blue],
+        color: BrandLockup._orange.withValues(alpha: 0.14),
+        border: Border.all(
+          color: BrandLockup._orange.withValues(alpha: 0.6),
+          width: 0.8,
         ),
         borderRadius: BorderRadius.circular(4),
       ),
@@ -133,7 +137,7 @@ class _ProMark extends StatelessWidget {
         'PRO',
         style: TextStyle(
           fontFamily: 'Audiowide',
-          color: Colors.white,
+          color: BrandLockup._orange,
           fontSize: 7.5,
           height: 1.0,
           letterSpacing: 0.6,
