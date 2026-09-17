@@ -2,7 +2,7 @@
 # PROJECT BRAIN — DoctorFilter
 
 > **Status:** Yapılabilecek her şey bitti ve denetlendi (A4). Kalan 6 görev proje sahibini bekliyor: mağaza hesapları, eski ürün kimliği, iOS/macOS/Linux derlemesi, AB onayı.
-> **Phase:** BUILD · **Next:** none · **Updated:** 2026-09-16 · **Synced@:** bc6637e
+> **Phase:** BUILD · **Next:** none · **Updated:** 2026-09-17 · **Synced@:** 83e67eb
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -356,6 +356,9 @@ doctorfilter/
 ### Marka
 - [x] T1 [H] (2026-09-16, Claude Opus 5) Ana ekran marka logosu (I6)
   - Done when: `flutter analyze` temiz; `flutter test` yeşil (yeni test dahil, mevcut 360dp taşma testi geçer); emülatör ekran görüntüsünde logo ve slogan okunur → `lib/presentation/widgets/brand_lockup.dart`; 2 yeni widget testi; emülatörde iki temada doğrulandı
+
+- [x] T28 [L] (2026-09-17, Claude Opus 5) Logo ince ayarı ve Pro sayfası başlığı (sahibin 3. tur geri bildirimi)
+  - Done when: `flutter test` yeşil; emülatörde ana ekran ve Pro sayfası başlığında ikon adına yakın, "doctor" ikon turuncusu #FF9900, "Filter" ikon mavisi #0087FF, Pro sayfasında sağ üstte küçük PRO → ikonun gölge payı 5dp ada doğru taşırıldı; renkler iki temada ikonla aynı; `_ProMark` turuncu→mavi küçük üst simge; Pro sayfası başlığı `BrandLockup(isPro: true, showTagline: false)`; Pro kullanıcıda ana ekranda aynı PRO işareti
 
 ### Android emülatör doğrulamaları
 Ortak kurulum: `flutter emulators --launch flutter_emulator`; `flutter build apk --debug`; `adb -s emulator-5554 install -r build/app/outputs/flutter-apk/app-debug.apk`; adb = `C:/Users/rubicon/AppData/Local/Android/Sdk/platform-tools/adb.exe`; Git Bash'te cihaz yolları için `export MSYS_NO_PATHCONV=1`; shell dışa kapalı receiver'lara yayın gönderemez (gerçek kullanıcı yolunu kullan). Bulunan her hata o görevin alt görevi olarak düzeltilir.

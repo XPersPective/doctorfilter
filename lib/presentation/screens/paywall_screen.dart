@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:doctorfilter/presentation/widgets/brand_lockup.dart';
 import 'package:doctorfilter/presentation/ads/rewarded_pass.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/domain/repositories/i_purchase_repository.dart';
@@ -38,7 +39,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(loc?.translate('pro_title') ?? 'DoctorFilter Pro'),
+        // The logo with its PRO mark is the title: this page is what the mark
+        // stands for.
+        title: const BrandLockup(isPro: true, showTagline: false),
       ),
       body: SafeArea(
         child: ListView(

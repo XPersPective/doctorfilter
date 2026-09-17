@@ -5,23 +5,26 @@ import 'package:doctorfilter/core/theme/app_theme.dart';
 /// The DoctorFilter logo: mark on the left, the two-colour slanted wordmark on
 /// the right, the tagline underneath, and a small PRO superscript for owners.
 ///
-/// The wordmark follows the original 1.x logo — lowercase "doctor" in yellow,
-/// "Filter" in blue, Audiowide leaning forward. On a light background those
-/// exact colours wash out, so the light theme uses deeper shades of the same
-/// two hues rather than a different pair.
+/// The wordmark is coloured with the icon's own two colours — "doctor" in the
+/// mark's orange, "Filter" in its blue — so the icon and the name read as one
+/// logo. The same two colours in both themes: they are the brand, and both
+/// hold enough contrast on the app's light and dark backgrounds.
 class BrandLockup extends StatelessWidget {
-  const BrandLockup({super.key, required this.isPro});
+  const BrandLockup({super.key, required this.isPro, this.showTagline = true});
 
+  /// Draws the PRO mark. True for owners on the home screen, and always on the
+  /// Pro page, whose title is the logo itself.
   final bool isPro;
 
-  static const _doctorOnDark = Color(0xFFFFD200);
-  static const _filterOnDark = Color(0xFF00BCFF);
-  static const _doctorOnLight = Color(0xFFE08600);
-  static const _filterOnLight = Color(0xFF0077E0);
+  /// The strapline under the name. Off where the bar is already busy.
+  final bool showTagline;
+
+  // Sampled from the icon (tool/brand/generate_icons.py: ORANGE, BLUE).
+  static const _orange = Color(0xFFFF9900);
+  static const _blue = Color(0xFF0087FF);
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
     final loc = AppLocalizations.of(context);
     const wordStyle = TextStyle(
       fontFamily: 'Audiowide',
@@ -38,44 +41,26 @@ class BrandLockup extends StatelessWidget {
           transform: Matrix4.skewX(-0.22),
           alignment: Alignment.bottomLeft,
           child: Text.rich(
-            TextSpan(children: [
-              TextSpan(
-                text: 'doctor',
-                style: wordStyle.copyWith(
-                  color: dark ? _doctorOnDark : _doctorOnLight,
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: 'doctor',
+                  style: wordStyle.copyWith(color: _orange),
                 ),
-              ),
-              TextSpan(
-                text: 'Filter',
-                style: wordStyle.copyWith(
-                  color: dark ? _filterOnDark : _filterOnLight,
+                TextSpan(
+                  text: 'Filter',
+                  style: wordStyle.copyWith(color: _blue),
                 ),
-              ),
-            ]),
+              ],
+            ),
             maxLines: 1,
           ),
         ),
         if (isPro) ...[
           const SizedBox(width: 3),
-          // Superscript, the way a trademark sits: a badge the owner notices
-          // and nobody else has to read.
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-            decoration: BoxDecoration(
-              color: context.colours.primary,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              'PRO',
-              style: context.texts.labelSmall?.copyWith(
-                color: context.colours.onPrimary,
-                fontWeight: FontWeight.bold,
-                fontSize: 8,
-                letterSpacing: 0.5,
-                height: 1.1,
-              ),
-            ),
-          ),
+          // Superscript at the top of the name, the way a trademark sits: small
+          // enough that nobody has to read it, in the logo's own two colours.
+          const _ProMark(),
         ],
       ],
     );
@@ -86,29 +71,73 @@ class BrandLockup extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset('assets/images/brand_mark.png', width: 40, height: 40),
-          const SizedBox(width: 8),
+          // The PNG carries a transparent margin on every side for its shadow,
+          // which read as a wide gap before the name. Laying it out 5dp
+          // narrower lets that margin fall behind the text instead.
+          SizedBox(
+            width: 35,
+            height: 40,
+            child: OverflowBox(
+              maxWidth: 40,
+              alignment: Alignment.centerLeft,
+              child: Image.asset(
+                'assets/images/brand_mark.png',
+                width: 40,
+                height: 40,
+              ),
+            ),
+          ),
+          const SizedBox(width: 1),
           Flexible(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 FittedBox(fit: BoxFit.scaleDown, child: wordmark),
-                const SizedBox(height: 3),
-                Text(
-                  loc?.translate('app_tagline') ??
-                      'Measured in kelvin. Honest about the numbers.',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.texts.labelSmall?.copyWith(
-                    color: context.colours.onSurfaceVariant,
-                    fontSize: 10,
+                if (showTagline) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    loc?.translate('app_tagline') ??
+                        'Measured in kelvin. Honest about the numbers.',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.texts.labelSmall?.copyWith(
+                      color: context.colours.onSurfaceVariant,
+                      fontSize: 10,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ProMark extends StatelessWidget {
+  const _ProMark();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1.5),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [BrandLockup._orange, BrandLockup._blue],
+        ),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: const Text(
+        'PRO',
+        style: TextStyle(
+          fontFamily: 'Audiowide',
+          color: Colors.white,
+          fontSize: 7.5,
+          height: 1.0,
+          letterSpacing: 0.6,
+        ),
       ),
     );
   }
