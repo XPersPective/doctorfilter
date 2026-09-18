@@ -23,10 +23,12 @@
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">
 
-        <!-- Google AdMob Application ID -->
+        <!-- Google AdMob application ID. Filled in at build time from
+             android/key.properties (admobAppId, not committed); a checkout
+             without it builds with Google's official test ID. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-0258900763816899~1987383172"/>
+            android:value="${admobAppId}"/>
 
         <activity
             android:name=".MainActivity"

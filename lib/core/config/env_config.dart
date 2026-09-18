@@ -26,7 +26,8 @@ import 'package:flutter/foundation.dart';
 /// flutter build appbundle --release \
 ///   --dart-define=ADMOB_ANDROID_BANNER_UNIT_ID=ca-app-pub-…/… \
 ///   --dart-define=ADMOB_ANDROID_INTERSTITIAL_UNIT_ID=ca-app-pub-…/… \
-///   --dart-define=ADMOB_ANDROID_REWARDED_UNIT_ID=ca-app-pub-…/… ///   --dart-define=ADMOB_ANDROID_APP_OPEN_UNIT_ID=ca-app-pub-…/…
+///   --dart-define=ADMOB_ANDROID_REWARDED_UNIT_ID=ca-app-pub-…/… \
+///   --dart-define=ADMOB_ANDROID_APP_OPEN_UNIT_ID=ca-app-pub-…/…
 /// ```
 abstract final class EnvConfig {
   /// Kept so callers need not care whether configuration is async.
