@@ -29,6 +29,12 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // The real AdMob app ID stays out of the repository (key.properties is
+        // gitignored). Google's sample app ID keeps a fresh clone buildable.
+        manifestPlaceholders["admobAppId"] =
+            keystoreProperties.getProperty("admobAppId")
+                ?: "ca-app-pub-3940256099942544~3347511713"
     }
 
     signingConfigs {
