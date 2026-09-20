@@ -1,0 +1,57 @@
+# DoctorFilter — Google Play yayın lanes
+#
+# Kullanım:
+#   fastlane build_release      → AAB üretir (imzalı sürüm)
+#   fastlane deploy_internal    → AAB'yi İç test (internal) kanalına yükler
+#   fastlane deploy_production  → AAB'yi Üretim (production) kanalına yükler
+#   fastlane push_metadata      → yalnızca mağaza metinlerini (TR+EN) günceller
+#
+# Sürüm numarası pubspec.yaml'dan gelir (version: 2.0.0+2000); her yüklemede
+# versionCode artırılmalı (ORTAK_UYGULAMA_STANDARDI.md 7).
+
+default_platform(:android)
+
+AAB_PATH = "../build/app/outputs/bundle/release/app-release.aab"
+METADATA_PATH = "D:/AppPublishing/apps/doctorfilter/stores/google-play/metadata"
+
+platform :android do
+  desc "İmzalı sürüm AAB'sini üretir (flutter build appbundle --release)"
+  lane :build_release do
+    sh("flutter", "build", "appbundle", "--release")
+    UI.success("AAB hazır: #{AAB_PATH}")
+  end
+
+  desc "AAB'yi Play Console İç test (internal) kanalına yükler"
+  lane :deploy_internal do
+    supply(
+      track: "internal",
+      aab: AAB_PATH,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+
+  desc "AAB'yi Play Console Üretim (production) kanalına yükler"
+  lane :deploy_production do
+    supply(
+      track: "production",
+      aab: AAB_PATH,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+
+  desc "Yalnızca mağaza metinlerini (tr-TR + en-US) Play'e gönderir"
+  lane :push_metadata do
+    supply(
+      track: "production",
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      metadata_path: METADATA_PATH,
+    )
+  end
+end
