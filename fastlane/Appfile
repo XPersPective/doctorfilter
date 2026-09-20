@@ -1,0 +1,6 @@
+# DoctorFilter — Google Play yapılandırması
+# Servis hesabı anahtarı repoda DEĞİL; yayın çalışma alanının sabit yolunda
+# (D:\AppPublishing\publisher\crazypenguin\credentials\google-play).
+
+json_key_file("D:/AppPublishing/publisher/crazypenguin/credentials/google-play/service-account.json")
+package_name("com.crazypenguin.doctorfilter")
