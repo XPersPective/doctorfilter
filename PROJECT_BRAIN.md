@@ -1,8 +1,8 @@
 <!-- project-brain:v1 -->
 # PROJECT BRAIN — DoctorFilter
 
-> **Status:** Yapılabilecek her şey bitti ve denetlendi (A4). Kalan 6 görev proje sahibini bekliyor: mağaza hesapları, eski ürün kimliği, iOS/macOS/Linux derlemesi, AB onayı.
-> **Phase:** BUILD · **Next:** none · **Updated:** 2026-09-17 · **Synced@:** 83e67eb
+> **Status:** Yapılabilecek her şey bitti; A1 derin denetimi 2026-09-21'de geçti (analyze temiz, 204 test, release APK emülatörde canlı). Kalan 6 görev proje sahibini bekliyor: mağaza hesapları, eski ürün kimliği, iOS/macOS/Linux derlemesi, AB onayı.
+> **Phase:** BUILD · **Next:** none · **Updated:** 2026-09-21 · **Synced@:** 7dd4cfe
 > **Goal:** v1 #25377c85 · **Goal status:** CONFIRMED
 
 ## 0. PROTOCOL
@@ -165,7 +165,8 @@ DoctorFilter (`com.crazypenguin.doctorfilter`): ekranın yaydığı kısa dalga 
 - Kelvin motoru ve eksenler: `lib/core/math/kelvin_engine.dart`, `lib/domain/entities/filter_config.dart` (testler `test/core/math`, `test/domain/entities`).
 - Kalıcılık: `lib/data/datasources/local/preferences_datasource.dart`, `lib/presentation/providers/filter_provider.dart`; zamanlama native'e açılışta yeniden gönderilir `lib/presentation/providers/schedule_provider.dart:loadSchedule` (başlatma `home_screen.dart` `ref.listen(scheduleProvider)`).
 - Android native emülatörde doğrulandı (2026-09-16): servis başlatmaları tek korumalı yoldan `kt/OverlayService.kt:start`; uygulama açılışta durumu servisten alır `filter_provider.dart:_init`; overlay izni alınınca servis kendini durdurur `kt/OverlayService.kt:watchOverlayPermission`; kokpit `kt/FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml` (düz `View` yok), kutucuk `kt/FilterTileService.kt:requestRefresh`, widget `kt/FilterWidgetProvider.kt`, kısayol `kt/ShortcutActivity.kt`, zamanlayıcı `kt/ScheduleReceiver.kt` (gerçek alarm tetiklendi, geçiş tavanı 180 dk). Native metinler `kt/PresetCatalog.kt:text` ← `lib/presentation/providers/notification_sync_provider.dart:nativeLabels`.
-- Reklam: `lib/domain/entities/ad_policy.dart`, `lib/presentation/ads/` (`AdConsent.sdkReady`, `AppOpenAdManager`, `watchAdForProPass`), tetik `lib/main.dart:_initialiseAds`, üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`; emülatörde app-open, banner, ödüllü → Pro doğrulandı.
+- Reklam: `lib/domain/entities/ad_policy.dart`, `lib/presentation/ads/` (`AdConsent.sdkReady`, `AppOpenAdManager`, `watchAdForProPass`), tetik `lib/main.dart:_initialiseAds`, üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`; emülatörde app-open, banner, ödüllü → Pro doğrulandı. AdMob uygulama kimliği manifest'e build sırasında `android/key.properties` (`admobAppId`) placeholder'ından gelir; dosya yoksa Google test kimliği (`android/app/build.gradle.kts` `manifestPlaceholders`).
+- Yayın: `Gemfile` + `fastlane/Appfile` + `fastlane/Fastfile` (lanes: `build_release`, `deploy_internal`, `deploy_production`, `push_metadata`); servis hesabı anahtarı repoda değil, yalnızca yerel yol referansı.
 - Pro: `lib/presentation/providers/pro_provider.dart`, `lib/data/repositories/store_purchase_repository.dart`, `lib/data/repositories/microsoft_store_purchase_repository.dart`, `windows/runner/store_purchases.cpp`. Ayar yedeği Pro'ya kilitli ve pil optimizasyonu kartı `lib/presentation/screens/settings_screen.dart`.
 - Ana ekran kaydırıcı notları sabit yuvada (`home_screen.dart` `Visibility.maintain`).
 - iOS: `ios/Runner/AppDelegate.swift`, `lib/core/math/ios_color_filter.dart`, `lib/presentation/screens/ios_setup_screen.dart`, `ios/DoctorFilterControl/` (hedef olarak eklenmedi). Mac'te derlenmedi.
@@ -212,6 +213,9 @@ doctorfilter/
       presets.png
       README.md
       schedule.png
+  fastlane/
+    Appfile  # package + servis hesabı anahtar yolu (anahtar repoda değil)
+    Fastfile  # build_release / deploy_internal / deploy_production / push_metadata
   ios/
     DoctorFilterControl/
       DoctorFilterControl.swift
@@ -338,6 +342,7 @@ doctorfilter/
     CMakeLists.txt
   analysis_options.yaml
   CHANGELOG.md
+  Gemfile  # fastlane
   LICENSE
   PROJECT_BRAIN.md  # tek doğruluk kaynağı
   AGENTS.md  # PROJECT_BRAIN.md'ye işaret
@@ -423,6 +428,8 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 | Date | Type | What | Why / evidence |
 |---|---|---|---|
+| 2026-09-21 | AUDIT | A1 (derin — Synced@ sonrası 2 protokol-dışı commit + harita sürüklenmesi tetikledi). VERIFY: T26 (`bc6637e`), T27 (`ea6fb82`), T28 (`b09740a`, `128be30`) — diff'ler görev metniyle uyumlu, debug/TODO yok, testleri pakette mevcut. `flutter analyze` temiz; `flutter test` 204/204 yeşil. T27'nin `Done when`'i HEAD'de yeniden koşuldu (408dc4c manifest değişikliğini kapsar): `flutter build apk --release` geçti; taze kurulum emülatörde açıldı, süreç canlı (pid 7866), `topResumedActivity` doctorfilter, logcat'te FATAL 0; `aapt xmltree` manifest'te `admobAppId` placeholder'ının key.properties'ten dolduğunu doğruladı; uiautomator dump "DoctorFilter"/"Pro"/"Settings" etiketlerini gösteriyor (T28 görseli render oluyor) | Yeni görev yok |
+| 2026-09-21 | RECONCILE | Protokol dışı 2 foreign commit incelendi ve korundu: `408dc4c` gerçek AdMob kimliğini gitignored `key.properties`'e taşıdı (güvenlik kısıtına hizmet eder, fallback Google test kimliği); `7dd4cfe` fastlane yayın lanes + Gemfile (T16'nın teknik ön hazırlığı; sır yok, yalnızca yerel anahtar yolu referansı). Dikkat: eski AdMob kimliği commit geçmişinde duruyor; geçmiş temizliği history rewrite gerektirir → insan kararı, burada yapılmadı | §3, §4 güncellendi |
 | 2026-09-16 | AUDIT | A4 (kısmi — kalan görevlerin hepsi `[!]`): `flutter analyze` temiz; `flutter test` 204 yeşil; `flutter build apk --release` ve `flutter build windows` geçti; sürüm APK'sı emülatörde denendi ve BAŞLANGIÇ ÇÖKMESİ bulundu → T27 düzeltildi. AC kanıtları: AC1 kalıcılık testleri + T7/T4 soğuk açılış/reboot; AC2 71 dil + `native_labels_test` + T10 RTL; AC3 T6 iki tema; AC4 `test/core/math`; AC5 `ad_policy_test` + T15 öncesi Pro geçişiyle banner'ın kalkması (I3/I4); AC6 I8/T2 kokpit dokunuşları; AC7 T4 reboot; AC8 T3 izin geri alma, T26 arka plan FGS çökmesi giderildi, sürüm APK FATAL yok; AC9 T8 dump + 1.3 ölçek; AC11 T1. AC10 işaretlenmedi: mağaza incelemesi olmadan kanıtlanamaz (T16, T18, T19). Değişiklik incelemesi (`git diff 10d4034..HEAD`, 34 dosya): TODO/FIXME/debug çıktısı yok, gizli bilgi yok, README gerçekle uyumlu (reklam kuralları, ekran görüntüleri, PROJECT_BRAIN bağlantıları). `Phase: DONE` yapılmadı çünkü §3'te insan gerektiren GAP var | T27 |
 | 2026-09-16 | ASSUMPTION | Windows'ta ikinci monitör/çözünürlük değişimi (G2 adım 4) denenemedi: makinede tek monitör var; kod her boyamada sanal ekranı yeniden ölçüyor (`overlay_window.cpp`) | T15 |
 | 2026-09-16 | ASSUMPTION | Yatay telefonda NavigationRail'e geçilmedi; ana ekran kaydırılarak kullanılabiliyor. Filtre uygulaması yatay kullanımı nadir | T9 ekran görüntüsü |
@@ -437,4 +444,4 @@ Newest first. Types: DECISION · ASSUMPTION · REVISION · GOAL-CHANGE · GOAL-C
 
 ## 7. HANDOFF
 
-Tüm yapılabilir görevler kapandı; A4 kısmen geçti (T27 sürüm çökmesi bulundu ve düzeltildi). Durdu çünkü kalan görevlerin hepsi insan gerektiriyor: T16 Play gerçek satın alma (Play Console ürünü `doctorfilter_pro_lifetime` + test hesabı), T17 eski 1.x ürün kimliği (`ProProduct.legacyIds`, tahmini `doctorfilter_proversion`), T18 Partner Center eklentisi + `msix_config.publisher`, T19 iOS derleme/cihaz (Mac + Xcode), T20 AB onay formu (AdMob UMP mesajı), T21 Linux/macOS derleme. Bunlardan biri çözülünce ilgili görev `[ ]` yapılıp döngü sürdürülür; sonra A4 tekrarlanır ve AC10 kanıtlanır.
+2026-09-21: A1 derin denetimi geçti — Synced@ sonrası 2 protokol-dışı commit (AdMob güvenlik düzeltmesi, fastlane lanes) incelendi ve reconcile edildi; `flutter analyze` temiz, 204 test yeşil, release APK emülatörde canlı (FATAL 0, manifest placeholder doğru). Harita sürüklenmesi giderildi (Gemfile, fastlane/). Açık kod görevi yok; kalan 6 görev insan bekliyor: T16 Play gerçek satın alma (Console ürünü `doctorfilter_pro_lifetime` + lisanslı test hesabı — fastlane `deploy_internal` hazır), T17 eski kimlik (`ProProduct.legacyIds`), T18 Partner Center + `msix_config.publisher`, T19 iOS (Mac + Xcode), T20 AB onayı (AdMob UMP), T21 Linux/macOS derleme. Biri çözülünce `[ ]` yap, döngüyü sürdür, sonra A4 + AC10.
