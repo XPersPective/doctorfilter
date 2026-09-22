@@ -222,3 +222,6 @@ migrate_working_dir/
 /.publishing/
 /AppPublishing/
 /publishing.local.json
+
+# Project Brain reconstructable cache
+.project-brain/.cache/
