@@ -178,14 +178,15 @@ entitlement edge cases such as an expired trial pass.
 Issues and pull requests are welcome. Two rules, both of which exist because
 this app makes claims about health:
 
-1. **No unsupported health claims.** See the forbidden-claims row in §6 of
-   [PROJECT_BRAIN.md](PROJECT_BRAIN.md) for what may and may not be said. A test
-   enforces this across all 71 locale files.
+1. **No unsupported health claims.** See
+   [ADR-001](.project-brain/decisions/ADR-001-yasak-saglik-iddialari.md) for
+   what may and may not be said. A test enforces this across all 71 locale
+   files.
 2. **Numbers shown to the user must be derived, not estimated.** If it cannot be
    computed, it is not displayed.
 
-[PROJECT_BRAIN.md](PROJECT_BRAIN.md) is the working document: goal,
-architecture, decisions and the outstanding tasks.
+[.project-brain/](.project-brain/) is the project's working memory: current
+and target architecture, constraints, outstanding tasks and decision records.
 
 ## Licence
 

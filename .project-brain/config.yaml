@@ -1,0 +1,15 @@
+schema_version: 3
+
+architecture:
+  mode: single
+
+git:
+  history_mode: preserve
+  push_policy: every-task
+  # Uzak: origin/master (GitHub). Her doğrulanmış birim ayrı commit + push.
+
+tasks:
+  id_prefix: PB
+
+verification:
+  default_risk: medium

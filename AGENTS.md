@@ -1,1 +1,1 @@
-Project state and working protocol: read PROJECT_BRAIN.md first and follow its §0 PROTOCOL.
+Project state and working protocol: .project-brain/ is the source of truth — read config.yaml, current.md, target.md, constraints.md, then tasks/. Follow the project-brain protocol (boot sequence + task loop) of the installed project-brain skill; keep .project-brain/.cache/ reconstructable only (gitignored).
