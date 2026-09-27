@@ -37,9 +37,7 @@ platform :android do
     supply(
       track: "production",
       aab: AAB_PATH,
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
+      metadata_path: METADATA_PATH,
     )
   end
 

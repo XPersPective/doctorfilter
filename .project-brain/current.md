@@ -91,7 +91,7 @@ iOS: sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Co
 **Sources:**
 - `Gemfile`, `fastlane/Appfile`, `fastlane/Fastfile`
 
-Lanes: `build_release`, `deploy_internal`, `deploy_production`, `push_metadata` (Play Console). Servis hesabı anahtarı repoda değil; yalnızca yerel yol referansı.
+Lanes: `build_release`, `deploy_internal`, `deploy_production`, `push_metadata` (Play Console). Production lane yayın klasöründeki TR/EN metadata ve görselleri AAB ile birlikte yükler. Servis hesabı anahtarı repoda değil; yalnızca yerel yol referansı. Yayın girdileri `D:\AppPublishing\apps\doctorfilter\stores\google-play\metadata` altında.
 
 ## External Dependencies
 
@@ -99,6 +99,7 @@ AdMob SDK (Google), `in_app_purchase`, WorkManager (reklam SDK'sı üzerinden, R
 
 ## Known Unknowns
 
-- Eski 1.x ürün kimliği tahmini (`doctorfilter_proversion`); Play Console'dan doğrulanmalı → PB-002.
+- Play API'de etkin eski tek seferlik Pro ürünü `doctorfilterpro`; kod hâlâ tahmini kimliği içeriyor → PB-002.
+- 2.0'ın `doctorfilter_pro_lifetime` ürünü Play API listesinde yok; gerçek satın alma ve internal yükleme doğrulanmadı → PB-001.
 - Eski AdMob kimliği git geçmişinde duruyor; temizlik kararı sahibin → PB-007.
-- Play/App/Microsoft mağaza incelemesi sonucu bilinmiyor → PB-001, PB-003, PB-004.
+- Play/App/Microsoft mağaza incelemesi ve Play beyanlarının durumu bilinmiyor → PB-009, PB-003, PB-004.
