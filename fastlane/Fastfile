@@ -11,7 +11,7 @@
 
 default_platform(:android)
 
-AAB_PATH = "../build/app/outputs/bundle/release/app-release.aab"
+AAB_PATH = File.expand_path("../build/app/outputs/bundle/release/app-release.aab", __dir__)
 METADATA_PATH = "D:/AppPublishing/apps/doctorfilter/stores/google-play/metadata"
 # Gerçek AdMob birimleri (Git dışında); yoksa derleme Google test birimlerine düşer.
 DART_DEFINES = "D:/AppPublishing/apps/doctorfilter/dart-defines.env"
