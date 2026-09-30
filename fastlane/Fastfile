@@ -13,11 +13,19 @@ default_platform(:android)
 
 AAB_PATH = "../build/app/outputs/bundle/release/app-release.aab"
 METADATA_PATH = "D:/AppPublishing/apps/doctorfilter/stores/google-play/metadata"
+# Gerçek AdMob birimleri (Git dışında); yoksa derleme Google test birimlerine düşer.
+DART_DEFINES = "D:/AppPublishing/apps/doctorfilter/dart-defines.env"
 
 platform :android do
   desc "İmzalı sürüm AAB'sini üretir (flutter build appbundle --release)"
   lane :build_release do
-    sh("flutter", "build", "appbundle", "--release")
+    defines = File.exist?(DART_DEFINES) ? File.read(DART_DEFINES) : ""
+    %w[BANNER INTERSTITIAL REWARDED APP_OPEN].each do |unit|
+      value = defines[/^ADMOB_ANDROID_#{unit}_UNIT_ID=(\S+)/, 1]
+      UI.user_error!("#{DART_DEFINES}: ADMOB_ANDROID_#{unit}_UNIT_ID eksik") if value.nil?
+      UI.user_error!("ADMOB_ANDROID_#{unit}_UNIT_ID Google test birimi") if value.include?("3940256099942544")
+    end
+    sh("flutter", "build", "appbundle", "--release", "--dart-define-from-file=#{DART_DEFINES}")
     UI.success("AAB hazır: #{AAB_PATH}")
   end
 
