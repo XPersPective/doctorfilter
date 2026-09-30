@@ -29,7 +29,7 @@
   "extra_dim_hint": "端末の最低輝度よりさらに暗くします。",
   "melanopic_reduction": "体内時計に効く光を{percent}%削減",
   "colour_only_warning": "暖色にするだけではあまり効きません。追加の減光も少し加えてください。",
-  "band_sleep_friendly": "就寝向き",
+  "band_sleep_friendly": "とても暖かい",
   "band_evening": "夕方",
   "band_balanced": "バランス",
   "band_blue_risk": "明るめ・日中向き",

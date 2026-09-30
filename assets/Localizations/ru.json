@@ -29,7 +29,7 @@
   "extra_dim_hint": "Опускает экран ниже минимальной аппаратной яркости.",
   "melanopic_reduction": "Циркадного света меньше на {percent}%",
   "colour_only_warning": "Одно лишь потепление даёт мало. Добавьте немного затемнения для реального эффекта.",
-  "band_sleep_friendly": "Подходит для сна",
+  "band_sleep_friendly": "Очень тёплый",
   "band_evening": "Вечер",
   "band_balanced": "Сбалансировано",
   "band_blue_risk": "Ярко, только днём",

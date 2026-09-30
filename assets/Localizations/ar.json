@@ -29,7 +29,7 @@
   "extra_dim_hint": "يخفض الشاشة إلى ما دون أدنى سطوع يسمح به الجهاز.",
   "melanopic_reduction": "انخفاض الضوء المؤثر في الساعة البيولوجية بنسبة {percent}%",
   "colour_only_warning": "التدفئة وحدها لا تكفي. أضف بعض التعتيم لتحصل على أثر حقيقي.",
-  "band_sleep_friendly": "مناسب للنوم",
+  "band_sleep_friendly": "دافئ جدًا",
   "band_evening": "المساء",
   "band_balanced": "متوازن",
   "band_blue_risk": "ساطع، للنهار فقط",

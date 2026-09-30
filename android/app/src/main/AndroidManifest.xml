@@ -13,9 +13,6 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <!-- Android 14+: the filter is a user-set alarm clock in spirit; without an
-         exact alarm the bedtime schedule drifts by minutes. -->
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
         android:label="@string/app_name"
@@ -73,7 +70,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Screen filter overlay to reduce blue light and eye strain" />
+                android:value="User-controlled colour filter overlay drawn over other apps while switched on" />
         </service>
 
         <!-- 20-20-20 eye break reminder -->

@@ -29,7 +29,7 @@
   "extra_dim_hint": "स्क्रिनलाई हार्डवेयरको न्यूनतम भन्दा पनि तल मधुरो बनाउँछ।",
   "melanopic_reduction": "{percent}% कम सर्काडियन प्रकाश",
   "colour_only_warning": "न्यानो बनाउँदा मात्र थोरै फरक पर्छ। साँचो असरका लागि केही थप मधुरो थप्नुहोस्।",
-  "band_sleep_friendly": "निद्राका लागि उपयुक्त",
+  "band_sleep_friendly": "धेरै न्यानो",
   "band_evening": "साँझ",
   "band_balanced": "सन्तुलित",
   "band_blue_risk": "उज्यालो, दिउँसो मात्र",

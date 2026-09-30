@@ -29,7 +29,7 @@
   "extra_dim_hint": "Darkens the screen below its hardware minimum.",
   "melanopic_reduction": "{percent}% less circadian light",
   "colour_only_warning": "Warming alone does little. Add some extra dim for a real effect.",
-  "band_sleep_friendly": "Sleep friendly",
+  "band_sleep_friendly": "Very warm",
   "band_evening": "Evening",
   "band_balanced": "Balanced",
   "band_blue_risk": "Bright, daytime only",

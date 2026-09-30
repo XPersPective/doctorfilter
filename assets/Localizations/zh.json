@@ -29,7 +29,7 @@
   "extra_dim_hint": "让屏幕暗于设备本身的最低亮度。",
   "melanopic_reduction": "影响生物钟的光减少 {percent}%",
   "colour_only_warning": "只调暖作用有限。再加一点额外调暗才有实际效果。",
-  "band_sleep_friendly": "适合睡前",
+  "band_sleep_friendly": "非常暖",
   "band_evening": "傍晚",
   "band_balanced": "均衡",
   "band_blue_risk": "偏亮，仅限白天",

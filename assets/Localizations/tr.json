@@ -29,7 +29,7 @@
   "extra_dim_hint": "Ekranı donanımın en düşük parlaklığının da altına indirir.",
   "melanopic_reduction": "Sirkadiyen ışıkta %{percent} azalma",
   "colour_only_warning": "Yalnızca ısıtmak pek işe yaramaz. Gerçek etki için biraz karartma ekleyin.",
-  "band_sleep_friendly": "Uyku dostu",
+  "band_sleep_friendly": "Çok sıcak",
   "band_evening": "Akşam",
   "band_balanced": "Dengeli",
   "band_blue_risk": "Parlak, gündüz için",

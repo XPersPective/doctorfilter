@@ -29,7 +29,7 @@
   "extra_dim_hint": "Laskee näytön laitteen vähimmäiskirkkauden alle.",
   "melanopic_reduction": "{percent} % vähemmän vuorokausirytmiin vaikuttavaa valoa",
   "colour_only_warning": "Pelkkä lämmittäminen auttaa vähän. Lisää hieman himmennystä, jotta vaikutus on todellinen.",
-  "band_sleep_friendly": "Unelle sopiva",
+  "band_sleep_friendly": "Hyvin lämmin",
   "band_evening": "Ilta",
   "band_balanced": "Tasapainoinen",
   "band_blue_risk": "Kirkas, vain päivällä",

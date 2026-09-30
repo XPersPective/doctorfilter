@@ -29,7 +29,7 @@
   "extra_dim_hint": "ลดความสว่างลงต่ำกว่าค่าต่ำสุดของเครื่อง",
   "melanopic_reduction": "แสงที่มีผลต่อนาฬิกาชีวภาพลดลง {percent}%",
   "colour_only_warning": "แค่ทำให้อุ่นขึ้นช่วยได้ไม่มาก เพิ่มการหรี่อีกนิดจึงจะเห็นผลจริง",
-  "band_sleep_friendly": "เหมาะก่อนนอน",
+  "band_sleep_friendly": "อุ่นมาก",
   "band_evening": "ช่วงเย็น",
   "band_balanced": "สมดุล",
   "band_blue_risk": "สว่าง ใช้ตอนกลางวัน",

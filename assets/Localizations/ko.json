@@ -29,7 +29,7 @@
   "extra_dim_hint": "기기의 최저 밝기보다 더 어둡게 만듭니다.",
   "melanopic_reduction": "생체리듬에 작용하는 빛 {percent}% 감소",
   "colour_only_warning": "색만 따뜻하게 해서는 효과가 크지 않습니다. 추가 어둡게도 조금 올려 보세요.",
-  "band_sleep_friendly": "수면에 적합",
+  "band_sleep_friendly": "매우 따뜻함",
   "band_evening": "저녁",
   "band_balanced": "균형",
   "band_blue_risk": "밝음, 낮 전용",

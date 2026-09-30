@@ -29,7 +29,7 @@
   "extra_dim_hint": "صفحه را پایین‌تر از کمترین روشنایی سخت‌افزاری می‌برد.",
   "melanopic_reduction": "{percent}٪ کاهش نوری که بر ساعت زیستی اثر می‌گذارد",
   "colour_only_warning": "فقط گرم‌کردن اثر چندانی ندارد. کمی تاریکی افزوده کنید تا اثر واقعی ببینید.",
-  "band_sleep_friendly": "مناسب خواب",
+  "band_sleep_friendly": "بسیار گرم",
   "band_evening": "غروب",
   "band_balanced": "متعادل",
   "band_blue_risk": "روشن، فقط برای روز",

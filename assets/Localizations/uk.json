@@ -29,7 +29,7 @@
   "extra_dim_hint": "Опускає екран нижче мінімальної апаратної яскравості.",
   "melanopic_reduction": "Циркадного світла менше на {percent}%",
   "colour_only_warning": "Саме лише потепління дає мало. Додайте трохи затемнення для реального ефекту.",
-  "band_sleep_friendly": "Сприяє сну",
+  "band_sleep_friendly": "Дуже теплий",
   "band_evening": "Вечір",
   "band_balanced": "Збалансовано",
   "band_blue_risk": "Яскраво, лише вдень",

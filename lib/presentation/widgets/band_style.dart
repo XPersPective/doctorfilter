@@ -13,7 +13,7 @@ import 'package:doctorfilter/core/theme/app_theme.dart';
 
   return switch (KelvinEngine.safetyLevel(kelvin)) {
     MelatoninSafetyLevel.sleepFriendly => (
-        label: loc?.translate('band_sleep_friendly') ?? 'Sleep friendly',
+        label: loc?.translate('band_sleep_friendly') ?? 'Very warm',
         colour: context.bands.sleepFriendly,
       ),
     MelatoninSafetyLevel.evening => (

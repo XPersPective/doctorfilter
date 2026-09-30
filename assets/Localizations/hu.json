@@ -29,7 +29,7 @@
   "extra_dim_hint": "A készülék legkisebb fényereje alá viszi a képernyőt.",
   "melanopic_reduction": "{percent}%-kal kevesebb a biológiai órára ható fény",
   "colour_only_warning": "Önmagában a melegítés keveset ér. Adj hozzá némi sötétítést a valódi hatásért.",
-  "band_sleep_friendly": "Alvásbarát",
+  "band_sleep_friendly": "Nagyon meleg",
   "band_evening": "Este",
   "band_balanced": "Kiegyensúlyozott",
   "band_blue_risk": "Világos, csak nappalra",

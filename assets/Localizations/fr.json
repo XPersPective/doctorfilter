@@ -29,7 +29,7 @@
   "extra_dim_hint": "Descend l’écran sous sa luminosité minimale matérielle.",
   "melanopic_reduction": "{percent} % de lumière circadienne en moins",
   "colour_only_warning": "Réchauffer seul ne fait pas grand-chose. Ajoutez un peu d’assombrissement pour un effet réel.",
-  "band_sleep_friendly": "Favorable au sommeil",
+  "band_sleep_friendly": "Très chaud",
   "band_evening": "Soirée",
   "band_balanced": "Équilibré",
   "band_blue_risk": "Vif, pour la journée",
