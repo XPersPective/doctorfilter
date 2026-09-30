@@ -39,3 +39,7 @@ Proje sahibinin kişisel bilgisi hiçbir dosyaya yazılmaz. `migrate_working_dir
 ### C-030: Tek doğruluk kaynağı bu dizin
 
 `.project-brain/` dışında plan/takip dosyası tutulmaz. Commit mesajları `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>` ile biter; push `master`.
+
+### C-031: Yerel yayın girdileri
+
+Google Play metadata/görselleri ve imzalama/API dosyaları `D:\AppPublishing` altında, Git dışında. Sonraki ortamda yayın öncesi bu klasör sağlanıp doğrulanmalı; yoksa eski 1.x mağaza metni veya görseli varsayılan olarak kullanılmaz. Sırlar Project Brain'e veya Git'e kopyalanmaz.

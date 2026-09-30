@@ -51,7 +51,7 @@ OverlayService (FGS specialUse; tüm başlatmalar `OverlayService.start` korumal
 - `lib/presentation/providers/pro_provider.dart`
 - `lib/data/repositories/store_purchase_repository.dart`, `microsoft_store_purchase_repository.dart`
 
-AdPolicy saf kurallar (grace 3 gün + 5 oturum, oturumda 1 tam ekran, app-open 4 saat arayla, ödüllü geçiş 7. günden itibaren günde 2). Tetik `lib/main.dart:_initialiseAds`; üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`. Emülatörde app-open, banner, ödüllü → Pro doğrulandı. AdMob uygulama kimliği build zamanında `android/key.properties` (`admobAppId`) manifest placeholder'ından gelir; dosya yoksa Google test kimliği (`android/app/build.gradle.kts:manifestPlaceholders`). Pro: Play/App Store (`in_app_purchase`) + Microsoft Store (C++/WinRT, `windows/runner/store_purchases.cpp`). Ayar yedeği dışa/içe aktarma Pro'ya kilitli (`settings_screen.dart`); pil optimizasyonu kartı aynı ekranda.
+AdPolicy saf kurallar (grace 3 gün + 5 oturum, oturumda 1 tam ekran, app-open 4 saat arayla, ödüllü geçiş 7. günden itibaren günde 2). Tetik `lib/main.dart:_initialiseAds`; üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`. Emülatörde app-open, banner, ödüllü → Pro doğrulandı. AdMob uygulama kimliği build zamanında `android/key.properties` (`admobAppId`) manifest placeholder'ından gelir; dosya yoksa Google test kimliği (`android/app/build.gradle.kts:manifestPlaceholders`). Pro: Play/App Store (`in_app_purchase`) + Microsoft Store (C++/WinRT, `windows/runner/store_purchases.cpp`). Play'in eski `doctorfilterpro` ürünü `ProProduct.allIds` ile geri yüklemede tanınır; gerçek mağaza hesabıyla test PB-001'de. Ayar yedeği dışa/içe aktarma Pro'ya kilitli (`settings_screen.dart`); pil optimizasyonu kartı aynı ekranda.
 
 ### Marka
 
@@ -91,7 +91,7 @@ iOS: sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Co
 **Sources:**
 - `Gemfile`, `fastlane/Appfile`, `fastlane/Fastfile`
 
-Lanes: `build_release`, `deploy_internal`, `deploy_production`, `push_metadata` (Play Console). Production lane yayın klasöründeki TR/EN metadata ve görselleri AAB ile birlikte yükler. Servis hesabı anahtarı repoda değil; yalnızca yerel yol referansı. Yayın girdileri `D:\AppPublishing\apps\doctorfilter\stores\google-play\metadata` altında.
+Lanes: `build_release`, `deploy_internal`, `deploy_production`, `push_metadata` (Play Console). İç test lane'i AAB'yi yükler; üretim lane'i doğrulanmış 2000 kodlu iç test sürümünü taşırken TR/EN metadata ve görselleri yükler. Servis hesabı anahtarı repoda değil; yalnızca yerel yol referansı. Yayın girdileri `D:\AppPublishing\apps\doctorfilter\stores\google-play\metadata` altında.
 
 ## External Dependencies
 
@@ -99,7 +99,7 @@ AdMob SDK (Google), `in_app_purchase`, WorkManager (reklam SDK'sı üzerinden, R
 
 ## Known Unknowns
 
-- Play API'de etkin eski tek seferlik Pro ürünü `doctorfilterpro`; kod hâlâ tahmini kimliği içeriyor → PB-002.
+- Play API'de etkin eski tek seferlik Pro ürünü `doctorfilterpro`; kod ve birim testi bu kimliği içeriyor. Gerçek eski alıcı hesabıyla geri yükleme henüz doğrulanmadı → PB-001.
 - 2.0'ın `doctorfilter_pro_lifetime` ürünü Play API listesinde yok; gerçek satın alma ve internal yükleme doğrulanmadı → PB-001.
 - Eski AdMob kimliği git geçmişinde duruyor; temizlik kararı sahibin → PB-007.
 - Play/App/Microsoft mağaza incelemesi ve Play beyanlarının durumu bilinmiyor → PB-009, PB-003, PB-004.

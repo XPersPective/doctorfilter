@@ -3,7 +3,7 @@
 # Kullanım:
 #   fastlane build_release      → AAB üretir (imzalı sürüm)
 #   fastlane deploy_internal    → AAB'yi İç test (internal) kanalına yükler
-#   fastlane deploy_production  → AAB'yi Üretim (production) kanalına yükler
+#   fastlane deploy_production  → İç testteki 2000 sürümünü Üretime taşır + mağaza içeriğini günceller
 #   fastlane push_metadata      → yalnızca mağaza metinlerini (TR+EN) günceller
 #
 # Sürüm numarası pubspec.yaml'dan gelir (version: 2.0.0+2000); her yüklemede
@@ -32,11 +32,12 @@ platform :android do
     )
   end
 
-  desc "AAB'yi Play Console Üretim (production) kanalına yükler"
+  desc "İç testte doğrulanmış 2000 sürümünü Üretim'e taşır ve mağaza içeriğini yükler"
   lane :deploy_production do
     supply(
-      track: "production",
-      aab: AAB_PATH,
+      track: "internal",
+      track_promote_to: "production",
+      version_code: 2000,
       metadata_path: METADATA_PATH,
     )
   end
@@ -47,6 +48,7 @@ platform :android do
       track: "production",
       skip_upload_apk: true,
       skip_upload_aab: true,
+      skip_upload_changelogs: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
       metadata_path: METADATA_PATH,

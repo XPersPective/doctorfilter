@@ -16,7 +16,7 @@ abstract final class ProProduct {
   /// ago must not be asked to pay again because the id was renamed. Costs one
   /// extra lookup and buys back a user who would otherwise leave a one-star
   /// review saying the update stole what they bought.
-  static const List<String> legacyIds = ['doctorfilter_proversion'];
+  static const List<String> legacyIds = ['doctorfilterpro'];
 
   static Set<String> get allIds => {lifetimeId, ...legacyIds};
 }

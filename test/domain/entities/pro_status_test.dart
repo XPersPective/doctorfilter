@@ -1,7 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:doctorfilter/domain/entities/pro_status.dart';
+import 'package:doctorfilter/domain/repositories/i_purchase_repository.dart';
 
 void main() {
+  test('the published 1.x product is recognised during Pro restoration', () {
+    expect(ProProduct.allIds, contains('doctorfilterpro'));
+    expect(ProProduct.allIds, isNot(contains('doctorfilter_proversion')));
+    expect(ProProduct.allIds, isNot(contains('testconsumable')));
+  });
+
   group('ProStatus', () {
     test('a free user is not entitled', () {
       expect(ProStatus.free().isActive, isFalse);

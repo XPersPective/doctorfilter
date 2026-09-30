@@ -22,7 +22,7 @@ Fiziksel cihaz şartı (reddedildi: sahip talimatına aykırı; emülatör kapsa
 
 ## Consequences
 
-Emülatörde doğrulanamayan tek kategori kaldı: mağaza/hesap gerektiren akışlar (PB-001, PB-002, PB-005) — bunlar emülatör meselesi değil, insan/hesap meselesidir.
+Emülatörde tek başına doğrulanamayan kategori: mağaza/hesap gerektiren akışlar (PB-001, PB-005). Bunlar emülatör meselesi değil, insan/hesap meselesidir.
 
 ## Related
 
