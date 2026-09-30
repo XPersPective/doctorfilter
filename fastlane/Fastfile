@@ -3,10 +3,10 @@
 # Kullanım:
 #   fastlane build_release      → AAB üretir (imzalı sürüm)
 #   fastlane deploy_internal    → AAB'yi İç test (internal) kanalına yükler
-#   fastlane deploy_production  → İç testteki 2000 sürümünü Üretime taşır + mağaza içeriğini günceller
+#   fastlane deploy_production  → İç testteki pubspec sürümünü Üretime taşır + mağaza içeriğini günceller
 #   fastlane push_metadata      → yalnızca mağaza metinlerini (TR+EN) günceller
 #
-# Sürüm numarası pubspec.yaml'dan gelir (version: 2.0.0+2000); her yüklemede
+# Sürüm numarası pubspec.yaml'dan gelir (version: 2.0.0+2001); her yüklemede
 # versionCode artırılmalı (ORTAK_UYGULAMA_STANDARDI.md 7).
 
 default_platform(:android)
@@ -14,6 +14,7 @@ default_platform(:android)
 AAB_PATH = File.expand_path("../build/app/outputs/bundle/release/app-release.aab", __dir__)
 METADATA_PATH = "D:/AppPublishing/apps/doctorfilter/stores/google-play/metadata"
 # Gerçek AdMob birimleri (Git dışında); yoksa derleme Google test birimlerine düşer.
+VERSION_CODE = File.read(File.expand_path("../pubspec.yaml", __dir__))[/^version: .*\+(\d+)/, 1].to_i
 DART_DEFINES = "D:/AppPublishing/apps/doctorfilter/dart-defines.env"
 
 platform :android do
@@ -40,12 +41,12 @@ platform :android do
     )
   end
 
-  desc "İç testte doğrulanmış 2000 sürümünü Üretim'e taşır ve mağaza içeriğini yükler"
+  desc "İç testte doğrulanmış pubspec sürümünü Üretim'e taşır ve mağaza içeriğini yükler"
   lane :deploy_production do
     supply(
       track: "internal",
       track_promote_to: "production",
-      version_code: 2000,
+      version_code: VERSION_CODE,
       metadata_path: METADATA_PATH,
     )
   end

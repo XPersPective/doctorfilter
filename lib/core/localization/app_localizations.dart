@@ -62,7 +62,7 @@ class AppLocalizations {
     'nav_home': 'Home',
     'nav_presets': 'Presets',
     'nav_schedule': 'Schedule',
-    'nav_education': 'Eye Health',
+    'nav_education': 'Learn',
     'nav_settings': 'Settings',
     'filter_active': 'Eye Filter Active',
     'filter_inactive': 'Filter Inactive',

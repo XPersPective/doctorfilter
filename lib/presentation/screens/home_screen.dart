@@ -275,7 +275,7 @@ class HomeScreen extends ConsumerWidget {
               NavigationDestination(
                 icon: const Icon(Icons.menu_book_outlined),
                 selectedIcon: const Icon(Icons.menu_book_rounded),
-                label: loc?.translate('nav_education') ?? 'Eye health',
+                label: loc?.translate('nav_education') ?? 'Learn',
               ),
             ],
             onDestinationSelected: (index) => switch (index) {

@@ -20,7 +20,7 @@ class EducationScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(loc?.translate('education_title') ?? 'Eye health'),
+        title: Text(loc?.translate('education_title') ?? 'Light and your screen'),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
