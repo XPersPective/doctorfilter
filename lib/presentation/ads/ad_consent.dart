@@ -29,6 +29,20 @@ abstract final class AdConsent {
   /// does not fire a request Google would reject.
   static bool get canRequestAds => _completed;
 
+  /// Whether the user's region requires a way back into the consent form.
+  ///
+  /// GDPR lets a user withdraw consent as easily as they gave it; AdMob
+  /// enforces that by requiring a visible entry point when UMP says so.
+  static bool privacyOptionsRequired = false;
+
+  /// Reopens the consent form so the user can change their choice.
+  static Future<void> showPrivacyOptions() =>
+      ConsentForm.showPrivacyOptionsForm((error) {
+        if (error != null && kDebugMode) {
+          debugPrint('[Ads] Privacy options failed: ${error.message}');
+        }
+      });
+
   static final Completer<void> _sdkReady = Completer<void>();
 
   /// Completes once consent is settled and the SDK is initialised.
@@ -74,12 +88,17 @@ abstract final class AdConsent {
     final completer = _Completer();
 
     ConsentInformation.instance.requestConsentInfoUpdate(
-      ConsentRequestParameters(),
+      ConsentRequestParameters(consentDebugSettings: _debugSettings),
       () async {
-        final available = await ConsentInformation.instance.isConsentFormAvailable();
+        final available = await ConsentInformation.instance
+            .isConsentFormAvailable();
         if (available) {
           await _loadAndShowFormIfRequired();
         }
+        privacyOptionsRequired =
+            await ConsentInformation.instance
+                .getPrivacyOptionsRequirementStatus() ==
+            PrivacyOptionsRequirementStatus.required;
         completer.done();
       },
       (error) {
@@ -91,6 +110,20 @@ abstract final class AdConsent {
     );
 
     await completer.future;
+  }
+
+  /// Debug builds only: `--dart-define=UMP_DEBUG_EEA=true` makes UMP treat the
+  /// device as being in the EEA, so the form can be tested from anywhere.
+  /// `UMP_TEST_DEVICE_ID` is the hashed id UMP prints to logcat on first run.
+  static ConsentDebugSettings? get _debugSettings {
+    if (!kDebugMode || !const bool.fromEnvironment('UMP_DEBUG_EEA')) {
+      return null;
+    }
+    const deviceId = String.fromEnvironment('UMP_TEST_DEVICE_ID');
+    return ConsentDebugSettings(
+      debugGeography: DebugGeography.debugGeographyEea,
+      testIdentifiers: deviceId.isEmpty ? null : [deviceId],
+    );
   }
 
   static Future<void> _loadAndShowFormIfRequired() async {
@@ -112,8 +145,7 @@ abstract final class AdConsent {
   static Future<void> _requestTrackingAuthorization() async {
     if (!Platform.isIOS) return;
 
-    final status =
-        await AppTrackingTransparency.trackingAuthorizationStatus;
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
     if (status != TrackingStatus.notDetermined) return;
 
     await AppTrackingTransparency.requestTrackingAuthorization();

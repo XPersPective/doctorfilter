@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
+import 'package:doctorfilter/presentation/ads/ad_consent.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
@@ -12,7 +13,9 @@ import 'package:doctorfilter/presentation/providers/preset_provider.dart';
 import 'package:doctorfilter/presentation/services/app_links.dart';
 import 'package:doctorfilter/presentation/services/settings_backup.dart';
 import 'package:file_picker/file_picker.dart';
+
 import 'dart:io';
+
 import 'about_screen.dart';
 import 'calibration_screen.dart';
 import 'exclusions_screen.dart';
@@ -39,12 +42,11 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          if (!isPro) _ProCard(onTap: () => _open(context, const PaywallScreen())),
+          if (!isPro)
+            _ProCard(onTap: () => _open(context, const PaywallScreen())),
           if (Platform.isAndroid) const _BatteryCard(),
 
-          _SectionLabel(
-            loc?.translate('settings_appearance') ?? 'Appearance',
-          ),
+          _SectionLabel(loc?.translate('settings_appearance') ?? 'Appearance'),
           Card(
             margin: EdgeInsets.zero,
             child: Column(
@@ -73,7 +75,8 @@ class SettingsScreen extends ConsumerWidget {
                         'Easier on the eyes at night.',
                   ),
                   value: isDark,
-                  onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
+                  onChanged: (_) =>
+                      ref.read(themeModeProvider.notifier).toggle(),
                 ),
                 // Only while the dark theme is actually showing: a "true black"
                 // switch under a white screen does nothing visible, and a
@@ -89,11 +92,11 @@ class SettingsScreen extends ConsumerWidget {
                       loc?.translate('settings_amoled') ?? 'True black (OLED)',
                     ),
                     subtitle: Text(
-                      loc?.translate('settings_amoled_desc') ??
-                          'Unlit pixels emit no light at all, and use less battery.',
+                      loc?.translate('settings_amoled_desc') ?? 'Unlit pixels emit no light at all, and use less battery.',
                     ),
                     value: isAmoled,
-                    onChanged: (_) => ref.read(amoledProvider.notifier).toggle(),
+                    onChanged: (_) =>
+                        ref.read(amoledProvider.notifier).toggle(),
                   ),
                 ],
                 const Divider(height: 1, indent: 56),
@@ -103,8 +106,7 @@ class SettingsScreen extends ConsumerWidget {
                     loc?.translate('exclusions_title') ?? 'Pause in these apps',
                   ),
                   subtitle: Text(
-                    loc?.translate('exclusions_desc') ??
-                        'Step aside for the camera, the gallery, a video player.',
+                    loc?.translate('exclusions_desc') ?? 'Step aside for the camera, the gallery, a video player.',
                   ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _open(context, const ExclusionsScreen()),
@@ -122,10 +124,9 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   subtitle: Text(
                     isPro
-                        ? loc?.translate('settings_ambient_desc') ??
-                            'Dims a little more in the dark, backs off in daylight.'
+                        ? loc?.translate('settings_ambient_desc') ?? 'Dims a little more in the dark, backs off in daylight.'
                         : loc?.translate('settings_ambient_locked') ??
-                            'Included with Pro.',
+                              'Included with Pro.',
                   ),
                   value: ambient,
                   onChanged: isPro
@@ -178,8 +179,9 @@ class SettingsScreen extends ConsumerWidget {
                         'Control the filter without opening the app.',
                   ),
                   value: config.isNotificationEnabled,
-                  onChanged:
-                      ref.read(filterProvider.notifier).setNotificationEnabled,
+                  onChanged: ref
+                      .read(filterProvider.notifier)
+                      .setNotificationEnabled,
                 ),
               ],
             ),
@@ -204,14 +206,17 @@ class SettingsScreen extends ConsumerWidget {
                         'Every 20 minutes, look 6 metres away for 20 seconds.',
                   ),
                   value: breaks.isEnabled,
-                  onChanged: ref.read(breakReminderProvider.notifier).setEnabled,
+                  onChanged: ref
+                      .read(breakReminderProvider.notifier)
+                      .setEnabled,
                 ),
                 if (breaks.isEnabled) ...[
                   const Divider(height: 1, indent: 56),
                   ListTile(
                     leading: const Icon(Icons.timer_outlined),
                     title: Text(
-                      loc?.translate('settings_breaks_interval') ?? 'Remind me every',
+                      loc?.translate('settings_breaks_interval') ??
+                          'Remind me every',
                     ),
                     subtitle: !isPro
                         ? Text(
@@ -226,7 +231,11 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     enabled: isPro,
                     onTap: isPro
-                        ? () => _pickInterval(context, ref, breaks.intervalMinutes)
+                        ? () => _pickInterval(
+                            context,
+                            ref,
+                            breaks.intervalMinutes,
+                          )
                         : null,
                   ),
                 ],
@@ -238,7 +247,9 @@ class SettingsScreen extends ConsumerWidget {
           _UsageCard(label: loc?.translate('settings_usage') ?? 'Your week'),
 
           const SizedBox(height: 16),
-          _SectionLabel(loc?.translate('settings_backup') ?? 'Back up settings'),
+          _SectionLabel(
+            loc?.translate('settings_backup') ?? 'Back up settings',
+          ),
           Card(
             margin: EdgeInsets.zero,
             child: Column(
@@ -251,11 +262,13 @@ class SettingsScreen extends ConsumerWidget {
                   subtitle: Text(
                     isPro
                         ? loc?.translate('settings_backup_desc') ??
-                            'Save your presets and filter settings as a file.'
+                              'Save your presets and filter settings as a file.'
                         : loc?.translate('settings_ambient_locked') ??
-                            'Included with Pro.',
+                              'Included with Pro.',
                   ),
-                  trailing: isPro ? null : const Icon(Icons.lock_outline_rounded),
+                  trailing: isPro
+                      ? null
+                      : const Icon(Icons.lock_outline_rounded),
                   // Pro only, at the owner's call: a free backup is a free
                   // way to carry Pro-built settings across reinstalls. Locked
                   // rows open the paywall rather than doing nothing, so the
@@ -270,7 +283,9 @@ class SettingsScreen extends ConsumerWidget {
                   title: Text(
                     loc?.translate('settings_restore') ?? 'Restore from a file',
                   ),
-                  trailing: isPro ? null : const Icon(Icons.lock_outline_rounded),
+                  trailing: isPro
+                      ? null
+                      : const Icon(Icons.lock_outline_rounded),
                   onTap: isPro
                       ? () => _import(context, ref)
                       : () => _open(context, const PaywallScreen()),
@@ -292,6 +307,17 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => _open(context, const AboutScreen()),
                 ),
                 const Divider(height: 1, indent: 56),
+                if (AdConsent.privacyOptionsRequired) ...[
+                  ListTile(
+                    leading: const Icon(Icons.privacy_tip_outlined),
+                    title: Text(
+                      loc?.translate('about_privacy_title') ?? 'Privacy',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: AdConsent.showPrivacyOptions,
+                  ),
+                  const Divider(height: 1, indent: 56),
+                ],
                 ListTile(
                   leading: const Icon(Icons.star_outline_rounded),
                   title: Text(loc?.translate('app_rate') ?? 'Rate the app'),
@@ -304,8 +330,7 @@ class SettingsScreen extends ConsumerWidget {
                   title: Text(loc?.translate('app_share') ?? 'Share'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => AppLinks.share(
-                    loc?.translate('app_share_text') ??
-                        'DoctorFilter — a blue light filter that shows you the real numbers.',
+                    loc?.translate('app_share_text') ?? 'DoctorFilter — a blue light filter that shows you the real numbers.',
                   ),
                 ),
               ],
@@ -369,7 +394,8 @@ class SettingsScreen extends ConsumerWidget {
       context,
       ok
           ? loc?.translate('backup_exported') ?? 'Backup created.'
-          : loc?.translate('backup_failed') ?? 'The backup could not be created.',
+          : loc?.translate('backup_failed') ??
+                'The backup could not be created.',
     );
   }
 
@@ -387,10 +413,11 @@ class SettingsScreen extends ConsumerWidget {
     final json = file.bytes != null
         ? String.fromCharCodes(file.bytes!)
         : file.path != null
-            ? await File(file.path!).readAsString()
-            : null;
+        ? await File(file.path!).readAsString()
+        : null;
 
-    final ok = json != null &&
+    final ok =
+        json != null &&
         await SettingsBackup.import(
           json: json,
           preferences: ref.read(preferencesDataSourceProvider),
@@ -407,7 +434,7 @@ class SettingsScreen extends ConsumerWidget {
       ok
           ? loc?.translate('backup_imported') ?? 'Settings restored.'
           : loc?.translate('backup_import_failed') ??
-              'That file could not be read.',
+                'That file could not be read.',
     );
   }
 
@@ -475,8 +502,9 @@ class _UsageCard extends ConsumerWidget {
                 Text(
                   loc?.translate('settings_usage_desc') ??
                       'Filtered screen time this week. Kept on this device.',
-                  style: context.texts.bodySmall
-                      ?.copyWith(color: context.colours.onSurfaceVariant),
+                  style: context.texts.bodySmall?.copyWith(
+                    color: context.colours.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -561,8 +589,9 @@ class _DayBar extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             _weekdayInitial(context, weekday),
-            style: context.texts.labelSmall
-                ?.copyWith(color: context.colours.onSurfaceVariant),
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colours.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -704,8 +733,9 @@ class _BatteryCardState extends ConsumerState<_BatteryCard>
   }
 
   Future<void> _check() async {
-    final optimised =
-        await ref.read(platformChannelDataSourceProvider).isBatteryOptimised();
+    final optimised = await ref
+        .read(platformChannelDataSourceProvider)
+        .isBatteryOptimised();
     if (mounted && optimised != _optimised) {
       setState(() => _optimised = optimised);
     }
@@ -721,8 +751,10 @@ class _BatteryCardState extends ConsumerState<_BatteryCard>
       child: Card(
         margin: EdgeInsets.zero,
         child: ListTile(
-          leading: Icon(Icons.battery_alert_rounded,
-              color: context.colours.primary),
+          leading: Icon(
+            Icons.battery_alert_rounded,
+            color: context.colours.primary,
+          ),
           title: Text(
             loc?.translate('permission_battery_title') ??
                 'Keep the filter running',
