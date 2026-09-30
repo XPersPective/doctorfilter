@@ -24,7 +24,7 @@ AdPolicy kuralları geçerli; tüm reklam yüklemeleri onay + SDK başlatma sonr
 
 ### Platformlar
 
-Android tam ve mağazada. iOS = sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Control. Windows = katman pencere overlay + MSIX + Store satın alma. Linux/macOS overlaysız çalışır (vaat edilmez).
+Android tam ve mağazada. iOS = sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Control. Windows = katman pencere overlay + MSIX + Store satın alma. Linux/macOS derlemeleri şimdilik kapsam dışı (sahip kararı 2026-09-30); iskeletler repoda kalır.
 
 ### Marka
 
