@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:ui' show Locale;
+import 'dart:ui' show Locale, PlatformDispatcher;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
@@ -45,7 +45,7 @@ Future<void> _pushCatalog(
 }) async {
   // Loaded here rather than taken from a BuildContext: this runs outside the
   // widget tree, and AppLocalizations only needs a locale to do its job.
-  final translations = AppLocalizations(locale ?? const Locale('en'));
+  final translations = AppLocalizations(locale ?? _deviceLocale());
   await translations.load();
 
   final entries = <Map<String, Object>>[];
@@ -71,6 +71,17 @@ Future<void> _pushCatalog(
           nativeLabels((key) => translations.translate(key).replaceAll('%', '%%')),
         ),
       );
+}
+
+/// The device language when the user has not picked one, as the app itself uses.
+///
+/// Without this the native surfaces stayed English for everyone following their
+/// phone's language — which is the default.
+Locale _deviceLocale() {
+  final code = PlatformDispatcher.instance.locale.languageCode;
+  final supported =
+      AppLocalizations.supportedLanguages.any((lang) => lang.code == code);
+  return Locale(supported ? code : 'en');
 }
 
 /// The notification, tile and widget text, keyed by Android resource name.
