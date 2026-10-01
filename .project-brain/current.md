@@ -39,7 +39,7 @@ Bellekte tek kaynak + debounce'lu tam yazma; native tarafta alarm/servis için k
 **Sources:**
 - `android/app/src/main/kotlin/com/crazypenguin/doctorfilter/**` (`kt/`)
 
-OverlayService (FGS specialUse; tüm başlatmalar `OverlayService.start` korumalı yoldan), RemoteViews bildirim kokpiti (`FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml`, düz `View` yok), Hızlı Ayarlar kutucuğu (`FilterTileService.kt:requestRefresh`), widget, kısayollar, zamanlayıcı/boot (`ScheduleReceiver.kt`, geçiş tavanı 180 dk), mola hatırlatıcı, uygulama istisnaları (pencere alfası değil görünüm rengi alfası), ortam ışığı. Uygulama açılışta durumu servisten alır (`filter_provider.dart:_init`, olay aboneliğinden SONRA `isFilterRunning`). Overlay izni alınırsa servis kendini durdurur (`watchOverlayPermission`). Native metinler Dart'ın gönderdiği çevirilerden (`PresetCatalog.kt:text` ← `notification_sync_provider.dart:nativeLabels`). Release çökmesi R8/WorkManager Room keep kuralıyla giderildi (`android/app/proguard-rules.pro`).
+OverlayService (FGS specialUse; tüm başlatmalar `OverlayService.start` korumalı yoldan), RemoteViews bildirim kokpiti (`FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml`, düz `View` yok), Hızlı Ayarlar kutucuğu (`FilterTileService.kt:requestRefresh`), widget, kısayollar, zamanlayıcı/boot (`ScheduleReceiver.kt`, geçiş tavanı 180 dk), mola hatırlatıcı, uygulama istisnaları (pencere alfası değil görünüm rengi alfası), ortam ışığı. Uygulama açılışta durumu servisten alır (`filter_provider.dart:_init`, olay aboneliğinden SONRA `isFilterRunning`). Overlay izni alınırsa servis kendini durdurur (`watchOverlayPermission`). Zamanlayıcı yalnızca `SCHEDULE_EXACT_ALARM` kullanır (`USE_EXACT_ALARM` Play politikası gereği kaldırıldı); izin yoksa esnek alarma düşer ve zamanlayıcı ekranı izin kartı gösterir (`scheduler_screen.dart`). Native metinler Dart'ın gönderdiği çevirilerden (`PresetCatalog.kt:text` ← `notification_sync_provider.dart:nativeLabels`). Release çökmesi R8/WorkManager Room keep kuralıyla giderildi (`android/app/proguard-rules.pro`).
 
 ### Reklam ve gelir
 
@@ -51,7 +51,7 @@ OverlayService (FGS specialUse; tüm başlatmalar `OverlayService.start` korumal
 - `lib/presentation/providers/pro_provider.dart`
 - `lib/data/repositories/store_purchase_repository.dart`, `microsoft_store_purchase_repository.dart`
 
-AdPolicy saf kurallar (grace 3 gün + 5 oturum, oturumda 1 tam ekran, app-open 4 saat arayla, ödüllü geçiş 7. günden itibaren günde 2). Tetik `lib/main.dart:_initialiseAds`; UMP onayı `lib/presentation/ads/ad_consent.dart` (AB'de gerekirse Ayarlar > Hakkında altında "Privacy" girişi `AdConsent.showPrivacyOptions`; debug'da `--dart-define=UMP_DEBUG_EEA=true` AB simülasyonu). Release gerçek reklam birimleri `D:\AppPublishingpps\doctorfilter\dart-defines.env` → `fastlane build_release` (test birimi reddedilir). AdMob ayrı Google hesabında; GDPR mesajı yayında (2026-09-30 emülatörde form/ret/kabul/yeniden açma doğrulandı). üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`. Emülatörde app-open, banner, ödüllü → Pro doğrulandı. AdMob uygulama kimliği build zamanında `android/key.properties` (`admobAppId`) manifest placeholder'ından gelir; dosya yoksa Google test kimliği (`android/app/build.gradle.kts:manifestPlaceholders`). Pro: Play/App Store (`in_app_purchase`) + Microsoft Store (C++/WinRT, `windows/runner/store_purchases.cpp`). Play'in eski `doctorfilterpro` ürünü `ProProduct.allIds` ile geri yüklemede tanınır; gerçek mağaza hesabıyla test PB-001'de. Ayar yedeği dışa/içe aktarma Pro'ya kilitli (`settings_screen.dart`); pil optimizasyonu kartı aynı ekranda.
+AdPolicy saf kurallar (grace 3 gün + 5 oturum, oturumda 1 tam ekran, app-open 4 saat arayla, ödüllü geçiş 7. günden itibaren günde 2). Tetik `lib/main.dart:_initialiseAds`; UMP onayı `lib/presentation/ads/ad_consent.dart` (AB'de gerekirse Ayarlar > Hakkında altında "Privacy" girişi `AdConsent.showPrivacyOptions`; debug'da `--dart-define=UMP_DEBUG_EEA=true` AB simülasyonu). Release gerçek reklam birimleri `D:\AppPublishingpps\doctorfilter\dart-defines.env` → `fastlane build_release` (test birimi reddedilir). AdMob ayrı Google hesabında; GDPR mesajı yayında (2026-09-30 emülatörde form/ret/kabul/yeniden açma doğrulandı). üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`. Emülatörde app-open, banner, ödüllü → Pro doğrulandı. AdMob uygulama kimliği build zamanında `android/key.properties` (`admobAppId`) manifest placeholder'ından gelir; dosya yoksa Google test kimliği (`android/app/build.gradle.kts:manifestPlaceholders`). Pro: Play/App Store (`in_app_purchase`) + Microsoft Store (C++/WinRT, `windows/runner/store_purchases.cpp`). Play'in eski `doctorfilterpro` ürünü `ProProduct.allIds` ile geri yüklemede tanınır. `doctorfilter_pro_lifetime` Play'de ACTIVE (99,99 TRY / 3,49 USD / 3,39 EUR); 2026-10-01 lisans testçisiyle emülatörde gerçek Play test satın alımı + açılışta sessiz geri yükleme (`pro_provider.dart:_restoreQuietly`) doğrulandı. Ayar yedeği dışa/içe aktarma Pro'ya kilitli (`settings_screen.dart`); pil optimizasyonu kartı aynı ekranda.
 
 ### Marka
 
@@ -71,7 +71,7 @@ Tek işaret üreticisi `generate_icons.py` → Android uyarlanabilir ikon + spla
 - `assets/Localizations/**` (71 dil)
 - `lib/core/localization/app_localizations.dart`
 
-RTL'de Kelvin/değer dizgisi `ltrIsolate` (U+2066/U+2069); saat biçimi locale'den.
+RTL'de Kelvin/değer dizgisi `ltrIsolate` (U+2066/U+2069); saat biçimi locale'den. Eğitim sekmesi `nav_education` = "Learn", başlık "Light and your screen"; en sıcak bant etiketi `band_sleep_friendly` = "Very warm" (ADR-001: ima yoluyla sağlık iddiası yok).
 
 ### Diğer platformlar
 
@@ -91,7 +91,7 @@ iOS: sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Co
 **Sources:**
 - `Gemfile`, `fastlane/Appfile`, `fastlane/Fastfile`
 
-Lanes: `build_release`, `deploy_internal`, `deploy_production`, `push_metadata` (Play Console). İç test lane'i AAB'yi yükler; üretim lane'i doğrulanmış 2000 kodlu iç test sürümünü taşırken TR/EN metadata ve görselleri yükler. Servis hesabı anahtarı repoda değil; yalnızca yerel yol referansı. Yayın girdileri `D:\AppPublishing\apps\doctorfilter\stores\google-play\metadata` altında.
+Lanes: `build_release` (gerçek AdMob birimleri için `dart-defines.env` zorunlu, test birimi reddedilir), `deploy_internal`, `deploy_production` (sürüm kodu `pubspec.yaml`'dan), `push_metadata`. Mağaza metadata'sı 73 dil; ekran görüntüsü üreticisi `tool/store/compose_screenshots.py`. Gizlilik politikası `PRIVACY.md` (Play URL'si bu dosya). Servis hesabı anahtarı repoda değil; yalnızca yerel yol referansı. Yayın girdileri `D:\AppPublishing\apps\doctorfilter\stores\google-play\metadata` altında.
 
 ## External Dependencies
 
@@ -99,8 +99,8 @@ AdMob SDK (Google), `in_app_purchase`, WorkManager (reklam SDK'sı üzerinden, R
 
 ## Known Unknowns
 
-- Play API'de etkin eski tek seferlik Pro ürünü `doctorfilterpro`; kod ve birim testi bu kimliği içeriyor. Gerçek eski alıcı hesabıyla geri yükleme henüz doğrulanmadı → PB-001.
-- 2.0'ın `doctorfilter_pro_lifetime` ürünü Play API listesinde yok; gerçek satın alma ve internal yükleme doğrulanmadı → PB-001.
+- Eski `doctorfilterpro` alıcısının 2.0'da geri yüklemesi gerçek eski alıcı hesabıyla test edilemedi (yalnızca birim testi).
+- Play yönetilen yayınlama KAPALI: API commit'leri bekleyen Console değişikliklerini de gönderir.
 - Eski AdMob kimliği git geçmişinde duruyor; temizlik kararı sahibin → PB-007.
-- Play/App/Microsoft mağaza incelemesi ve Play beyanlarının durumu bilinmiyor → PB-009, PB-003, PB-004.
-- Play mağaza ayarı 2026-09-30: kategori Araçlar, etiketler Araçlar + Kişiselleştirme (kaydedildi, incelemeye gönderilmedi).
+- Play 2.0 üretim incelemesinin sonucu bilinmiyor (yayın sahip onayı bekliyor) → PB-009; App/Microsoft mağazaları → PB-004, PB-003.
+- Play mağaza ayarı yayında (2026-10-01): kategori Araçlar, etiketler Araçlar + Kişiselleştirme.

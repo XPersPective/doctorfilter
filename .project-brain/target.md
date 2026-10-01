@@ -43,7 +43,7 @@ Tek işaret üreticisi `tool/brand/generate_icons.py`; ana ekranda `BrandLockup`
 
 **Status:** RESOLVED
 
-Eski 1.x kullanıcılarının Pro geri yüklemesi: Play Developer API'de etkin, eski Billing akışıyla uyumlu tek seferlik ürün `doctorfilterpro` olarak doğrulandı (2026-09-27). Kod ve birim testi PB-002 checkpoint'inde tamamlandı; gerçek hesapla geri yükleme PB-001'de.
+Eski 1.x kullanıcılarının Pro geri yüklemesi: Play Developer API'de etkin, eski Billing akışıyla uyumlu tek seferlik ürün `doctorfilterpro` olarak doğrulandı (2026-09-27). Kod ve birim testi PB-002 checkpoint'inde tamamlandı; yeni ürünle gerçek satın alma + geri yükleme 2026-10-01'de doğrulandı, eski alıcı hesabıyla test edilemedi.
 
 ### TD-002
 
@@ -62,7 +62,7 @@ Eski AdMob uygulama kimliği git geçmişinde (`408dc4c` öncesi `AndroidManifes
 - [x] AC7 Zamanlayıcı cihaz yeniden başlasa bile çalışır.
 - [x] AC8 Çökme yok; izin reddi, servis ve mağaza hataları anlaşılır mesajla.
 - [x] AC9 Erişilebilir: ekran okuyucu etiketleri, 48dp dokunma alanı, büyük yazıda taşma yok.
-- [ ] AC10 Play, App Store ve Microsoft Store politikalarına uygun; yasak sağlık iddiası yok — mağaza incelemesi olmadan kanıtlanamaz (PB-001, PB-005, PB-009, PB-003, PB-004).
+- [ ] AC10 Play, App Store ve Microsoft Store politikalarına uygun; yasak sağlık iddiası yok — mağaza incelemesi olmadan kanıtlanamaz (Play: PB-009 sahip onayı bekliyor; App Store PB-004, Microsoft PB-003).
 - [x] AC11 Ana ekranda marka logosu (ikon + iki renkli "doctorFilter" + PRO üst simgesi + slogan); splash'ta ikon.
 
 Kanıt kaydı ve tarihçe: `git log` (eski brain'in 2026-09-16 A4 ve 2026-09-21 A1 denetim satırları commit `c54e0a4` öncesindeki `PROJECT_BRAIN.md` içinde).
