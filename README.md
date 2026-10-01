@@ -43,7 +43,7 @@ inventing a number.
   <img src="docs/screenshots/notification.png" width="180" alt="Notification cockpit">
   <img src="docs/screenshots/presets.png" width="180" alt="Presets">
   <img src="docs/screenshots/schedule.png" width="180" alt="Schedule">
-  <img src="docs/screenshots/education.png" width="180" alt="Eye health, with sources">
+  <img src="docs/screenshots/education.png" width="180" alt="Learn: light and your screen, with sources">
 </p>
 
 The running app with the filter on, not renders — see

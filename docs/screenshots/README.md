@@ -20,7 +20,7 @@ Portrait, on a phone, with the filter **on** so the tint is visible in the shot:
 |---|---|---|
 | `home.png` | Home | The three axes and the melanopic ring — the app's argument in one image |
 | `notification.png` | Shade, expanded | The cockpit, which is the feature people stay for |
-| `education.png` | Eye health | Shows the sources, which is what separates this from the others |
+| `education.png` | Learn (Light and your screen) | Shows the sources, which is what separates this from the others |
 | `schedule.png` | Schedule | The bedtime assistant with a fade set |
 | `presets.png` | Presets | The grid, mid press-and-hold if you can catch it |
 
