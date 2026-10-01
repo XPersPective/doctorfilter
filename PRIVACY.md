@@ -1,6 +1,6 @@
 # Privacy policy
 
-**Last updated:** 15 September 2026
+**Last updated:** 1 October 2026
 **Applies to:** DoctorFilter (`com.crazypenguin.doctorfilter`)
 
 ## The short version
@@ -102,18 +102,28 @@ Open an issue at <https://github.com/XPersPective/doctorfilter/issues>.
 
 ---
 
+## Contact
+
+Questions about this policy: open an issue at
+<https://github.com/XPersPective/doctorfilter/issues>, or use the developer
+contact shown on the app's store page.
+
 ## Notes for the Play Data Safety and App Privacy forms
 
 *Not part of the policy — a record of what has been declared and why, so the
 answers stay consistent across releases.*
 
-- **Data collected:** none by the app itself.
-- **Data shared:** none by the app itself.
-- **Third-party SDK (free version only):** Google AdMob, which collects the
-  advertising ID and approximate location for advertising purposes. Declare
-  under "Device or other IDs" and "Location → Approximate location", purpose
-  "Advertising or marketing", shared: yes, optional: no (free tier), user can
-  request deletion: via device ad-ID controls.
+- **Data collected / shared by the app itself:** none.
+- **Third-party SDK (free version only):** Google Mobile Ads (AdMob). Declared,
+  following Google's AdMob data-disclosure guidance, as collected **and**
+  shared, not ephemeral, required (the free tier cannot turn ads off):
+  Location → Approximate location; App activity → App interactions;
+  App info and performance → Crash logs, Diagnostics, Other performance data;
+  Device or other IDs. Purposes for each: Advertising or marketing, Analytics,
+  Fraud prevention / security / compliance.
+- **Accounts:** the app has none ("does not allow users to create an account").
 - **Purchases:** handled by the store; no payment data reaches the app.
 - **Encryption in transit:** yes, by the SDKs used.
-- **Data deletion:** uninstalling removes everything local.
+- **Data deletion:** uninstalling removes everything local; the ad ID is reset
+  from the device's own ad settings.
+- Last declared in Play Console: 1 October 2026.
