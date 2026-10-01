@@ -51,7 +51,7 @@ OverlayService (FGS specialUse; tüm başlatmalar `OverlayService.start` korumal
 - `lib/presentation/providers/pro_provider.dart`
 - `lib/data/repositories/store_purchase_repository.dart`, `microsoft_store_purchase_repository.dart`
 
-AdPolicy saf kurallar (grace 3 gün + 5 oturum, oturumda 1 tam ekran, app-open 4 saat arayla, ödüllü geçiş 7. günden itibaren günde 2). Tetik `lib/main.dart:_initialiseAds`; UMP onayı `lib/presentation/ads/ad_consent.dart` (AB'de gerekirse Ayarlar > Hakkında altında "Privacy" girişi `AdConsent.showPrivacyOptions`; debug'da `--dart-define=UMP_DEBUG_EEA=true` AB simülasyonu). Release gerçek reklam birimleri `D:\AppPublishingpps\doctorfilter\dart-defines.env` → `fastlane build_release` (test birimi reddedilir). AdMob ayrı Google hesabında; GDPR mesajı yayında (2026-09-30 emülatörde form/ret/kabul/yeniden açma doğrulandı). üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`. Emülatörde app-open, banner, ödüllü → Pro doğrulandı. AdMob uygulama kimliği build zamanında `android/key.properties` (`admobAppId`) manifest placeholder'ından gelir; dosya yoksa Google test kimliği (`android/app/build.gradle.kts:manifestPlaceholders`). Pro: Play/App Store (`in_app_purchase`) + Microsoft Store (C++/WinRT, `windows/runner/store_purchases.cpp`). Play'in eski `doctorfilterpro` ürünü `ProProduct.allIds` ile geri yüklemede tanınır. `doctorfilter_pro_lifetime` Play'de ACTIVE (99,99 TRY / 3,49 USD / 3,39 EUR); 2026-10-01 lisans testçisiyle emülatörde gerçek Play test satın alımı + açılışta sessiz geri yükleme (`pro_provider.dart:_restoreQuietly`) doğrulandı. Ayar yedeği dışa/içe aktarma Pro'ya kilitli (`settings_screen.dart`); pil optimizasyonu kartı aynı ekranda.
+AdPolicy saf kurallar (grace 3 gün + 5 oturum, oturumda 1 tam ekran, app-open 4 saat arayla, ödüllü geçiş 7. günden itibaren günde 2). Tetik `lib/main.dart:_initialiseAds`; UMP onayı `lib/presentation/ads/ad_consent.dart` (AB'de gerekirse Ayarlar > Hakkında altında "Privacy" girişi `AdConsent.showPrivacyOptions`; debug'da `--dart-define=UMP_DEBUG_EEA=true` AB simülasyonu). Release gerçek reklam birimleri `D:\AppPublishingpps\doctorfilter\dart-defines.env` → `fastlane build_release` (test birimi reddedilir). AdMob ayrı Google hesabında; GDPR mesajı yayında (2026-09-30 emülatörde form/ret/kabul/yeniden açma doğrulandı). üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`. Emülatörde app-open, banner, ödüllü → Pro doğrulandı. AdMob uygulama kimliği build zamanında `android/key.properties` (`admobAppId`) manifest placeholder'ından gelir; dosya yoksa Google test kimliği (`android/app/build.gradle.kts:manifestPlaceholders`). Pro: Play/App Store (`in_app_purchase`) + Microsoft Store (C++/WinRT, `windows/runner/store_purchases.cpp`). Play'in eski `doctorfilterpro` ürünü `ProProduct.allIds` ile geri yüklemede tanınır. `doctorfilter_pro_lifetime` ("DoctorFilter Pro – Lifetime") Play'de ACTIVE, 0,99 USD tabanlı Play dönüşümü (TR 57,99 TRY, DE 0,99 EUR; 2026-10-01 sahip kararı); 2026-10-01 lisans testçisiyle emülatörde gerçek Play test satın alımı + açılışta sessiz geri yükleme (`pro_provider.dart:_restoreQuietly`) doğrulandı. Ayar yedeği dışa/içe aktarma Pro'ya kilitli (`settings_screen.dart`); pil optimizasyonu kartı aynı ekranda.
 
 ### Marka
 
@@ -93,6 +93,14 @@ iOS: sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Co
 
 Lanes: `build_release` (gerçek AdMob birimleri için `dart-defines.env` zorunlu, test birimi reddedilir), `deploy_internal`, `deploy_production` (sürüm kodu `pubspec.yaml`'dan), `push_metadata`. Mağaza metadata'sı 73 dil; ekran görüntüsü üreticisi `tool/store/compose_screenshots.py`. Gizlilik politikası `PRIVACY.md` (Play URL'si bu dosya). Servis hesabı anahtarı repoda değil; yalnızca yerel yol referansı. Yayın girdileri `D:\AppPublishing\apps\doctorfilter\stores\google-play\metadata` altında.
 
+## Platform kapsamı
+
+minSdk 24 (Flutter alt sınırı; Android 6 cihazlar 1.5'te kalır), target/compileSdk 36. Yerel kitaplıklar 16 KB hizalı (zipalign -P 16 doğrulandı); arm64/armv7/x86_64; tüm ekran boyutları, yön kilidi yok. Play kataloğu 21.901 desteklenen model (1.5 baz).
+
+## Güvenlik (2026-10-01 tarama)
+
+Geçmiş + ağaçta gerçek sır yok (yalnızca *.example sahte değerler); `.env`, `key.properties`, `*.jks`, servis hesabı yok sayılıyor. Dışa açık bileşenler: MainActivity, ShortcutActivity (başka uygulama filtreyi aç/kapa yapabilir — düşük etki, launcher kısayolları için gerekli), FilterTileService (BIND_QUICK_SETTINGS_TILE korumalı).
+
 ## External Dependencies
 
 AdMob SDK (Google), `in_app_purchase`, WorkManager (reklam SDK'sı üzerinden, Room), flutter_riverpod. Kendi sunucusu yok.
@@ -101,6 +109,6 @@ AdMob SDK (Google), `in_app_purchase`, WorkManager (reklam SDK'sı üzerinden, R
 
 - Eski `doctorfilterpro` alıcısının 2.0'da geri yüklemesi gerçek eski alıcı hesabıyla test edilemedi (yalnızca birim testi).
 - Play yönetilen yayınlama KAPALI: API commit'leri bekleyen Console değişikliklerini de gönderir.
-- Eski AdMob kimliği git geçmişinde duruyor; temizlik kararı sahibin → PB-007.
+- Git geçmişi temizlendi (AdMob kimliği, kişisel e-posta); GitHub önbelleği silinmesi sahip talebi bekliyor → PB-007.
 - Play 2.0 üretim incelemesinin sonucu bilinmiyor (yayın sahip onayı bekliyor) → PB-009; App/Microsoft mağazaları → PB-004, PB-003.
 - Play mağaza ayarı yayında (2026-10-01): kategori Araçlar, etiketler Araçlar + Kişiselleştirme.

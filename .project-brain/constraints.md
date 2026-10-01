@@ -32,7 +32,7 @@ Yasak: mavi ışık retinaya zarar/AMD, göz yorgunluğu/kuruluğu tedavisi, kil
 
 ### C-022: Kişisel veri ve arşiv
 
-Proje sahibinin kişisel bilgisi hiçbir dosyaya yazılmaz. `migrate_working_dir/local_archive` (eski 1.x arşivi, gitignored) taranmaz; yalnızca adı bilinen logo/font dosyaları kopyalanabilir.
+Proje sahibinin kişisel bilgisi hiçbir dosyaya ve commit metadata'sına yazılmaz (commit e-postası GitHub noreply). `migrate_working_dir/local_archive` (eski 1.x arşivi, gitignored) taranmaz; yalnızca adı bilinen logo/font dosyaları kopyalanabilir.
 
 ## Operations
 
