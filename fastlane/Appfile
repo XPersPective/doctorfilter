@@ -2,5 +2,5 @@
 # Servis hesabı anahtarı repoda DEĞİL; yayın çalışma alanının sabit yolunda
 # (D:\AppPublishing\publisher\crazypenguin\credentials\google-play).
 
-json_key_file("D:/AppPublishing/publisher/crazypenguin/credentials/google-play/service-account.json")
+json_key_file(File.join(ENV.fetch("APP_PUBLISHING_ROOT", "D:/AppPublishing"), "publisher/crazypenguin/credentials/google-play/service-account.json"))
 package_name("com.crazypenguin.doctorfilter")

@@ -7,9 +7,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Release signing lives outside the repository, in the publishing folder
+// (D:\AppPublishingpps\doctorfilter\credentialsndroid). fastlane points
+// DOCTORFILTER_SIGNING at that key.properties; its storeFile is relative to it.
+// Without it the release build falls back to debug signing.
 val keystoreProperties = Properties()
-val keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
+val keystorePropertiesFile = System.getenv("DOCTORFILTER_SIGNING")?.let { file(it) }
+if (keystorePropertiesFile?.exists() == true) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
@@ -30,10 +34,10 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        // The real AdMob app ID stays out of the repository (key.properties is
-        // gitignored). Google's sample app ID keeps a fresh clone buildable.
+        // The real AdMob app ID comes from the publishing folder's app-ids.env
+        // (fastlane exports it). Google's sample app ID keeps a clone buildable.
         manifestPlaceholders["admobAppId"] =
-            keystoreProperties.getProperty("admobAppId")
+            System.getenv("ADMOB_APP_ID_ANDROID")
                 ?: "ca-app-pub-3940256099942544~3347511713"
     }
 
@@ -43,7 +47,7 @@ android {
             keyPassword = keystoreProperties.getProperty("keyPassword")
             val storeFilePath = keystoreProperties.getProperty("storeFile")
             if (storeFilePath != null) {
-                storeFile = file(storeFilePath)
+                storeFile = keystorePropertiesFile!!.parentFile.resolve(storeFilePath)
             }
             storePassword = keystoreProperties.getProperty("storePassword")
         }
@@ -57,7 +61,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = if (keystorePropertiesFile.exists()) {
+            signingConfig = if (keystorePropertiesFile?.exists() == true) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")

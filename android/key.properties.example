@@ -1,9 +1,15 @@
-# Example keystore configuration for release builds
-# Copy this file to key.properties and fill with real credentials
+# Example release-signing file. Do NOT put it in this repository.
+#
+# Keep it next to your keystore, outside Git — for the maintainer that is
+# <publishing root>/apps/doctorfilter/credentials/android/key.properties —
+# and point the build at it:
+#   DOCTORFILTER_SIGNING=/path/to/key.properties   (fastlane build_release sets this)
+# storeFile is resolved relative to this file's folder.
+# Without DOCTORFILTER_SIGNING the release build is signed with the debug key.
+#
+# The real AdMob IDs come from the publishing folder's app-ids.env
+# (ADMOB_APP_ID_ANDROID and the ad units); without them Google's test IDs are used.
 storePassword=your_keystore_password
 keyPassword=your_key_password
 keyAlias=your_key_alias
-storeFile=key.jks
-# Real AdMob application ID (AdMob > App settings). Optional: without it the
-# build uses Google's test ID.
-admobAppId=ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX
+storeFile=upload.jks

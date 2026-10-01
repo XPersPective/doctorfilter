@@ -24,7 +24,7 @@ Flutter 3.47 / Dart 3.13, flutter_riverpod StateNotifier, clean architecture (co
 
 ### C-020: Sır asla repoya girmez
 
-`.env`, `.env.local`, `android/key.properties`, `*.jks`, `*.keystore`, `*.p12`, `google-services.json`, `GoogleService-Info.plist`, fastlane servis hesabı JSON'u. `.gitignore` zayıflatılmaz. Gerçek AdMob/ürün kimlikleri koda yazılmaz: `lib/core/config/env_config.dart` (dart-define + Google test fallback) ve `android/app/build.gradle.kts` manifest placeholder (`key.properties:admobAppId`).
+Kaynak projede imza anahtarı, şifre veya gerçek kimlik dosyası TUTULMAZ (2026-10-01 sahip kararı): hepsi `D:\AppPublishing\apps\doctorfilter` altında (`credentials/android/`, `app-ids.env`), protokol `D:\AppPublishing\README.md`. Gradle imzayı `DOCTORFILTER_SIGNING`, AdMob uygulama kimliğini `ADMOB_APP_ID_ANDROID` ortam değişkeninden okur; ikisini `fastlane build_release` ayarlar. `.env`, `.env.local`, `android/key.properties`, `*.jks`, `*.keystore`, `*.p12`, `google-services.json`, `GoogleService-Info.plist`, fastlane servis hesabı JSON'u. `.gitignore` zayıflatılmaz. Gerçek AdMob/ürün kimlikleri koda yazılmaz: `lib/core/config/env_config.dart` (dart-define + Google test fallback) ve `android/app/build.gradle.kts` manifest placeholder (`ADMOB_APP_ID_ANDROID`).
 
 ### C-021: Sağlık iddiası yasağı
 

@@ -4,7 +4,7 @@
 #   fastlane build_release      → AAB üretir (imzalı sürüm)
 #   fastlane deploy_internal    → AAB'yi İç test (internal) kanalına yükler
 #   fastlane deploy_production  → İç testteki pubspec sürümünü Üretime taşır + mağaza içeriğini günceller
-#   fastlane push_metadata      → yalnızca mağaza metinlerini (TR+EN) günceller
+#   fastlane push_metadata      → yalnızca mağaza metinlerini günceller
 #
 # Sürüm numarası pubspec.yaml'dan gelir (version: 2.0.0+5000; 1.x split APKs used 1002/2002/4002, so codes must stay above 4002); her yüklemede
 # versionCode artırılmalı (ORTAK_UYGULAMA_STANDARDI.md 7).
@@ -12,21 +12,46 @@
 default_platform(:android)
 
 AAB_PATH = File.expand_path("../build/app/outputs/bundle/release/app-release.aab", __dir__)
-METADATA_PATH = "D:/AppPublishing/apps/doctorfilter/stores/google-play/metadata"
-# Gerçek AdMob birimleri (Git dışında); yoksa derleme Google test birimlerine düşer.
 VERSION_CODE = File.read(File.expand_path("../pubspec.yaml", __dir__))[/^version: .*\+(\d+)/, 1].to_i
-DART_DEFINES = "D:/AppPublishing/apps/doctorfilter/dart-defines.env"
+
+# Yayın kökü (Git dışında): D:\AppPublishing — protokol: D:\AppPublishing\README.md.
+# Başka makinede APP_PUBLISHING_ROOT ile değiştirilir. İmza, kimlikler ve mağaza
+# içeriği yalnızca orada durur; kaynak projede anahtar tutulmaz.
+PUBLISHING_ROOT = ENV.fetch("APP_PUBLISHING_ROOT", "D:/AppPublishing")
+APP_DIR = File.join(PUBLISHING_ROOT, "apps/doctorfilter")
+METADATA_PATH = File.join(APP_DIR, "stores/google-play/metadata")
+APP_IDS = File.join(APP_DIR, "app-ids.env")
+SIGNING = File.join(APP_DIR, "credentials/android/key.properties")
+
+# app-ids.env anahtarı → Dart --dart-define adı (lib/core/config/env_config.dart)
+AD_UNITS = {
+  "ADMOB_BANNER_ANDROID" => "ADMOB_ANDROID_BANNER_UNIT_ID",
+  "ADMOB_INTERSTITIAL_ANDROID" => "ADMOB_ANDROID_INTERSTITIAL_UNIT_ID",
+  "ADMOB_REWARDED_ANDROID" => "ADMOB_ANDROID_REWARDED_UNIT_ID",
+  "ADMOB_APP_OPEN_ANDROID" => "ADMOB_ANDROID_APP_OPEN_UNIT_ID",
+}
+
+def app_ids
+  UI.user_error!("Yayın kimlikleri yok: #{APP_IDS}") unless File.exist?(APP_IDS)
+  File.readlines(APP_IDS, chomp: true).grep(/^[A-Z_]+=/).to_h { |l| l.split("=", 2) }
+end
 
 platform :android do
-  desc "İmzalı sürüm AAB'sini üretir (flutter build appbundle --release)"
+  desc "İmzalı sürüm AAB'sini üretir (yayın klasöründeki imza ve gerçek AdMob kimlikleriyle)"
   lane :build_release do
-    defines = File.exist?(DART_DEFINES) ? File.read(DART_DEFINES) : ""
-    %w[BANNER INTERSTITIAL REWARDED APP_OPEN].each do |unit|
-      value = defines[/^ADMOB_ANDROID_#{unit}_UNIT_ID=(\S+)/, 1]
-      UI.user_error!("#{DART_DEFINES}: ADMOB_ANDROID_#{unit}_UNIT_ID eksik") if value.nil?
-      UI.user_error!("ADMOB_ANDROID_#{unit}_UNIT_ID Google test birimi") if value.include?("3940256099942544")
+    ids = app_ids
+    UI.user_error!("İmza dosyası yok: #{SIGNING}") unless File.exist?(SIGNING)
+    defines = AD_UNITS.map do |key, define|
+      value = ids[key].to_s
+      UI.user_error!("#{APP_IDS}: #{key} eksik") unless value.start_with?("ca-app-pub-")
+      UI.user_error!("#{key} Google test birimi") if value.include?("3940256099942544")
+      "--dart-define=#{define}=#{value}"
     end
-    sh("flutter", "build", "appbundle", "--release", "--dart-define-from-file=#{DART_DEFINES}")
+    app_id = ids["ADMOB_APP_ID_ANDROID"].to_s
+    UI.user_error!("#{APP_IDS}: ADMOB_APP_ID_ANDROID eksik") unless app_id.include?("~")
+    ENV["DOCTORFILTER_SIGNING"] = SIGNING
+    ENV["ADMOB_APP_ID_ANDROID"] = app_id
+    sh("flutter", "build", "appbundle", "--release", *defines, log: false)
     UI.success("AAB hazır: #{AAB_PATH}")
   end
 
