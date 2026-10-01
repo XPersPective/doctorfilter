@@ -110,5 +110,5 @@ AdMob SDK (Google), `in_app_purchase`, WorkManager (reklam SDK'sı üzerinden, R
 - Eski `doctorfilterpro` alıcısının 2.0'da geri yüklemesi gerçek eski alıcı hesabıyla test edilemedi (yalnızca birim testi).
 - Play yönetilen yayınlama KAPALI: API commit'leri bekleyen Console değişikliklerini de gönderir.
 - Git geçmişi temizlendi (AdMob kimliği, kişisel e-posta); GitHub önbelleği silinmesi sahip talebi bekliyor → PB-007.
-- Play 2.0 üretim incelemesinin sonucu bilinmiyor (yayın sahip onayı bekliyor) → PB-009; App/Microsoft mağazaları → PB-004, PB-003.
+- Play 2.0 üretim incelemesi sürüyor (2026-10-01 gönderildi) → PB-009; App/Microsoft mağazaları → PB-004, PB-003.
 - Play mağaza ayarı yayında (2026-10-01): kategori Araçlar, etiketler Araçlar + Kişiselleştirme.
