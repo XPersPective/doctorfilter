@@ -80,4 +80,4 @@ Geçmiş ve ağaçta sır yok; commit e-postaları GitHub noreply. Dışa açık
 ## Known Unknowns
 
 - Eski `doctorfilterpro` alıcısının 2.0'da geri yüklemesi gerçek hesapla test edilemedi (birim testi var).
-- GitHub önbelleğinde temizlik öncesi commit'ler SHA ile erişilebilir → PB-007.
+- GitHub önbelleğinde temizlik öncesi commit'ler tam SHA ile erişilebilir; sahip kararıyla (2026-10-01) bırakıldı: AdMob uygulama kimliği APK'da zaten herkese açık, fork yok.
