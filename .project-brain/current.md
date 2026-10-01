@@ -2,113 +2,82 @@
 
 ## Scope
 
-Repository-wide current architecture. DoctorFilter (`com.crazypenguin.doctorfilter`), Flutter 2.0 mağaza sürümü.
+DoctorFilter (`com.crazypenguin.doctorfilter`) — Android'de yayında olan 2.0 sürümü. Açık kaynak (GPL-3.0), GitHub `XPersPective/doctorfilter`.
+
+## Durum özeti (2026-10-01)
+
+- Play üretimi: **2.0.0 / 5000** gönderildi, Google incelemesinde (→ PB-009). Önceki canlı sürüm 1.5 / 15.
+- Etiket `v2.0.0` = 5000 derlemesinin kaynağı.
+- iOS ve Microsoft Store: kod hazır, mağaza yok (→ PB-004, PB-003).
 
 ## Runtime
 
-Flutter 3.47 / Dart 3.13, flutter_riverpod (StateNotifier), clean architecture: `lib/core` (Kelvin motoru, tema, yerelleştirme, env) → `lib/domain` (saf entity/politika) → `lib/data` (prefs/SQLite/kanal + repository) → `lib/presentation` (provider, ekran, widget, reklam). Girdi noktası `lib/main.dart`.
+Flutter 3.47 / Dart 3.13, flutter_riverpod (StateNotifier), clean architecture: `lib/core` (Kelvin motoru, tema, yerelleştirme, env) → `lib/domain` (saf entity/politika) → `lib/data` (prefs/SQLite/kanal + repository) → `lib/presentation` (provider, ekran, widget, reklam). Girdi `lib/main.dart`. `flutter analyze` temiz, `flutter test` 205 test.
 
 ## Domains
 
-### Filtre çekirdeği
+### Filtre çekirdeği — VERIFIED
 
-**Status:** VERIFIED
+`lib/core/math/kelvin_engine.dart`, `lib/domain/entities/filter_config.dart`. Üç eksen kelvin (1700–6500 K) / density / extraDim; bileşik alfa tavanı 0.92 (native `MAX_ALPHA 235`). Dart renk+alfa hesaplar, platformlar yalnızca çizer.
 
-**Sources:**
-- `lib/core/math/kelvin_engine.dart`
-- `lib/domain/entities/filter_config.dart`
-- `test/core/math/**`, `test/domain/entities/**`
+### Kalıcılık ve zamanlayıcı — VERIFIED
 
-Üç eksen kelvin/density/extraDim; bileşik alfa tavanı 0.92 (native `MAX_ALPHA 235`). Dart bileşik renk+alfa hesaplar; platformlar yalnızca çizer. 2026-09-16/21 denetimleriyle doğrulandı.
+`preferences_datasource.dart`, `filter_provider.dart`, `schedule_provider.dart`. Bellekte tek kaynak + debounce'lu yazma; native kopya (Dart kazanır, açılışta yeniden gönderilir). Zamanlayıcı yalnızca `SCHEDULE_EXACT_ALARM` (USE_EXACT_ALARM Play politikası gereği yok); izin yoksa esnek alarm + zamanlayıcı ekranında izin kartı.
 
-### Kalıcılık ve zamanlayıcı
+### Android native — VERIFIED
 
-**Status:** VERIFIED
+`android/app/src/main/kotlin/com/crazypenguin/doctorfilter/**`. OverlayService (FGS specialUse, `OverlayService.start`), RemoteViews bildirim kokpiti (`FilterNotificationManager.kt`), Hızlı Ayarlar kutucuğu, widget, kısayollar, zamanlayıcı/boot (`ScheduleReceiver.kt`), mola hatırlatıcı, uygulama istisnaları, ortam ışığı. Overlay izni alınırsa servis durur. Native metinler Dart'tan (`notification_sync_provider.dart:nativeLabels`); dil seçilmemişse cihaz dili (`_deviceLocale`). R8 keep kuralları `android/app/proguard-rules.pro`.
 
-**Sources:**
-- `lib/data/datasources/local/preferences_datasource.dart`
-- `lib/presentation/providers/filter_provider.dart`
-- `lib/presentation/providers/schedule_provider.dart`
+### Reklam ve gelir — VERIFIED
 
-Bellekte tek kaynak + debounce'lu tam yazma; native tarafta alarm/servis için kopya (Dart kopyası kazanır, açılışta yeniden gönderilir `schedule_provider.dart:loadSchedule`; başlatma `home_screen.dart` `ref.listen(scheduleProvider)`).
+`lib/domain/entities/ad_policy.dart` (grace 3 gün + 5 oturum, oturumda 1 tam ekran, 4 dk ara, app-open 4 saatte bir, 7. günden ödüllü 24 saat Pro günde 2), `lib/presentation/ads/**`. UMP onayı `ad_consent.dart`; AB'de Ayarlar'da "Privacy" girişi; debug'da `--dart-define=UMP_DEBUG_EEA=true`. Pro: `pro_provider.dart` (açılışta sessiz geri yükleme), Play `doctorfilter_pro_lifetime` (0,99 USD tabanlı, "Pro – Lifetime") + eski `doctorfilterpro` geri yüklemede tanınır (`ProProduct.allIds`); Microsoft Store C++/WinRT. Ayar yedeği Pro.
 
-### Android native
+### Marka — VERIFIED
 
-**Status:** VERIFIED (2026-09-16 emülatör oturumu + 2026-09-21 release APK doğrulaması)
+`tool/brand/generate_icons.py` tek ikon üreticisi; `BrandLockup` (ikon + "doctorFilter" Audiowide + PRO + slogan).
 
-**Sources:**
-- `android/app/src/main/kotlin/com/crazypenguin/doctorfilter/**` (`kt/`)
+### Yerelleştirme — VERIFIED
 
-OverlayService (FGS specialUse; tüm başlatmalar `OverlayService.start` korumalı yoldan), RemoteViews bildirim kokpiti (`FilterNotificationManager.kt` + `res/layout/notification_cockpit.xml`, düz `View` yok), Hızlı Ayarlar kutucuğu (`FilterTileService.kt:requestRefresh`), widget, kısayollar, zamanlayıcı/boot (`ScheduleReceiver.kt`, geçiş tavanı 180 dk), mola hatırlatıcı, uygulama istisnaları (pencere alfası değil görünüm rengi alfası), ortam ışığı. Uygulama açılışta durumu servisten alır (`filter_provider.dart:_init`, olay aboneliğinden SONRA `isFilterRunning`). Overlay izni alınırsa servis kendini durdurur (`watchOverlayPermission`). Zamanlayıcı yalnızca `SCHEDULE_EXACT_ALARM` kullanır (`USE_EXACT_ALARM` Play politikası gereği kaldırıldı); izin yoksa esnek alarma düşer ve zamanlayıcı ekranı izin kartı gösterir (`scheduler_screen.dart`). Native metinler Dart'ın gönderdiği çevirilerden (`PresetCatalog.kt:text` ← `notification_sync_provider.dart:nativeLabels`); dil seçilmemişse cihaz dili (`_deviceLocale`). Sürüm kodları 4002'nin üstünde olmalı (1.x bölünmüş APK'lar). Release çökmesi R8/WorkManager Room keep kuralıyla giderildi (`android/app/proguard-rules.pro`).
+`assets/Localizations/**` 71 dil, `app_localizations.dart`. RTL'de değerler `ltrIsolate`. Eğitim sekmesi "Learn", en sıcak bant "Very warm" (ADR-001).
 
-### Reklam ve gelir
+### Diğer platformlar — OBSERVED
 
-**Status:** VERIFIED
+iOS: sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Control; `DoctorFilterControl` hedefi Xcode projesine eklenmedi, Mac'te derlenmedi. Windows: `overlay_window.cpp`, `flutter build windows` geçiyor, MSIX publisher yer tutucu. Linux/macOS iskelet (kapsam dışı).
 
-**Sources:**
-- `lib/domain/entities/ad_policy.dart`
-- `lib/presentation/ads/**`
-- `lib/presentation/providers/pro_provider.dart`
-- `lib/data/repositories/store_purchase_repository.dart`, `microsoft_store_purchase_repository.dart`
+## Yayın
 
-AdPolicy saf kurallar (grace 3 gün + 5 oturum, oturumda 1 tam ekran, app-open 4 saat arayla, ödüllü geçiş 7. günden itibaren günde 2). Tetik `lib/main.dart:_initialiseAds`; UMP onayı `lib/presentation/ads/ad_consent.dart` (AB'de gerekirse Ayarlar > Hakkında altında "Privacy" girişi `AdConsent.showPrivacyOptions`; debug'da `--dart-define=UMP_DEBUG_EEA=true` AB simülasyonu). Release gerçek reklam birimleri `D:\AppPublishingpps\doctorfilter\app-ids.env` → `fastlane build_release` (test birimi reddedilir). AdMob ayrı Google hesabında; GDPR mesajı yayında (2026-09-30 emülatörde form/ret/kabul/yeniden açma doğrulandı). üst çubuk hediye düğmesi `home_screen.dart:_offerProPass`. Emülatörde app-open, banner, ödüllü → Pro doğrulandı. AdMob uygulama kimliği build zamanında `ADMOB_APP_ID_ANDROID` ortam değişkeninden manifest placeholder'ına gelir; yoksa Google test kimliği (`android/app/build.gradle.kts:manifestPlaceholders`). Pro: Play/App Store (`in_app_purchase`) + Microsoft Store (C++/WinRT, `windows/runner/store_purchases.cpp`). Play'in eski `doctorfilterpro` ürünü `ProProduct.allIds` ile geri yüklemede tanınır. `doctorfilter_pro_lifetime` ("DoctorFilter Pro – Lifetime") Play'de ACTIVE, 0,99 USD tabanlı Play dönüşümü (TR 57,99 TRY, DE 0,99 EUR; 2026-10-01 sahip kararı); 2026-10-01 lisans testçisiyle emülatörde gerçek Play test satın alımı + açılışta sessiz geri yükleme (`pro_provider.dart:_restoreQuietly`) doğrulandı. Ayar yedeği dışa/içe aktarma Pro'ya kilitli (`settings_screen.dart`); pil optimizasyonu kartı aynı ekranda.
+**Sır ve kimlikler projede yok.** Yayın kökü `D:\AppPublishing` (Git dışı; protokol `D:\AppPublishing\README.md`; başka makinede `APP_PUBLISHING_ROOT`):
 
-### Marka
+| Ne | Yer |
+|---|---|
+| İmza | `apps/doctorfilter/credentials/android/upload.jks` + `key.properties` |
+| AdMob + ürün kimlikleri | `apps/doctorfilter/app-ids.env` |
+| Play API | `publisher/crazypenguin/credentials/google-play/service-account.json` |
+| Mağaza metni + görseller (73 dil) | `apps/doctorfilter/stores/google-play/metadata/` |
 
-**Status:** VERIFIED
+Gradle imzayı `DOCTORFILTER_SIGNING`, manifest AdMob kimliğini `ADMOB_APP_ID_ANDROID` ortamından alır; yoksa debug imza + test kimlikleri.
 
-**Sources:**
-- `tool/brand/generate_icons.py`
-- `lib/presentation/widgets/brand_lockup.dart`
+### Yeni sürüm adımları
 
-Tek işaret üreticisi `generate_icons.py` → Android uyarlanabilir ikon + splash (`res/drawable/splash_logo.xml`), iOS, macOS, web, Windows ico, `assets/images/brand_mark.png`. `BrandLockup` (ikon + eğik iki renkli "doctor"/"Filter" Audiowide `assets/fonts/Audiowide-Regular.ttf` + PRO üst simgesi + `app_tagline`); Pro sayfası başlığı aynı bileşenle.
+1. Kodu değiştir; `flutter analyze` + `flutter test`.
+2. `pubspec.yaml` sürümü: ad artır, kod **5000'in üstüne** (1.x bölünmüş APK'lar 1002/2002/4002 kullandı; kod hep son yüklenenden büyük).
+3. Her dilde `metadata/<locale>/changelogs/<kod>.txt` (73 dil; ADR-001'e uygun).
+4. Ekranlar değiştiyse görselleri yenile: `tool/store/README.md` (emülatör `capture_all.py` → `render_all.py <metadata>`).
+5. `cd fastlane` → `bundle exec fastlane build_release` → `deploy_internal`; iç testte dene (lisans testçisi listesi "teste").
+6. Sahip onayıyla `bundle exec fastlane deploy_production` (internal'daki pubspec kodunu üretime taşır + metadata/görseller). Play API ile production kanalını doğrula.
+7. `git tag -a vX.Y.Z` + push.
 
-### Yerelleştirme
-
-**Status:** VERIFIED
-
-**Sources:**
-- `assets/Localizations/**` (71 dil)
-- `lib/core/localization/app_localizations.dart`
-
-RTL'de Kelvin/değer dizgisi `ltrIsolate` (U+2066/U+2069); saat biçimi locale'den. Eğitim sekmesi `nav_education` = "Learn", başlık "Light and your screen"; en sıcak bant etiketi `band_sleep_friendly` = "Very warm" (ADR-001: ima yoluyla sağlık iddiası yok).
-
-### Diğer platformlar
-
-**Status:** OBSERVED
-
-**Sources:**
-- `ios/Runner/**`, `ios/DoctorFilterControl/**`
-- `windows/runner/**`
-- `linux/`, `macos/`
-
-iOS: sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Control (`ios/Runner/AppDelegate.swift`, `lib/core/math/ios_color_filter.dart`, `lib/presentation/screens/ios_setup_screen.dart`); DoctorFilterControl hedef olarak eklenmedi; Mac'te derlenmedi. Windows: `overlay_window.cpp` (açık kaydedilmiş filtre açılışta yeniden çizilir, tek örnek mutex, WM_CLOSE yutulur); `flutter build windows` geçiyor; MSIX publisher yer tutucu. Linux/macOS: yalnızca iskelet, overlaysız.
-
-### Yayın araçları
-
-**Status:** VERIFIED
-
-**Sources:**
-- `Gemfile`, `fastlane/Appfile`, `fastlane/Fastfile`
-
-Lanes: `build_release` (yayın kökündeki `app-ids.env` + `credentials/android/key.properties` zorunlu; test birimi reddedilir; kök `APP_PUBLISHING_ROOT`, varsayılan `D:/AppPublishing`), `deploy_internal`, `deploy_production` (sürüm kodu `pubspec.yaml`'dan), `push_metadata`. Mağaza metadata'sı 73 dil; yerel ekran görüntüsü hattı `tool/store/` (emülatör çekimi + headless Chrome; 73 dil). Gizlilik politikası `PRIVACY.md` (Play URL'si bu dosya). Servis hesabı anahtarı repoda değil; yalnızca yerel yol referansı. Yayın girdileri `D:\AppPublishing\apps\doctorfilter\stores\google-play\metadata` altında.
+Dikkat: Play'de yönetilen yayınlama KAPALI — her API commit'i Console'da bekleyen değişiklikleri de gönderir. Play beyanları (veri güvenliği, sağlık yok, FGS specialUse videosu `docs/play/`, kategori Araçlar) yapıldı; uygulama davranışı değişirse güncellenmeli. Gizlilik URL'si `PRIVACY.md`.
 
 ## Platform kapsamı
 
-minSdk 24 (Flutter alt sınırı; Android 6 cihazlar 1.5'te kalır), target/compileSdk 36. Yerel kitaplıklar 16 KB hizalı (zipalign -P 16 doğrulandı); arm64/armv7/x86_64; tüm ekran boyutları, yön kilidi yok. Play kataloğu 21.901 desteklenen model (1.5 baz).
+minSdk 24 (Flutter alt sınırı), target/compileSdk 36, 16 KB hizalı yerel kitaplıklar, arm64/armv7/x86_64, tüm ekran boyutları. Play kataloğu ~21.900 model.
 
-## Güvenlik (2026-10-01 tarama)
+## Güvenlik
 
-Geçmiş + ağaçta gerçek sır yok (yalnızca *.example sahte değerler); `.env`, `key.properties`, `*.jks`, servis hesabı yok sayılıyor. Dışa açık bileşenler: MainActivity, ShortcutActivity (başka uygulama filtreyi aç/kapa yapabilir — düşük etki, launcher kısayolları için gerekli), FilterTileService (BIND_QUICK_SETTINGS_TILE korumalı).
-
-## External Dependencies
-
-AdMob SDK (Google), `in_app_purchase`, WorkManager (reklam SDK'sı üzerinden, Room), flutter_riverpod. Kendi sunucusu yok.
+Geçmiş ve ağaçta sır yok; commit e-postaları GitHub noreply. Dışa açık bileşenler: MainActivity, ShortcutActivity (düşük etki), FilterTileService (izinli).
 
 ## Known Unknowns
 
-- Eski `doctorfilterpro` alıcısının 2.0'da geri yüklemesi gerçek eski alıcı hesabıyla test edilemedi (yalnızca birim testi).
-- Play yönetilen yayınlama KAPALI: API commit'leri bekleyen Console değişikliklerini de gönderir.
-- Git geçmişi temizlendi (AdMob kimliği, kişisel e-posta); GitHub önbelleği silinmesi sahip talebi bekliyor → PB-007.
-- Play 2.0 üretim incelemesi sürüyor (2026-10-01 gönderildi) → PB-009; App/Microsoft mağazaları → PB-004, PB-003.
-- Play mağaza ayarı yayında (2026-10-01): kategori Araçlar, etiketler Araçlar + Kişiselleştirme.
+- Eski `doctorfilterpro` alıcısının 2.0'da geri yüklemesi gerçek hesapla test edilemedi (birim testi var).
+- GitHub önbelleğinde temizlik öncesi commit'ler SHA ile erişilebilir → PB-007.

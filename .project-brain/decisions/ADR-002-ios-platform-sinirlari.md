@@ -14,7 +14,7 @@ iOS sürümü yalnızca şunları sunar: sistem parlaklığı azaltma, Renk Filt
 
 ## Rationale
 
-iOS public API'sinde sistem geneli ekran overlay'i yok; Colour Filters yalnızca kullanıcının Kısayol'u üzerinden değişiyor; Night Shift programlanabilir değil. Bu sınırlar Apple dokümantasyonu ve API araştırmasıyla sabit (eski plan `git show 5453c2b:MIMARI.md` §7.2.4).
+iOS public API'sinde sistem geneli ekran overlay'i yok; Colour Filters yalnızca kullanıcının Kısayol'u üzerinden değişiyor; Night Shift programlanabilir değil. Bu sınırlar Apple dokümantasyonu ve API araştırmasıyla sabit (eski plan `git show d746364^:MIMARI.md` §7.2.4).
 
 ## Alternatives
 

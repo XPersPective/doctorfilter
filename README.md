@@ -46,7 +46,7 @@ inventing a number.
   <img src="docs/screenshots/education.png" width="180" alt="Learn: light and your screen, with sources">
 </p>
 
-The running app with the filter on, not renders — see
+Captured from the running app on an emulator, not renders — see
 [`docs/screenshots/`](docs/screenshots/) for how they were taken.
 
 ## Features
@@ -60,8 +60,14 @@ The running app with the filter on, not renders — see
 - Quick Settings tile and a home-screen widget for one-tap toggling.
 - Automatic schedule that survives reboots and re-arms itself every day.
 - Undo, so a mis-drag is one tap away from being reverted.
-- 71 languages, right-to-left layouts included.
-- Light and dark themes.
+- Pause in chosen apps (camera, gallery, video player) and adapt to the room's
+  light.
+- Screen calibration, so the numbers match what your panel actually shows.
+- A 20-20-20 eye-break reminder.
+- Settings backup and restore (Pro).
+- 71 languages, right-to-left layouts included; the notification, tile and
+  widget follow your phone's language.
+- Light and dark themes, including true black for OLED.
 
 ## Privacy
 
@@ -105,9 +111,10 @@ as plain, testable code, so you can check them rather than take our word for it.
 One purchase, forever. **No subscription**, no tiers, no countdown timers.
 
 Pro unlocks the full notification cockpit, unlimited custom presets, multiple
-schedules, and removes all advertising. Payment goes through Google Play or the
-App Store using the payment method already on your account — the app never sees
-a card number and never shows a payment form.
+schedules and settings backup, and removes all advertising. Payment goes through
+Google Play (and the App Store or Microsoft Store where the app is published)
+using the payment method already on your account — the app never sees a card
+number and never shows a payment form.
 
 Verification is on-device. There is no licence server, because running one would
 cost every honest user their privacy to inconvenience a handful of people. This
@@ -147,8 +154,8 @@ flutter run
 Ad units fall back to Google's official **test** IDs, so a fresh clone works
 immediately without touching anyone's real ad account.
 
-For a release build, supply real IDs at build time — there is no `.env` file to
-create:
+A release build needs real ad IDs and a signing key, and neither is in this
+repository. Supply the ad units at build time:
 
 ```bash
 flutter build appbundle --release \
@@ -158,8 +165,11 @@ flutter build appbundle --release \
   --dart-define=ADMOB_ANDROID_APP_OPEN_UNIT_ID=ca-app-pub-xxx/xxx
 ```
 
-Release signing needs `android/key.properties` and a keystore, neither of which
-is in this repository. Without them the build falls back to debug signing.
+For signing, point `DOCTORFILTER_SIGNING` at a `key.properties` kept next to
+your keystore (see [`android/key.properties.example`](android/key.properties.example))
+and set `ADMOB_APP_ID_ANDROID` for the manifest. Without them the build uses
+debug signing and Google's test app ID. The maintainer's `fastlane build_release`
+does all of this from a publishing folder outside the repository.
 
 ## Testing
 
@@ -180,8 +190,8 @@ this app makes claims about health:
 
 1. **No unsupported health claims.** See
    [ADR-001](.project-brain/decisions/ADR-001-yasak-saglik-iddialari.md) for
-   what may and may not be said. A test enforces this across all 71 locale
-   files.
+   what may and may not be said. It applies to every string in all 71 locale
+   files and to the store listings.
 2. **Numbers shown to the user must be derived, not estimated.** If it cannot be
    computed, it is not displayed.
 
