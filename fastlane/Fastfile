@@ -6,7 +6,7 @@
 #   fastlane deploy_production  → İç testteki pubspec sürümünü Üretime taşır + mağaza içeriğini günceller
 #   fastlane push_metadata      → yalnızca mağaza metinlerini (TR+EN) günceller
 #
-# Sürüm numarası pubspec.yaml'dan gelir (version: 2.0.0+2001); her yüklemede
+# Sürüm numarası pubspec.yaml'dan gelir (version: 2.0.0+5000; 1.x split APKs used 1002/2002/4002, so codes must stay above 4002); her yüklemede
 # versionCode artırılmalı (ORTAK_UYGULAMA_STANDARDI.md 7).
 
 default_platform(:android)

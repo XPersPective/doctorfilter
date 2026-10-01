@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 # versionCode scheme: major*1000 + minor*100 + patch (must stay above legacy Play max 1015)
-version: 2.0.0+2002
+version: 2.0.0+5000
 
 environment:
   sdk: ^3.13.2
