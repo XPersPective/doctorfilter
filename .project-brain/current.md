@@ -8,7 +8,7 @@ DoctorFilter (`com.crazypenguin.doctorfilter`) — Android'de yayında olan 2.0 
 
 - Play üretimi: **2.0.0 / 5000** gönderildi, Google incelemesinde (→ PB-009). Önceki canlı sürüm 1.5 / 15.
 - Etiket `v2.0.0` = 5000 derlemesinin kaynağı.
-- İç test: **5002** (5000 + bildirim izni düzeltmesi + Keşfet sekmesi). Üretimde 5000'in yerine geçmesi sahip onayı bekliyor.
+- Üretime gönderilen: **5003** (5000 + bildirim izni + Keşfet + filtre koyu tutarken tema anahtarı düzeltmesi), sahip onayıyla 2026-10-02.
 - iOS ve Microsoft Store: kod hazır, mağaza yok (→ PB-004, PB-003).
 
 ## Runtime

@@ -30,7 +30,10 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final loc = AppLocalizations.of(context);
     final locale = ref.watch(localeProvider);
-    final isDark = ref.watch(themeModeProvider) == ThemeMode.dark;
+    // What is on screen, not just the stored choice: while the filter forces the
+    // dark theme, a switch showing "off" would look like it does nothing.
+    final isDark = ref.watch(effectiveThemeModeProvider) == ThemeMode.dark;
+    final forcedDark = isDark && ref.watch(themeModeProvider) != ThemeMode.dark;
     final isPro = ref.watch(isProProvider);
     final isAmoled = ref.watch(amoledProvider);
     final themeFollowsFilter = ref.watch(themeFollowsFilterProvider);
@@ -77,8 +80,11 @@ class SettingsScreen extends ConsumerWidget {
                         'Easier on the eyes at night.',
                   ),
                   value: isDark,
-                  onChanged: (_) =>
-                      ref.read(themeModeProvider.notifier).toggle(),
+                  onChanged: (_) => forcedDark
+                      // Asking for light while the filter holds it dark means
+                      // "stop following the filter", or the switch could never win.
+                      ? ref.read(themeFollowsFilterProvider.notifier).toggle()
+                      : ref.read(themeModeProvider.notifier).toggle(),
                 ),
                 // Only while the dark theme is actually showing: a "true black"
                 // switch under a white screen does nothing visible, and a
