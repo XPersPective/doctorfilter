@@ -27,7 +27,7 @@ Flutter 3.47 / Dart 3.13, flutter_riverpod (StateNotifier), clean architecture: 
 
 ### Keşfet (diğer uygulamalar) — VERIFIED
 
-`lib/data/repositories/other_apps_repository.dart`, `lib/presentation/screens/discover_screen.dart`; alt çubuğun 5. sekmesi. Katalog herkese açık `XPersPective/napp_apps/apps.json` (schema 1, ORTAK_UYGULAMA_STANDARDI 3.6), `OTHER_APPS_URL` ile değiştirilebilir. Ağ → 24 s önbellek → boş; uygulamanın kendisi gizlenir. Yeni uygulama eklemek = o depoya commit, sürüm gerekmez. Aynı özellik `napp_app_template` şablonunda (napp_kit `OtherAppsPage`).
+`lib/data/repositories/other_apps_repository.dart`, `lib/presentation/screens/discover_screen.dart`; alt çubuğun 5. sekmesi. Katalog herkese açık `XPersPective/napp_apps/apps.json` (schema 1, ORTAK_UYGULAMA_STANDARDI 3.6), `OTHER_APPS_URL` ile değiştirilebilir. Ağ → 24 s önbellek → boş; uygulamanın kendisi gizlenir. Yeni uygulama eklemek = o depoya commit, sürüm gerekmez; yalnızca mağazada herkese açık uygulamalar girer (2026-10-02: Play'de yalnızca DoctorFilter açık, bu yüzden DoctorFilter'da liste boş durumu gösterir). Aynı özellik şablonda: kaynak `napp_kit/tool/templates/main.dart.template` → `napp_app_template`'e kopyalanır (napp_kit `OtherAppsPage`).
 
 ### Android native — VERIFIED
 
