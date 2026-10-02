@@ -4,15 +4,16 @@
 
 DoctorFilter (`com.crazypenguin.doctorfilter`) — Android'de yayında olan 2.0 sürümü. Açık kaynak (GPL-3.0), GitHub `XPersPective/doctorfilter`.
 
-## Durum özeti (2026-10-01)
+## Durum özeti (2026-10-02)
 
 - Play üretimi: **2.0.0 / 5000** gönderildi, Google incelemesinde (→ PB-009). Önceki canlı sürüm 1.5 / 15.
 - Etiket `v2.0.0` = 5000 derlemesinin kaynağı.
+- İç test: **5002** (5000 + bildirim izni düzeltmesi + Keşfet sekmesi). Üretimde 5000'in yerine geçmesi sahip onayı bekliyor.
 - iOS ve Microsoft Store: kod hazır, mağaza yok (→ PB-004, PB-003).
 
 ## Runtime
 
-Flutter 3.47 / Dart 3.13, flutter_riverpod (StateNotifier), clean architecture: `lib/core` (Kelvin motoru, tema, yerelleştirme, env) → `lib/domain` (saf entity/politika) → `lib/data` (prefs/SQLite/kanal + repository) → `lib/presentation` (provider, ekran, widget, reklam). Girdi `lib/main.dart`. `flutter analyze` temiz, `flutter test` 205 test.
+Flutter 3.47 / Dart 3.13, flutter_riverpod (StateNotifier), clean architecture: `lib/core` (Kelvin motoru, tema, yerelleştirme, env) → `lib/domain` (saf entity/politika) → `lib/data` (prefs/SQLite/kanal + repository) → `lib/presentation` (provider, ekran, widget, reklam). Girdi `lib/main.dart`. `flutter analyze` temiz, `flutter test` 209 test.
 
 ## Domains
 
@@ -23,6 +24,10 @@ Flutter 3.47 / Dart 3.13, flutter_riverpod (StateNotifier), clean architecture: 
 ### Kalıcılık ve zamanlayıcı — VERIFIED
 
 `preferences_datasource.dart`, `filter_provider.dart`, `schedule_provider.dart`. Bellekte tek kaynak + debounce'lu yazma; native kopya (Dart kazanır, açılışta yeniden gönderilir). Zamanlayıcı yalnızca `SCHEDULE_EXACT_ALARM` (USE_EXACT_ALARM Play politikası gereği yok); izin yoksa esnek alarm + zamanlayıcı ekranında izin kartı.
+
+### Keşfet (diğer uygulamalar) — VERIFIED
+
+`lib/data/repositories/other_apps_repository.dart`, `lib/presentation/screens/discover_screen.dart`; alt çubuğun 5. sekmesi. Katalog herkese açık `XPersPective/napp_apps/apps.json` (schema 1, ORTAK_UYGULAMA_STANDARDI 3.6), `OTHER_APPS_URL` ile değiştirilebilir. Ağ → 24 s önbellek → boş; uygulamanın kendisi gizlenir. Yeni uygulama eklemek = o depoya commit, sürüm gerekmez. Aynı özellik `napp_app_template` şablonunda (napp_kit `OtherAppsPage`).
 
 ### Android native — VERIFIED
 

@@ -1,6 +1,6 @@
 # Privacy policy
 
-**Last updated:** 1 October 2026
+**Last updated:** 2 October 2026
 **Applies to:** DoctorFilter (`com.crazypenguin.doctorfilter`)
 
 ## The short version
@@ -20,6 +20,7 @@ All of it on your device only, and all of it deleted when you uninstall:
 - Whether you have purchased Pro, and when a trial pass expires.
 - Two counters used to keep ads infrequent: when you first launched the app, and
   how many times you have opened it.
+- A cached copy of the public "Discover" app list (see below).
 
 None of this is transmitted anywhere.
 
@@ -35,7 +36,7 @@ None of this is transmitted anywhere.
 
 ## Third parties
 
-Two, and only in the situations described.
+Three, and only in the situations described.
 
 ### Google AdMob — free version only
 
@@ -60,6 +61,15 @@ Google's handling of this data is governed by its own policy:
 Purchases go through Google Play or the App Store. They handle the payment; the
 app receives only a confirmation that a purchase exists. The developer never
 sees your payment details, and the app never asks for them.
+
+### GitHub — only when you open Discover
+
+The Discover tab lists the developer's other apps. The list is a public file,
+downloaded from GitHub (`raw.githubusercontent.com`) at most once a day while
+you have that tab open. The request carries nothing about you or your settings;
+like any web request, GitHub sees your IP address. Tapping an app opens its
+store page — nothing is unlocked or rewarded for it. GitHub's policy:
+<https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement>
 
 ## Permissions, and why
 
@@ -95,10 +105,6 @@ checked against the code:
 
 Material changes to this policy will be published in this file and noted in the
 app's release notes.
-
-## Contact
-
-Open an issue at <https://github.com/XPersPective/doctorfilter/issues>.
 
 ---
 

@@ -28,6 +28,7 @@ import 'package:doctorfilter/presentation/widgets/power_button.dart';
 import 'package:doctorfilter/presentation/widgets/preset_grid.dart';
 import 'package:doctorfilter/presentation/widgets/spectrum_slider.dart';
 import 'package:doctorfilter/presentation/providers/paywall_request_provider.dart';
+import 'discover_screen.dart';
 import 'education_screen.dart';
 import 'ios_setup_screen.dart';
 import 'presets_screen.dart';
@@ -283,11 +284,17 @@ class HomeScreen extends ConsumerWidget {
                 selectedIcon: const Icon(Icons.menu_book_rounded),
                 label: loc?.translate('nav_education') ?? 'Learn',
               ),
+              NavigationDestination(
+                icon: const Icon(Icons.explore_outlined),
+                selectedIcon: const Icon(Icons.explore_rounded),
+                label: loc?.translate('nav_discover') ?? 'Discover',
+              ),
             ],
             onDestinationSelected: (index) => switch (index) {
               1 => _openPresets(context, ref),
               2 => _open(context, const SchedulerScreen()),
               3 => _open(context, const EducationScreen()),
+              4 => _open(context, const DiscoverScreen()),
               _ => null,
             },
           ),

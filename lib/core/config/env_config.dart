@@ -36,6 +36,18 @@ abstract final class EnvConfig {
   /// next person wonder where configuration went.
   static Future<void> init() async {}
 
+  /// The developer's app catalogue for the Discover tab (public, no secret).
+  /// A fork can point it elsewhere with `--dart-define=OTHER_APPS_URL=…`.
+  static String get otherAppsUrl => const String.fromEnvironment(
+        'OTHER_APPS_URL',
+        defaultValue:
+            'https://raw.githubusercontent.com/XPersPective/napp_apps/HEAD/apps.json',
+      );
+
+  /// Every app by the developer on Google Play, for the empty Discover state.
+  static const developerPlayPage =
+      'https://play.google.com/store/search?q=pub%3Acrazypenguin&c=apps';
+
   static String get appName => const String.fromEnvironment(
         'APP_NAME',
         defaultValue: 'DoctorFilter',
