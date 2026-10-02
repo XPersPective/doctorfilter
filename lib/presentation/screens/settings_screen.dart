@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
 import 'package:doctorfilter/core/theme/app_theme.dart';
 import 'package:doctorfilter/presentation/ads/ad_consent.dart';
+import 'package:doctorfilter/presentation/widgets/notification_permission_card.dart';
 import 'package:doctorfilter/presentation/providers/filter_provider.dart';
 import 'package:doctorfilter/presentation/providers/pro_provider.dart';
 import 'package:doctorfilter/presentation/providers/theme_and_locale_provider.dart';
@@ -44,6 +45,7 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           if (!isPro)
             _ProCard(onTap: () => _open(context, const PaywallScreen())),
+          const NotificationPermissionCard(margin: EdgeInsets.only(top: 12)),
           if (Platform.isAndroid) const _BatteryCard(),
 
           _SectionLabel(loc?.translate('settings_appearance') ?? 'Appearance'),

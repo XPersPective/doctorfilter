@@ -9,6 +9,7 @@ import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import androidx.core.app.NotificationManagerCompat
 
 /**
  * The Flutter ↔ Android bridge.
@@ -22,6 +23,7 @@ class MainActivity : FlutterActivity() {
 
     companion object {
         const val CHANNEL_NAME = "com.crazypenguin.doctorfilter"
+        private const val REQUEST_NOTIFICATIONS = 7001
 
         private var channel: MethodChannel? = null
 
@@ -203,6 +205,13 @@ class MainActivity : FlutterActivity() {
                     result.success(true)
                 }
 
+                "areNotificationsEnabled" ->
+                    result.success(NotificationManagerCompat.from(this).areNotificationsEnabled())
+                "requestNotificationPermission" -> {
+                    requestNotificationPermission(call.argument<Boolean>("promptOnly") == true)
+                    result.success(true)
+                }
+
                 "isBatteryOptimised" -> result.success(isBatteryOptimised())
                 "openBatterySettings" -> {
                     openBatterySettings()
@@ -264,6 +273,48 @@ class MainActivity : FlutterActivity() {
         }
 
         OverlayService.start(this, intent)
+    }
+
+    /**
+     * Android 13+ makes notifications a runtime permission. Without it the
+     * foreground service still runs, but the notification cockpit — a Pro
+     * feature — never appears. The system shows its dialog only until the user
+     * refuses, so after that the app's notification settings are opened instead.
+     */
+    private fun requestNotificationPermission(promptOnly: Boolean) {
+        val prefs = getSharedPreferences("permissions", MODE_PRIVATE)
+        val asked = prefs.getBoolean("notifications_asked", false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && (!asked ||
+                shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS))
+        ) {
+            prefs.edit().putBoolean("notifications_asked", true).apply()
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
+            return
+        }
+        // An automatic ask (turning the filter on) never jumps into Settings.
+        if (promptOnly) return
+        startActivity(
+            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // The user may have just allowed notifications in the system settings;
+        // re-post so the cockpit appears without restarting the filter.
+        if (NotificationManagerCompat.from(this).areNotificationsEnabled()) refreshNotification()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // A notification posted while the permission was missing stays hidden;
+        // post it again so the cockpit appears straight away.
+        if (requestCode == REQUEST_NOTIFICATIONS) refreshNotification()
     }
 
     /**

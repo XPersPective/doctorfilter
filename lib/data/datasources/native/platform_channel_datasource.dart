@@ -195,6 +195,16 @@ class PlatformChannelDataSource {
       });
 
   /// Whether the OS may still doze this app, killing the filter overnight.
+  /// Whether the app may post notifications (Android 13+ asks at runtime).
+  Future<bool> areNotificationsEnabled() => _invokeBool('areNotificationsEnabled');
+
+  /// Shows the system prompt the first time; afterwards opens the app's
+  /// notification settings, because Android stops showing the prompt.
+  /// [promptOnly] asks only if the system prompt can still be shown.
+  Future<void> requestNotificationPermission({bool promptOnly = false}) async {
+    await _invokeBool('requestNotificationPermission', {'promptOnly': promptOnly});
+  }
+
   Future<bool> isBatteryOptimised() => _invokeBool('isBatteryOptimised');
 
   /// Opens the system battery-optimisation list so the user can exempt the app.

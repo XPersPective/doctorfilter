@@ -22,6 +22,7 @@ import 'package:doctorfilter/presentation/widgets/axis_slider.dart';
 import 'package:doctorfilter/presentation/widgets/band_style.dart';
 import 'package:doctorfilter/presentation/widgets/brand_lockup.dart';
 import 'package:doctorfilter/presentation/widgets/melanopic_ring.dart';
+import 'package:doctorfilter/presentation/widgets/notification_permission_card.dart';
 import 'package:doctorfilter/presentation/widgets/overlay_permission_banner.dart';
 import 'package:doctorfilter/presentation/widgets/power_button.dart';
 import 'package:doctorfilter/presentation/widgets/preset_grid.dart';
@@ -131,6 +132,11 @@ class HomeScreen extends ConsumerWidget {
               OverlayPermissionBanner(
                 onGrantPressed: filter.requestPermission,
               ),
+
+            // One request at a time: the overlay comes first, since without it
+            // there is no filter to control from a notification.
+            if (!_isIos && filterState.hasOverlayPermission)
+              const NotificationPermissionCard(),
 
             if (_isIos)
               _IosProtectionCard(
@@ -320,6 +326,15 @@ class HomeScreen extends ConsumerWidget {
         ),
       );
       return;
+    }
+
+    // The first time the filter comes on is when the notification cockpit
+    // first matters, so that is when Android 13+ is asked — once.
+    if (!wasEnabled && state.config.isEnabled && !kIsWeb && Platform.isAndroid) {
+      final channel = ref.read(platformChannelDataSourceProvider);
+      if (!await channel.areNotificationsEnabled()) {
+        await channel.requestNotificationPermission(promptOnly: true);
+      }
     }
 
     // Turning it off is the user saying they are done for now.
