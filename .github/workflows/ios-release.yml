@@ -1,0 +1,96 @@
+name: iOS release (TestFlight)
+
+# Manual only. Builds a signed IPA on a free macOS runner (public repo) and
+# uploads it to App Store Connect. Signing uses Apple's cloud-managed
+# distribution certificate through the App Store Connect API key, so no
+# certificate or profile is stored anywhere.
+#
+# Repository secrets:
+#   ASC_KEY_P8        contents of AuthKey_<id>.p8 (App Manager key)
+#   ADMOB_APP_ID_IOS, ADMOB_IOS_BANNER_UNIT_ID, ADMOB_IOS_INTERSTITIAL_UNIT_ID,
+#   ADMOB_IOS_REWARDED_UNIT_ID, ADMOB_IOS_APP_OPEN_UNIT_ID   (optional: Google
+#   test units are used for any that are empty)
+
+on:
+  workflow_dispatch:
+
+env:
+  ASC_KEY_ID: T7HY367GT9
+  ASC_ISSUER_ID: 73c12ef5-d57e-4400-8a21-32e0a41b9f3d
+  TEAM_ID: 53X3279WA3
+
+jobs:
+  release:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: API key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          test -n "$ASC_KEY_P8" || { echo "ASC_KEY_P8 secret is missing"; exit 1; }
+          mkdir -p "$RUNNER_TEMP/keys"
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8"
+
+      - name: AdMob app id
+        env:
+          ADMOB_APP_ID_IOS: ${{ secrets.ADMOB_APP_ID_IOS }}
+        run: |
+          if [ -n "$ADMOB_APP_ID_IOS" ]; then
+            /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier $ADMOB_APP_ID_IOS" ios/Runner/Info.plist
+          fi
+
+      - name: Build (no signing yet)
+        env:
+          B: ${{ secrets.ADMOB_IOS_BANNER_UNIT_ID }}
+          I: ${{ secrets.ADMOB_IOS_INTERSTITIAL_UNIT_ID }}
+          R: ${{ secrets.ADMOB_IOS_REWARDED_UNIT_ID }}
+          O: ${{ secrets.ADMOB_IOS_APP_OPEN_UNIT_ID }}
+        run: |
+          flutter pub get
+          defs=()
+          [ -n "$B" ] && defs+=("--dart-define=ADMOB_IOS_BANNER_UNIT_ID=$B")
+          [ -n "$I" ] && defs+=("--dart-define=ADMOB_IOS_INTERSTITIAL_UNIT_ID=$I")
+          [ -n "$R" ] && defs+=("--dart-define=ADMOB_IOS_REWARDED_UNIT_ID=$R")
+          [ -n "$O" ] && defs+=("--dart-define=ADMOB_IOS_APP_OPEN_UNIT_ID=$O")
+          flutter build ios --release --no-codesign "${defs[@]}"
+
+      - name: Archive and sign
+        run: |
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" archive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic
+
+      - name: Export and upload to App Store Connect
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
