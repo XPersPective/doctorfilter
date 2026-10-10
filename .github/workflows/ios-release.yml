@@ -67,16 +67,12 @@ jobs:
           [ -n "$O" ] && defs+=("--dart-define=ADMOB_IOS_APP_OPEN_UNIT_ID=$O")
           flutter build ios --release --no-codesign "${defs[@]}"
 
-      - name: Archive and sign
+      - name: Archive (unsigned; signed at export)
+        # Archiving with automatic signing asks for a *development* profile,
+        # which needs a registered device. The account has none and does not
+        # need one: the App Store distribution signature is applied at export.
         run: |
-          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner \
-            -configuration Release -destination 'generic/platform=iOS' \
-            -archivePath "$RUNNER_TEMP/Runner.xcarchive" archive \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
-            DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner             -configuration Release -destination 'generic/platform=iOS'             -archivePath "$RUNNER_TEMP/Runner.xcarchive" archive             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
       - name: Export and upload to App Store Connect
         run: |
