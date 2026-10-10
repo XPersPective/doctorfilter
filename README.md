@@ -189,7 +189,7 @@ Issues and pull requests are welcome. Two rules, both of which exist because
 this app makes claims about health:
 
 1. **No unsupported health claims.** See
-   [ADR-001](.project-brain/decisions/ADR-001-yasak-saglik-iddialari.md) for
+   [ADR-001](.project-brain/decisions/ADR-001.md) for
    what may and may not be said. It applies to every string in all 71 locale
    files and to the store listings.
 2. **Numbers shown to the user must be derived, not estimated.** If it cannot be

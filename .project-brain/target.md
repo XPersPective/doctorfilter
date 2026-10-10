@@ -1,7 +1,7 @@
 # Target Architecture
+Status: DRAFT
 
-## Objective
-
+## Goal
 DoctorFilter: ekranın yaydığı kısa dalga (mavi) ışığı Kelvin cinsinden doğrulanabilir renk bilimiyle azaltan, ekranı donanım minimumunun altına karartabilen, açık kaynak (GPL-3.0), veri toplamayan, premium kalitede göz konforu uygulaması. Önce Android (2.0 mağaza sürümü), sonra iOS ve Windows. 71 dil. Gelir: kullanıcıyı rahatsız etmeyen reklam + yalnızca ömür boyu Pro (abonelik yok), yalnızca mağazaların kendi ödeme sistemi.
 
 ## Target State

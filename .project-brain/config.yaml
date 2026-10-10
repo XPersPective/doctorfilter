@@ -1,15 +1,21 @@
-schema_version: 3
+schema_version: 4
 
 architecture:
-  mode: single
+  mode: "single"
 
 git:
-  history_mode: preserve
-  push_policy: every-task
-  # Uzak: origin/master (GitHub). Her doğrulanmış birim ayrı commit + push.
+  history_mode: "preserve"
+  commit: "auto"
+  push: "every-task"
+  push_policy: "every-task"
+
+commands:
+  test: ""
+  lint: ""
+  build: ""
 
 tasks:
-  id_prefix: PB
+  id_prefix: "PB"
 
 verification:
-  default_risk: medium
+  default_risk: "medium"
