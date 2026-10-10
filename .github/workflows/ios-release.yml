@@ -40,8 +40,7 @@ jobs:
           key="$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8"
           # The secret may have been pasted with lost line breaks or without the
           # BEGIN/END lines: keep only the base64 body and rebuild a clean PEM.
-          body=$(printf '%s' "$ASC_KEY_P8"             | sed -E 's/-----(BEGIN|END)[A-Z ]*-----//g' | tr -d ' 
-	')
+          body=$(printf '%s' "$ASC_KEY_P8" | sed -E 's/-----(BEGIN|END)[A-Z ]*-----//g' | tr -d '[:space:]')
           { echo "-----BEGIN PRIVATE KEY-----"; printf '%s' "$body" | fold -w 64; echo; echo "-----END PRIVATE KEY-----"; } > "$key"
           openssl pkey -in "$key" -noout || { echo "ASC_KEY_P8 is not a valid .p8 private key"; exit 1; }
 
