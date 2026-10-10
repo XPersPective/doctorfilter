@@ -32,3 +32,15 @@ jobs:
           name: Runner-simulator
           path: Runner-simulator.zip
           retention-days: 7
+
+      - name: Upload to Appetize
+        # Optional: runs only when the APPETIZE_TOKEN secret exists. Appetize
+        # returns a public key; open https://appetize.io/app/<publicKey>.
+        env:
+          APPETIZE_TOKEN: ${{ secrets.APPETIZE_TOKEN }}
+        if: env.APPETIZE_TOKEN != ''
+        run: |
+          curl -sS --fail https://api.appetize.io/v1/apps \
+            -u "$APPETIZE_TOKEN:" \
+            -F file=@Runner-simulator.zip \
+            -F platform=ios
