@@ -1,0 +1,69 @@
+# DoctorFilter — iOS bulut derleme (Windows'ta Mac olmadan). Codemagic: https://codemagic.io
+#
+# Kurulum (bir kez, Codemagic arayüzünde):
+#  1. Repoyu bağla. Team > Integrations > App Store Connect: API anahtarı ekle, adı "doctorfilter_asc".
+#  2. Team > Code signing identities: "Automatic" ile dağıtım sertifikası/profil Codemagic'te üretilir.
+#  3. Environment variables grubu "doctorfilter_ios" (secure): ADMOB_APP_ID_IOS,
+#     ADMOB_IOS_BANNER_UNIT_ID, ADMOB_IOS_INTERSTITIAL_UNIT_ID,
+#     ADMOB_IOS_REWARDED_UNIT_ID, ADMOB_IOS_APP_OPEN_UNIT_ID (D:\AppPublishing\apps\doctorfilter\app-ids.env).
+#
+# Workflow'lar:
+#  ios-simulator : imzasız simülatör .app zip'i → Appetize.io'ya yükle, ekran görüntüsü al.
+#  ios-release   : imzalı IPA → TestFlight.
+
+definitions:
+  env: &ios_env
+    groups:
+      - doctorfilter_ios
+    flutter: stable
+    xcode: latest
+    cocoapods: default
+
+workflows:
+  ios-simulator:
+    name: iOS simulator (Appetize)
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment: *ios_env
+    scripts:
+      - flutter pub get
+      - |
+        /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier $ADMOB_APP_ID_IOS" ios/Runner/Info.plist
+      - flutter build ios --simulator --debug
+      - |
+        cd build/ios/iphonesimulator && zip -r "$CM_EXPORT_DIR/Runner-simulator.zip" Runner.app
+    artifacts:
+      - build/ios/iphonesimulator/Runner.app
+      - $CM_EXPORT_DIR/Runner-simulator.zip
+
+  ios-release:
+    name: iOS release (TestFlight)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: doctorfilter_asc
+    environment:
+      <<: *ios_env
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.crazypenguin.doctorfilter
+    scripts:
+      - flutter pub get
+      - |
+        /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier $ADMOB_APP_ID_IOS" ios/Runner/Info.plist
+      - pod install --project-directory=ios
+      - xcode-project use-profiles
+      - |
+        flutter build ipa --release \
+          --build-number=$(($(grep -E '^version:' pubspec.yaml | sed 's/.*+//') )) \
+          --export-options-plist=/Users/builder/export_options.plist \
+          --dart-define=ADMOB_IOS_BANNER_UNIT_ID=$ADMOB_IOS_BANNER_UNIT_ID \
+          --dart-define=ADMOB_IOS_INTERSTITIAL_UNIT_ID=$ADMOB_IOS_INTERSTITIAL_UNIT_ID \
+          --dart-define=ADMOB_IOS_REWARDED_UNIT_ID=$ADMOB_IOS_REWARDED_UNIT_ID \
+          --dart-define=ADMOB_IOS_APP_OPEN_UNIT_ID=$ADMOB_IOS_APP_OPEN_UNIT_ID
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

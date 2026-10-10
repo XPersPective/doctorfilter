@@ -1,0 +1,34 @@
+name: iOS simulator build
+
+# Manual only: macOS runners are free for public repositories, but there is no
+# reason to burn them on every push. No secrets, no signing — this produces a
+# simulator .app (test ad units) to upload to Appetize.io for screenshots.
+# Signed App Store builds are a separate job (see codemagic.yaml).
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - run: flutter build ios --simulator --debug
+
+      - name: Zip for Appetize
+        run: cd build/ios/iphonesimulator && zip -r "$GITHUB_WORKSPACE/Runner-simulator.zip" Runner.app
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Runner-simulator
+          path: Runner-simulator.zip
+          retention-days: 7
