@@ -113,4 +113,39 @@ platform :ios do
       run_precheck_before_submit: false,
     )
   end
+
+  desc "CI (GitHub Actions macOS): dağıtım sertifikası + profil API anahtarıyla, imzalı IPA, TestFlight"
+  lane :ci_release do
+    setup_ci
+    key = app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"),
+      issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+      key_filepath: ENV.fetch("ASC_KEY_FILE"),
+    )
+    bundle = "com.crazypenguin.doctorfilter"
+    team = ENV.fetch("TEAM_ID")
+    cert(api_key: key, team_id: team, development: false, output_path: "build/cert")
+    sigh(api_key: key, app_identifier: bundle, team_id: team, force: true, output_path: "build/profile")
+    profile_name = lane_context[SharedValues::SIGH_NAME]
+    export_dir = File.expand_path("build/export", __dir__)
+    plist = File.expand_path("build/ExportOptions.plist", __dir__)
+    FileUtils.mkdir_p(File.dirname(plist))
+    File.write(plist, <<~XML)
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0"><dict>
+        <key>method</key><string>app-store-connect</string>
+        <key>teamID</key><string>#{team}</string>
+        <key>signingStyle</key><string>manual</string>
+        <key>signingCertificate</key><string>Apple Distribution</string>
+        <key>provisioningProfiles</key><dict><key>#{bundle}</key><string>#{profile_name}</string></dict>
+        <key>uploadSymbols</key><true/>
+      </dict></plist>
+    XML
+    sh("xcodebuild", "-exportArchive", "-archivePath", ENV.fetch("ARCHIVE"),
+       "-exportOptionsPlist", plist, "-exportPath", export_dir)
+    ipa = Dir[File.join(export_dir, "*.ipa")].first
+    UI.user_error!("IPA üretilemedi") unless ipa
+    upload_to_testflight(api_key: key, ipa: ipa, skip_waiting_for_build_processing: true)
+  end
 end
