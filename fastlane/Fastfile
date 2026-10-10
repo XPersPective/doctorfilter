@@ -89,3 +89,28 @@ platform :android do
     )
   end
 end
+
+IOS_METADATA_PATH = File.join(APP_DIR, "stores/app-store/metadata")
+IOS_SCREENSHOTS_PATH = File.join(APP_DIR, "stores/app-store/screenshots")
+
+platform :ios do
+  desc "App Store Connect: yalnızca mağaza metinleri (App Store Connect API anahtarıyla; Mac gerekmez)"
+  lane :push_metadata do
+    ids = app_ids
+    key = app_store_connect_api_key(
+      key_id: ids.fetch("ASC_KEY_ID"),
+      issuer_id: ids.fetch("ASC_ISSUER_ID"),
+      key_filepath: ids.fetch("ASC_KEY_FILE"),
+    )
+    deliver(
+      api_key: key,
+      app_identifier: ids.fetch("IOS_BUNDLE_ID"),
+      metadata_path: IOS_METADATA_PATH,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      skip_app_version_update: true,
+      force: true,
+      run_precheck_before_submit: false,
+    )
+  end
+end
