@@ -14,7 +14,11 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
-    registerChannel(with: engineBridge.binaryMessenger)
+    // The bridge has no binaryMessenger of its own; a plugin registrar does.
+    if let messenger = engineBridge.pluginRegistry
+      .registrar(forPlugin: "DoctorFilterChannel")?.messenger() {
+      registerChannel(with: messenger)
+    }
   }
 
   /// The iOS side of the platform channel.
