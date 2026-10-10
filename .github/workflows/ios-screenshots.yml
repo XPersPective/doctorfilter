@@ -1,0 +1,67 @@
+name: iOS store screenshots
+
+# Manual only. Runs the app on an iPhone Pro Max simulator, captures the store
+# screenshots with integration_test and uploads them to App Store Connect.
+
+on:
+  workflow_dispatch:
+
+env:
+  ASC_KEY_ID: T7HY367GT9
+  ASC_ISSUER_ID: 73c12ef5-d57e-4400-8a21-32e0a41b9f3d
+
+jobs:
+  screenshots:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Boot a Pro Max simulator
+        run: |
+          udid=$(xcrun simctl list devices available -j | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)['devices']
+          c=[(x['name'],x['udid']) for r in d.values() for x in r if 'Pro Max' in x['name'] and 'iPhone' in x['name']]
+          c.sort(reverse=True)
+          print(c[0][1])")
+          echo "UDID=$udid" >> "$GITHUB_ENV"
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+
+      - name: Capture screenshots
+        run: |
+          flutter drive \
+            --driver=test_driver/integration_test.dart \
+            --target=integration_test/screenshots_test.dart \
+            -d "$UDID" --dart-define=STORE_SCREENSHOTS=true
+          for f in screenshots/en-US/*.png; do sips -g pixelWidth -g pixelHeight "$f" | tr '\n' ' '; echo; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: store-screenshots
+          path: screenshots
+          retention-days: 7
+
+      - name: API key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/keys"
+          key="$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8"
+          body=$(printf '%s' "$ASC_KEY_P8" | sed -E 's/-----(BEGIN|END)[A-Z ]*-----//g' | tr -d '[:space:]')
+          { echo "-----BEGIN PRIVATE KEY-----"; printf '%s' "$body" | fold -w 64; echo; echo "-----END PRIVATE KEY-----"; } > "$key"
+          echo "ASC_KEY_FILE=$key" >> "$GITHUB_ENV"
+
+      - name: Upload to App Store Connect
+        run: |
+          export FASTLANE_SKIP_UPDATE_CHECK=1
+          cd fastlane
+          fastlane ios ci_screenshots

@@ -70,6 +70,9 @@ class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp> {
   /// and then told to stay quiet, but never started.
   Future<void> _initialiseAds() async {
     if (!Platform.isAndroid && !Platform.isIOS) return;
+    // Store-screenshot builds only: no consent form or tracking prompt over
+    // the screens being captured, and no test-ad label in the images.
+    if (const bool.fromEnvironment('STORE_SCREENSHOTS')) return;
     if (ref.read(isProProvider)) return;
 
     await AdConsent.gather();
