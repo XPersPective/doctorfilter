@@ -37,6 +37,12 @@
 			<string>cstr6suwn9.skadnetwork</string>
 		</dict>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>DoctorFilter does not read your photos. This is only needed by the file picker used to restore a settings backup.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>DoctorFilter does not use the camera. This is only needed by a system component used by the file picker.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>DoctorFilter does not use your location. This is only needed by a component of the advertising library.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
