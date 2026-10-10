@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
@@ -29,6 +30,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     _controller.dispose();
     super.dispose();
   }
+
+  static bool get _isIos => defaultTargetPlatform == TargetPlatform.iOS;
 
   @override
   Widget build(BuildContext context) {
@@ -105,12 +108,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           // strapline would be adding a delay to show marketing copy.
           tagline: loc?.translate('app_tagline'),
         ),
-        _PageData(
-          icon: Icons.layers_rounded,
-          title: loc?.translate('onboarding_permission_title') ?? 'One permission',
-          body: loc?.translate('onboarding_permission_body') ?? '',
-          requestsPermission: true,
-        ),
+        if (_isIos)
+          // iOS has no overlay permission to ask for, and no app can set the
+          // Colour Filters itself (ADR-002): say what actually happens.
+          _PageData(
+            icon: Icons.tune_rounded,
+            title: loc?.translate('onboarding_ios_title') ?? 'One-time setup',
+            body: loc?.translate('onboarding_ios_body') ?? '',
+          )
+        else
+          _PageData(
+            icon: Icons.layers_rounded,
+            title: loc?.translate('onboarding_permission_title') ??
+                'One permission',
+            body: loc?.translate('onboarding_permission_body') ?? '',
+            requestsPermission: true,
+          ),
         _PageData(
           icon: Icons.tune_rounded,
           title: loc?.translate('onboarding_ready_title') ?? 'You are set',

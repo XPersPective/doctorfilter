@@ -80,8 +80,15 @@ class IosSetupScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Center(
             child: FilledButton(
-              onPressed: () =>
-                  ref.read(iosSetupProvider.notifier).setDone(true),
+              onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                final navigator = Navigator.of(context);
+                final message = loc?.translate('ios_setup_saved') ??
+                    'Saved. Switch it on with the shortcut you chose.';
+                await ref.read(iosSetupProvider.notifier).setDone(true);
+                messenger.showSnackBar(SnackBar(content: Text(message)));
+                navigator.maybePop();
+              },
               child: Text(loc?.translate('ios_setup_done') ?? "I've done this"),
             ),
           ),
