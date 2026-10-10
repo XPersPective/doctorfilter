@@ -130,6 +130,10 @@ platform :ios do
     team = ENV.fetch("TEAM_ID")
     cert(api_key: key, team_id: team, development: false, output_path: "build/cert",
          keychain_path: kc_path, keychain_password: kc_password)
+    # The private key only ever exists on this runner, so the certificate is
+    # single-use. Revoke it at the end: Apple allows very few distribution
+    # certificates and a leftover one fails the next run.
+    cert_id = lane_context[SharedValues::CERT_CERTIFICATE_ID]
     sigh(api_key: key, app_identifier: bundle, team_id: team, force: true, output_path: "build/profile")
     profile_name = lane_context[SharedValues::SIGH_NAME]
     export_dir = File.expand_path("build/export", __dir__)
@@ -159,7 +163,15 @@ platform :ios do
     sh("xcrun altool --validate-app -f '#{ipa}' -t ios --apiKey #{ENV.fetch('ASC_KEY_ID')} --apiIssuer #{ENV.fetch('ASC_ISSUER_ID')} 2>&1 | tee build/validate.log; test ${PIPESTATUS[0]} -eq 0") do |status, _|
       UI.important("altool validate exited #{status.exitstatus}; see log above") unless status.success?
     end
-    upload_to_testflight(api_key: key, ipa: ipa, skip_waiting_for_build_processing: true)
+    begin
+      upload_to_testflight(api_key: key, ipa: ipa, skip_waiting_for_build_processing: true)
+    ensure
+      begin
+        Spaceship::ConnectAPI::Certificate.get(certificate_id: cert_id).delete! if cert_id
+      rescue => e
+        UI.important("Could not revoke certificate #{cert_id}: #{e.message}")
+      end
+    end
   end
 
   desc "CI: simülatörden alınan ekran görüntülerini App Store Connect'e yükler"
