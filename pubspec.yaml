@@ -44,8 +44,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  integration_test:
-    sdk: flutter
   flutter_lints: ^6.0.0
   # Builds the Microsoft Store package from the Windows release build.
   # A dev dependency, not a runtime one: it is a packaging tool and has no

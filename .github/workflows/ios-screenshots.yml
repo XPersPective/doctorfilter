@@ -24,25 +24,11 @@ jobs:
 
       - run: flutter pub get
 
-      - name: Boot a Pro Max simulator
-        run: |
-          udid=$(xcrun simctl list devices available -j | python3 -c "
-          import json,sys
-          d=json.load(sys.stdin)['devices']
-          c=[(x['name'],x['udid']) for r in d.values() for x in r if 'Pro Max' in x['name'] and 'iPhone' in x['name']]
-          c.sort(reverse=True)
-          print(c[0][1])")
-          echo "UDID=$udid" >> "$GITHUB_ENV"
-          xcrun simctl boot "$udid"
-          xcrun simctl bootstatus "$udid" -b
+      - name: Build the simulator app (no consent form or test-ad label)
+        run: flutter build ios --simulator --debug --dart-define=STORE_SCREENSHOTS=true
 
       - name: Capture screenshots
-        run: |
-          flutter drive \
-            --driver=test_driver/integration_test.dart \
-            --target=integration_test/screenshots_test.dart \
-            -d "$UDID" --dart-define=STORE_SCREENSHOTS=true
-          for f in screenshots/en-US/*.png; do sips -g pixelWidth -g pixelHeight "$f" | tr '\n' ' '; echo; done
+        run: tool/ios_screenshots.sh
 
       - uses: actions/upload-artifact@v4
         with:
