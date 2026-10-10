@@ -1,3 +1,4 @@
+require "securerandom"
 # DoctorFilter — Google Play yayın lanes
 #
 # Kullanım:
@@ -116,7 +117,10 @@ platform :ios do
 
   desc "CI (GitHub Actions macOS): dağıtım sertifikası + profil API anahtarıyla, imzalı IPA, TestFlight"
   lane :ci_release do
-    setup_ci
+    kc_password = SecureRandom.hex(16)
+    create_keychain(name: "ci", password: kc_password, default_keychain: true,
+                    unlock: true, timeout: 3600, lock_when_sleeps: false)
+    kc_path = File.expand_path("~/Library/Keychains/ci.keychain-db")
     key = app_store_connect_api_key(
       key_id: ENV.fetch("ASC_KEY_ID"),
       issuer_id: ENV.fetch("ASC_ISSUER_ID"),
@@ -124,7 +128,8 @@ platform :ios do
     )
     bundle = "com.crazypenguin.doctorfilter"
     team = ENV.fetch("TEAM_ID")
-    cert(api_key: key, team_id: team, development: false, output_path: "build/cert")
+    cert(api_key: key, team_id: team, development: false, output_path: "build/cert",
+         keychain_path: kc_path, keychain_password: kc_password)
     sigh(api_key: key, app_identifier: bundle, team_id: team, force: true, output_path: "build/profile")
     profile_name = lane_context[SharedValues::SIGH_NAME]
     export_dir = File.expand_path("build/export", __dir__)
