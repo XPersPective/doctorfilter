@@ -120,7 +120,7 @@ platform :ios do
     kc_password = SecureRandom.hex(16)
     create_keychain(name: "ci", password: kc_password, default_keychain: true,
                     unlock: true, timeout: 3600, lock_when_sleeps: false)
-    kc_path = File.expand_path("~/Library/Keychains/ci.keychain-db")
+    kc_path = File.expand_path("~/Library/Keychains/ci-db")
     key = app_store_connect_api_key(
       key_id: ENV.fetch("ASC_KEY_ID"),
       issuer_id: ENV.fetch("ASC_ISSUER_ID"),
