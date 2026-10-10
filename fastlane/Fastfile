@@ -151,6 +151,14 @@ platform :ios do
        "-exportOptionsPlist", plist, "-exportPath", export_dir)
     ipa = Dir[File.join(export_dir, "*.ipa")].first
     UI.user_error!("IPA üretilemedi") unless ipa
+    # TestFlight rejects some builds only after "uploading" succeeded, and says
+    # so by e-mail. Validating first makes the reason visible in this log.
+    keys_dir = File.expand_path("~/.appstoreconnect/private_keys")
+    FileUtils.mkdir_p(keys_dir)
+    FileUtils.cp(ENV.fetch("ASC_KEY_FILE"), File.join(keys_dir, "AuthKey_#{ENV.fetch('ASC_KEY_ID')}.p8"))
+    sh("xcrun altool --validate-app -f '#{ipa}' -t ios --apiKey #{ENV.fetch('ASC_KEY_ID')} --apiIssuer #{ENV.fetch('ASC_ISSUER_ID')} 2>&1 | tee build/validate.log; test ${PIPESTATUS[0]} -eq 0") do |status, _|
+      UI.important("altool validate exited #{status.exitstatus}; see log above") unless status.success?
+    end
     upload_to_testflight(api_key: key, ipa: ipa, skip_waiting_for_build_processing: true)
   end
 
