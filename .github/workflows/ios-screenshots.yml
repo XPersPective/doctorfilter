@@ -28,7 +28,7 @@ jobs:
         run: flutter build ios --simulator --debug --dart-define=STORE_SCREENSHOTS=true
 
       - name: Capture screenshots
-        run: tool/ios_screenshots.sh
+        run: bash tool/ios_screenshots.sh
 
       - uses: actions/upload-artifact@v4
         with:
