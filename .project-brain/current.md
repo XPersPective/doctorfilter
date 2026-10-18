@@ -2,15 +2,11 @@
 
 ## Scope
 
-DoctorFilter (`com.crazypenguin.doctorfilter`) — Android'de yayında olan 2.0 sürümü. Açık kaynak (GPL-3.0), GitHub `XPersPective/doctorfilter`.
+DoctorFilter (`com.crazypenguin.doctorfilter`) — Android, iOS ve Windows hedefleri olan Flutter uygulaması. Açık kaynak (GPL-3.0), GitHub `XPersPective/doctorfilter`.
 
 ## Durum özeti (2026-10-10)
 
-- Play üretimi: **2.0.0 / 5003** 2026-10-02'de gönderildi; güncel inceleme sonucu kontrol edilmedi (→ PB-009). Önceki canlı sürüm 1.5 / 15.
-- Etiket `v2.0.0` = 5000 derlemesinin kaynağı.
-- Üretime gönderilen: **5003** (5000 + bildirim izni + Keşfet + filtre koyu tutarken tema anahtarı düzeltmesi), sahip onayıyla 2026-10-02.
-- iOS: App Store Connect taslağı **2.0.0 / build 5003**, `PREPARE_FOR_SUBMISSION`; build `VALID`. 46 dilin açıklaması ve anahtar sözcükleri yüklü; en-US'te 4 ekran görüntüsü yüklü. IAP `MISSING_METADATA`; fiyat, satın alma inceleme görüntüsü ve gerçek cihaz/Control doğrulaması bekliyor (→ PB-004). İncelemeye gönderilmedi.
-- Microsoft Store: Partner Center ve publisher bilgileri bekleniyor (→ PB-003).
+- iOS sistem parlaklığı, Renk Filtreleri sihirbazı, Kısayollar ve iOS 18 Control akışları için gerçek cihaz/Control doğrulaması açık (→ PB-004).
 
 ## Runtime
 
@@ -27,14 +23,10 @@ Flutter 3.47 / Dart 3.13, flutter_riverpod (StateNotifier), clean architecture: 
 - `lib/presentation/screens/{home,onboarding,settings}_screen.dart` — ana gezinme, ilk kurulum ve ayarlar.
 - `lib/presentation/widgets/notification_permission_card.dart` — bildirim izni istemi.
 - `assets/Localizations/**` — 71 dilin kaynak metinleri.
-- `android/**` — Android manifesti, Kotlin servisleri ve mağaza yapılandırması.
+- `android/**` — Android manifesti, Kotlin servisleri ve platform yapılandırması.
 - `ios/Runner/**` — iOS uygulama hedefi; `ios/DoctorFilterControl/**` — henüz Xcode hedefine eklenmemiş Control kaynağı.
 - `windows/**` — Windows runner ve Store satın alma köprüsü.
-- `.github/workflows/ios-*.yml` — macOS GitHub Actions iOS derleme ve ekran görüntüsü iş akışları.
-- `codemagic.yaml` — ek CI derleme yapılandırması.
-- `fastlane/Fastfile` — Play ve App Store Connect yayın şeritleri.
 - `PRIVACY.md` — uygulama gizlilik politikası.
-- `tool/ios_screenshots.sh`, `tool/store/**` — iOS/Android mağaza görseli üretimi.
 - `test/**` — Flutter birim/widget testleri.
 
 ## Domains
@@ -76,44 +68,5 @@ Sources: `assets/Localizations/**`, `lib/core/localization/**`, `test/core/local
 
 ### Diğer platformlar — OBSERVED
 
-iOS: sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Control; `DoctorFilterControl` hedefi Xcode projesine eklenmedi, Mac'te derlenmedi. Windows: `overlay_window.cpp`, `flutter build windows` geçiyor, MSIX publisher yer tutucu. Linux/macOS iskelet (kapsam dışı).
+iOS: sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Control; `DoctorFilterControl` hedefi Xcode projesine eklenmedi, Mac'te derlenmedi. Windows: `overlay_window.cpp` overlay implementation. Linux/macOS iskelet (kapsam dışı).
 Sources: `ios/**`, `lib/core/math/ios_color_filter.dart`, `lib/presentation/screens/ios_setup_screen.dart`, `windows/**`.
-
-## Yayın
-
-**Sır ve kimlikler projede yok.** Yayın kökü `D:\AppPublishing` (Git dışı; protokol `D:\AppPublishing\README.md`; başka makinede `APP_PUBLISHING_ROOT`):
-Sources: `.github/workflows/**`, `fastlane/**`, `tool/ios_screenshots.sh`, `tool/store/**`; mağaza girdileri Git dışındaki `D:\AppPublishing\apps\doctorfilter\stores\**`.
-
-| Ne | Yer |
-|---|---|
-| İmza | `apps/doctorfilter/credentials/android/upload.jks` + `key.properties` |
-| AdMob + ürün kimlikleri | `apps/doctorfilter/app-ids.env` |
-| Play API | `publisher/crazypenguin/credentials/google-play/service-account.json` |
-| Mağaza metni + görseller (73 dil) | `apps/doctorfilter/stores/google-play/metadata/` |
-
-Gradle imzayı `DOCTORFILTER_SIGNING`, manifest AdMob kimliğini `ADMOB_APP_ID_ANDROID` ortamından alır; yoksa debug imza + test kimlikleri.
-
-### Yeni sürüm adımları
-
-1. Kodu değiştir; `flutter analyze` + `flutter test`.
-2. `pubspec.yaml` sürümü: ad artır, kod **5000'in üstüne** (1.x bölünmüş APK'lar 1002/2002/4002 kullandı; kod hep son yüklenenden büyük).
-3. Her dilde `metadata/<locale>/changelogs/<kod>.txt` (73 dil; ADR-001'e uygun).
-4. Ekranlar değiştiyse görselleri yenile: `tool/store/README.md` (emülatör `capture_all.py` → `render_all.py <metadata>`).
-5. `cd fastlane` → `bundle exec fastlane build_release` → `deploy_internal`; iç testte dene (lisans testçisi listesi "teste").
-6. Sahip onayıyla `bundle exec fastlane deploy_production` (internal'daki pubspec kodunu üretime taşır + metadata/görseller). Play API ile production kanalını doğrula.
-7. `git tag -a vX.Y.Z` + push.
-
-Dikkat: Play'de yönetilen yayınlama KAPALI — her API commit'i Console'da bekleyen değişiklikleri de gönderir. Play beyanları (veri güvenliği, sağlık yok, FGS specialUse videosu `docs/play/`, kategori Araçlar) yapıldı; uygulama davranışı değişirse güncellenmeli. Gizlilik URL'si `PRIVACY.md`.
-
-## Platform kapsamı
-
-minSdk 24 (Flutter alt sınırı), target/compileSdk 36, 16 KB hizalı yerel kitaplıklar, arm64/armv7/x86_64, tüm ekran boyutları. Play kataloğu ~21.900 model.
-
-## Güvenlik
-
-Geçmiş ve ağaçta sır yok; commit e-postaları GitHub noreply. Dışa açık bileşenler: MainActivity, ShortcutActivity (düşük etki), FilterTileService (izinli).
-
-## Known Unknowns
-
-- Eski `doctorfilterpro` alıcısının 2.0'da geri yüklemesi gerçek hesapla test edilemedi (birim testi var).
-- GitHub önbelleğinde temizlik öncesi commit'ler tam SHA ile erişilebilir; sahip kararıyla (2026-10-01) bırakıldı: AdMob uygulama kimliği APK'da zaten herkese açık, fork yok.

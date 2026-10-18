@@ -24,8 +24,7 @@ Flutter 3.47 / Dart 3.13, flutter_riverpod StateNotifier, clean architecture (co
 
 ### C-020: Sır asla repoya girmez
 
-Kaynak projede imza anahtarı, şifre veya gerçek kimlik dosyası TUTULMAZ (2026-10-01 sahip kararı): hepsi `D:\AppPublishing\apps\doctorfilter` altında (`credentials/android/`, `app-ids.env`), protokol `D:\AppPublishing\README.md`. Gradle imzayı `DOCTORFILTER_SIGNING`, AdMob uygulama kimliğini `ADMOB_APP_ID_ANDROID` ortam değişkeninden okur; ikisini `fastlane build_release` ayarlar. `.env`, `.env.local`, `android/key.properties`, `*.jks`, `*.keystore`, `*.p12`, `google-services.json`, `GoogleService-Info.plist`, fastlane servis hesabı JSON'u. `.gitignore` zayıflatılmaz. Gerçek AdMob/ürün kimlikleri koda yazılmaz: `lib/core/config/env_config.dart` (dart-define + Google test fallback) ve `android/app/build.gradle.kts` manifest placeholder (`ADMOB_APP_ID_ANDROID`).
-
+Kaynak projeye imza anahtarı, şifre veya gerçek kimlik dosyası eklenmez. `.env`, `.env.local`, `android/key.properties`, `*.jks`, `*.keystore`, `*.p12`, `google-services.json`, `GoogleService-Info.plist` ve servis hesabı JSON dosyaları repoya alınmaz; `.gitignore` zayıflatılmaz. Gerçek AdMob/ürün kimlikleri koda yazılmaz: `lib/core/config/env_config.dart` (dart-define + Google test fallback) ve `android/app/build.gradle.kts` manifest placeholder (`ADMOB_APP_ID_ANDROID`).
 ### C-021: Sağlık iddiası yasağı
 
 Yasak: mavi ışık retinaya zarar/AMD, göz yorgunluğu/kuruluğu tedavisi, kilo, herhangi tedavi/tanı/önleme vaadi. Söylenebilecek: akşam melanopik dozu düşürme, karartma konforu, 20-20-20. Gerekçe ve sınır ADR-001'de.
@@ -39,7 +38,3 @@ Proje sahibinin kişisel bilgisi hiçbir dosyaya ve commit metadata'sına yazıl
 ### C-030: Tek doğruluk kaynağı bu dizin
 
 `.project-brain/` dışında plan/takip dosyası tutulmaz. Commit mesajları `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>` ile biter; push `master`.
-
-### C-031: Yerel yayın girdileri
-
-Google Play metadata/görselleri ve imzalama/API dosyaları `D:\AppPublishing` altında, Git dışında. Sonraki ortamda yayın öncesi bu klasör sağlanıp doğrulanmalı; yoksa eski 1.x mağaza metni veya görseli varsayılan olarak kullanılmaz. Sırlar Project Brain'e veya Git'e kopyalanmaz.

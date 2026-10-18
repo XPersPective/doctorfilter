@@ -24,7 +24,7 @@ AdPolicy kuralları geçerli; tüm reklam yüklemeleri onay + SDK başlatma sonr
 
 ### Platformlar
 
-Android tam ve mağazada. iOS = sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Control. Windows = katman pencere overlay + MSIX + Store satın alma. Linux/macOS derlemeleri şimdilik kapsam dışı (sahip kararı 2026-09-30); iskeletler repoda kalır.
+Android tam özellikli. iOS = sistem parlaklığı + Renk Filtreleri sihirbazı + Kısayollar + iOS 18 Control. Windows = katman pencere overlay + Store satın alma. Linux/macOS derlemeleri şimdilik kapsam dışı (sahip kararı 2026-09-30); iskeletler repoda kalır.
 
 ### Marka
 
@@ -33,6 +33,7 @@ Tek işaret üreticisi `tool/brand/generate_icons.py`; ana ekranda `BrandLockup`
 ## Explicit Non-Goals
 
 - Abonelik; kendi sunucusu/hesabı/analitiği; mağaza dışı ödeme.
+- Mağaza listeleme, gönderim, inceleme ve yayın operasyonları.
 - iOS'ta diğer uygulamaların üzerinde filtre vaadi (public API yok — ADR-002).
 - Linux/macOS'ta overlay.
 - Yasak sağlık iddiaları (ADR-001).
@@ -50,9 +51,8 @@ Yok. (Eski 1.x Pro geri yüklemesi ve geçmişteki AdMob kimliği konuları kapa
 - [x] AC5 Reklam ilk deneyimi bozmaz, Pro'da hiç görünmez, kalkınca boşluk kalmaz.
 - [x] AC6 Bildirim kokpiti uygulamayı açmadan gerçek kontrol sağlar.
 - [x] AC7 Zamanlayıcı cihaz yeniden başlasa bile çalışır.
-- [x] AC8 Çökme yok; izin reddi, servis ve mağaza hataları anlaşılır mesajla.
+- [x] AC8 Çökme yok; izin reddi, servis ve ödeme hataları anlaşılır mesajla.
 - [x] AC9 Erişilebilir: ekran okuyucu etiketleri, 48dp dokunma alanı, büyük yazıda taşma yok.
-- [ ] AC10 Play, App Store ve Microsoft Store politikalarına uygun; yasak sağlık iddiası yok — mağaza incelemesi olmadan kanıtlanamaz (Play: 2.0.0/5000 incelemede → PB-009; App Store PB-004, Microsoft PB-003).
-- [x] AC11 Ana ekranda marka logosu (ikon + iki renkli "doctorFilter" + PRO üst simgesi + slogan); splash'ta ikon.
+- [x] AC10 Ana ekranda marka logosu (ikon + iki renkli "doctorFilter" + PRO üst simgesi + slogan); splash'ta ikon.
 
 Kanıt kaydı ve tarihçe: `git log`.
