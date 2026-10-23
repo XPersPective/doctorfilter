@@ -105,3 +105,6 @@ footer nav{display:flex;flex-wrap:wrap;gap:8px 20px}
 .menu a:hover,.menu a[aria-current]{background:#0087ff1f;color:var(--blue)}
 .card .dot{font-family:"Audiowide",system-ui,sans-serif;font-weight:400}
 .hero::before{background:radial-gradient(40% 50% at 78% 30%,#ff990050,transparent 70%),radial-gradient(35% 45% at 18% 15%,#0087ff38,transparent 70%)}
+.stores{display:flex;flex-wrap:wrap;gap:12px}.hero .stores,.cta .stores{position:relative}.cta .stores{justify-content:center}
+.btn-apple{background:var(--fg);color:var(--bg);box-shadow:0 14px 40px -16px #0087ff88}.btn-apple svg{width:20px;height:20px}
+@media (max-width:880px){.hero .stores{justify-content:center}}

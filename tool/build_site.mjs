@@ -11,6 +11,8 @@ const META = process.argv[2];
 const OUT = 'site';
 const BASE = 'https://xperspective.github.io/doctorfilter/';
 const PLAY = 'https://play.google.com/store/apps/details?id=com.crazypenguin.doctorfilter';
+const APPSTORE = 'https://apps.apple.com/app/id6821332436';
+const INDEXNOW_KEY = 'd0c7f11e4b2a4c9e8f3a6b5d1e2c7a90';
 const REPO = 'https://github.com/XPersPective/doctorfilter';
 const PRIVACY = `${REPO}/blob/master/PRIVACY.md`;
 const RTL = new Set(['ar', 'he', 'iw', 'fa', 'ur']);
@@ -72,6 +74,7 @@ function screenshots(loc) {
   });
 }
 
+const appleIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.7c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.4.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1ZM13.8 5c.7-.9 1.2-2 1.1-3.2-1 0-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.1.1 2.3-.6 3-1.5Z"/></svg>';
 const playIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.3 2.2c-.2.3-.3.6-.3 1v17.6c0 .4.1.7.3 1L14 12 4.3 2.2Zm10.9 11-2.4 2.4-7.3 7.2c.4.1.9 0 1.3-.2l9.6-5.5-1.2-3.9Zm4.5-2.9-3.1-1.8L14 12l2.6 2.5 3.1-1.8c.9-.5.9-1.9 0-2.4ZM6.8.6c-.4-.2-.9-.3-1.3-.2l7.3 7.2 2.4 2.4 1.2-3.9L6.8.6Z"/></svg>';
 const css = fs.readFileSync('tool/site.css', 'utf8');
 const alternates = locales.map((l) => `<link rel="alternate" hreflang="${l}" href="${BASE}${dir(l)}">`).join('\n')
@@ -83,13 +86,15 @@ for (const loc of locales) {
   const { intro, bullets, outro } = split(read(loc, 'full_description.txt'));
   const url = BASE + dir(loc);
   const play = playUrl(loc);
+  const ios = `${APPSTORE}?l=${lang(loc)}`;
+  const buttons = (cls = '') => `<div class="stores"><a class="btn btn-play ${cls}" href="${play}" rel="noopener">${playIcon}Google Play</a><a class="btn btn-apple ${cls}" href="${ios}" rel="noopener">${appleIcon}App Store</a></div>`;
   const shots = screenshots(loc);
   const ld = {
     '@context': 'https://schema.org', '@type': 'SoftwareApplication',
     name: title, description: short, url, inLanguage: loc,
     applicationCategory: 'HealthApplication', operatingSystem: 'Android, iOS',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    downloadUrl: play, installUrl: play, image: `${BASE}img/icon.png`, screenshot: shots,
+    downloadUrl: [play, ios], installUrl: play, sameAs: [play, ios, REPO], image: `${BASE}img/icon.png`, screenshot: shots,
     license: 'https://www.gnu.org/licenses/gpl-3.0.html',
   };
   const menu = locales.map((l) => `<a href="${BASE}${dir(l)}" lang="${l}" hreflang="${l}"${l === loc ? ' aria-current="page"' : ''}>${esc(native(l))}</a>`).join('');
@@ -138,7 +143,7 @@ ${alternates}
         <div><span class="wm"><b>doctor</b><i>Filter</i></span></div>
         <h1>${heading(title)}</h1>
         <p class="lead">${esc(short)}</p>
-        <a class="btn btn-play" href="${play}" rel="noopener">${playIcon}Google Play</a>
+        ${buttons()}
         <div class="band"><div class="bar"></div><div class="ticks"><span>6500 K</span><span>5500 K</span><span>3400 K</span><span>2200 K</span><span>1850 K</span></div></div>
       </div>
       <div class="stage">
@@ -164,7 +169,7 @@ ${shots.map((s, i) => `      <div class="phone"><img src="${s}" alt="${esc(title
     <section class="cta">
       <h2>${esc(title)}</h2>
       <p>${esc(short)}</p>
-      <a class="btn btn-play" href="${play}" rel="noopener">${playIcon}Google Play</a>
+      ${buttons()}
     </section>
   </div>
 </main>
@@ -195,4 +200,5 @@ fs.writeFileSync(path.join(OUT, 'sitemap.xml'),
   + '\n</urlset>\n');
 fs.writeFileSync(path.join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${BASE}sitemap.xml\n`);
 fs.writeFileSync(path.join(OUT, '.nojekyll'), '');
+fs.writeFileSync(path.join(OUT, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
 console.log(`${locales.length} languages written to ${OUT}/`);
