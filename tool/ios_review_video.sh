@@ -31,7 +31,10 @@ clip() { # seconds on screen: the app is launched and drawn before recording
   xcrun simctl io "$UDID" recordVideo --codec=h264 --force "$OUT/clips/$n.mp4" &
   rec=$!
   sleep "$1"
-  kill -INT "$rec"; wait "$rec" || true
+  # Signal simctl itself (not only the xcrun wrapper) and never wait forever.
+  pkill -INT -f "simctl io $UDID recordVideo" || kill -INT "$rec" || true
+  for _ in $(seq 1 20); do kill -0 "$rec" 2>/dev/null || break; sleep 1; done
+  kill -0 "$rec" 2>/dev/null && { echo "recording did not stop"; exit 1; }
   xcrun simctl terminate "$UDID" "$BUNDLE" || true
 }
 
