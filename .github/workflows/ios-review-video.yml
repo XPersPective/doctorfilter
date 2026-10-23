@@ -1,0 +1,29 @@
+name: iOS App Review video
+
+# Manual only. Records the app flow on a simulator for an App Review reply.
+# Uploads nothing to App Store Connect; the video is a workflow artifact.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  video:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build ios --simulator --debug --dart-define=STORE_SCREENSHOTS=true
+      - run: |
+          command -v ffmpeg || brew install ffmpeg
+          bash tool/ios_review_video.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review-video
+          path: review
+          retention-days: 7

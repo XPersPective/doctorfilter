@@ -46,6 +46,8 @@ import 'settings_screen.dart';
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
+  static bool _storePaywallOpened = false;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filterState = ref.watch(filterProvider);
@@ -57,6 +59,17 @@ class HomeScreen extends ConsumerWidget {
 
     // Keeps the notification's copy of the preset list current.
     ref.watch(notificationCatalogSyncProvider);
+
+    // Store-screenshot builds only: the App Store review image for the Pro
+    // purchase is the paywall itself, so the capture script can ask for it.
+    if (const bool.fromEnvironment('STORE_SCREENSHOTS') &&
+        !_storePaywallOpened &&
+        ref.read(preferencesDataSourceProvider).storePaywallRequested()) {
+      _storePaywallOpened = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) _open(context, const PaywallScreen());
+      });
+    }
 
     // Created at launch rather than when the scheduler is first opened: loading
     // it re-sends the schedule to the native alarms, which must match the app.
