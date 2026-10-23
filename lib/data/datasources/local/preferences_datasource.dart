@@ -51,7 +51,7 @@ class PreferencesDataSource {
 
   static const _keyOnboardingDone = 'df_onboarding_done';
   // Written only by the store-screenshot script, read only in STORE_SCREENSHOTS builds.
-  static const _keyStorePaywall = 'df_store_paywall';
+  static const _keyStoreScreen = 'df_store_screen';
 
   static const _keyLocale = 'df_app_locale';
   static const _keyIsDarkMode = 'df_app_is_dark_mode';
@@ -190,7 +190,9 @@ class PreferencesDataSource {
   bool isOnboardingDone() => _prefs.getBool(_keyOnboardingDone) ?? false;
   Future<void> setOnboardingDone() => _prefs.setBool(_keyOnboardingDone, true);
 
-  bool storePaywallRequested() => _prefs.getBool(_keyStorePaywall) ?? false;
+  /// Screen name the store-screenshot scripts ask for, or null.
+  String? storeScreen() =>
+      _prefs.getString(_keyStoreScreen) ?? (_prefs.getBool('df_store_paywall') == true ? 'paywall' : null);
 
   String? getLocale() => _prefs.getString(_keyLocale);
   Future<void> setLocale(String languageCode) => _prefs.setString(_keyLocale, languageCode);

@@ -46,7 +46,7 @@ import 'settings_screen.dart';
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  static bool _storePaywallOpened = false;
+  static bool _storeScreenOpened = false;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,14 +60,23 @@ class HomeScreen extends ConsumerWidget {
     // Keeps the notification's copy of the preset list current.
     ref.watch(notificationCatalogSyncProvider);
 
-    // Store-screenshot builds only: the App Store review image for the Pro
-    // purchase is the paywall itself, so the capture script can ask for it.
-    if (const bool.fromEnvironment('STORE_SCREENSHOTS') &&
-        !_storePaywallOpened &&
-        ref.read(preferencesDataSourceProvider).storePaywallRequested()) {
-      _storePaywallOpened = true;
+    // Store-screenshot builds only: the capture scripts open a screen by
+    // name (df_store_screen) so every store image is taken without taps.
+    final storeScreen = const bool.fromEnvironment('STORE_SCREENSHOTS') && !_storeScreenOpened
+        ? ref.read(preferencesDataSourceProvider).storeScreen()
+        : null;
+    final Widget? storeTarget = switch (storeScreen) {
+      'paywall' => const PaywallScreen(),
+      'presets' => const PresetsScreen(),
+      'schedule' => const SchedulerScreen(),
+      'learn' => const EducationScreen(),
+      'settings' => const SettingsScreen(),
+      _ => null,
+    };
+    if (storeTarget != null) {
+      _storeScreenOpened = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) _open(context, const PaywallScreen());
+        if (context.mounted) _open(context, storeTarget);
       });
     }
 
