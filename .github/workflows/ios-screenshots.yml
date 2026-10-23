@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -30,7 +30,7 @@ jobs:
       - name: Capture screenshots
         run: bash tool/ios_screenshots.sh
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: store-screenshots
           path: screenshots
