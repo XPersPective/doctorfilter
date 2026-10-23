@@ -24,12 +24,12 @@ boot
 xcrun simctl install "$UDID" "$APP"
 
 n=0
-clip() { # seconds: records while the app launches and settles
+clip() { # seconds on screen: the app is launched and drawn before recording
   n=$((n+1))
+  xcrun simctl launch "$UDID" "$BUNDLE"
+  sleep 12
   xcrun simctl io "$UDID" recordVideo --codec=h264 --force "$OUT/clips/$n.mp4" &
   rec=$!
-  sleep 1
-  xcrun simctl launch "$UDID" "$BUNDLE"
   sleep "$1"
   kill -INT "$rec"; wait "$rec" || true
   xcrun simctl terminate "$UDID" "$BUNDLE" || true
