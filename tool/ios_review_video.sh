@@ -3,6 +3,8 @@
 # home screen at three presets, then the Pro paywall. Needs a simulator build
 # made with --dart-define=STORE_SCREENSHOTS=true. Output: review/app-flow.mp4
 set -euo pipefail
+# Job control: without it, background jobs ignore SIGINT and recordVideo never stops.
+set -m
 
 BUNDLE=com.crazypenguin.doctorfilter
 APP=build/ios/iphonesimulator/Runner.app
