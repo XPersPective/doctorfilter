@@ -201,4 +201,6 @@ fs.writeFileSync(path.join(OUT, 'sitemap.xml'),
 fs.writeFileSync(path.join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${BASE}sitemap.xml\n`);
 fs.writeFileSync(path.join(OUT, '.nojekyll'), '');
 fs.writeFileSync(path.join(OUT, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
+// Google Search Console ownership (URL-prefix property).
+fs.writeFileSync(path.join(OUT, 'googled43129377e1af667.html'), 'google-site-verification: googled43129377e1af667.html');
 console.log(`${locales.length} languages written to ${OUT}/`);
