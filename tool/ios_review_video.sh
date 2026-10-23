@@ -26,22 +26,32 @@ boot
 xcrun simctl install "$UDID" "$APP"
 
 n=0
-clip() { # seconds on screen: the app is launched and drawn before recording
+# simctl recordVideo writes frames only when the screen changes, so a settled
+# screen gives a near-empty clip. Record the cold launch (it moves), then show
+# each later state as a screenshot held for a fixed time.
+seg() { # input, seconds -> fixed-length 30 fps segment
   n=$((n+1))
+  ffmpeg -hide_banner -loglevel error -y "${@:3}" -i "$1" -t "$2"     -vf "tpad=stop_mode=clone:stop_duration=$2,fps=30,scale=1080:-2,format=yuv420p"     -c:v libx264 "$OUT/clips/$n.mp4"
+}
+still() { # seconds on screen
   xcrun simctl launch "$UDID" "$BUNDLE"
   sleep 12
-  xcrun simctl io "$UDID" recordVideo --codec=h264 --force "$OUT/clips/$n.mp4" &
-  rec=$!
-  sleep "$1"
-  # Signal simctl itself (not only the xcrun wrapper) and never wait forever.
-  pkill -INT -f "simctl io $UDID recordVideo" || kill -INT "$rec" || true
-  for _ in $(seq 1 20); do kill -0 "$rec" 2>/dev/null || break; sleep 1; done
-  kill -0 "$rec" 2>/dev/null && { echo "recording did not stop"; exit 1; }
+  xcrun simctl io "$UDID" screenshot --type=png "$OUT/clips/s$n.png"
   xcrun simctl terminate "$UDID" "$BUNDLE" || true
+  seg "$OUT/clips/s$n.png" "$1" -loop 1
 }
 
-# 1. First launch: welcome and guided setup.
-clip 10
+# 1. Cold first launch: welcome and guided setup, recorded live.
+xcrun simctl io "$UDID" recordVideo --codec=h264 --force "$OUT/clips/launch.mov" &
+rec=$!
+sleep 1
+xcrun simctl launch "$UDID" "$BUNDLE"
+sleep 12
+pkill -INT -f "simctl io $UDID recordVideo" || kill -INT "$rec" || true
+for _ in $(seq 1 20); do kill -0 "$rec" 2>/dev/null || break; sleep 1; done
+kill -0 "$rec" 2>/dev/null && { echo "recording did not stop"; exit 1; }
+xcrun simctl terminate "$UDID" "$BUNDLE" || true
+seg "$OUT/clips/launch.mov" 10
 
 CONTAINER=$(xcrun simctl get_app_container "$UDID" "$BUNDLE" data)
 PLIST="$CONTAINER/Library/Preferences/$BUNDLE.plist"
@@ -58,14 +68,14 @@ setpref df_onboarding_done bool true
 for k in 3400 2200 1850; do
   setpref df_filter_kelvin integer "$k"
   restart
-  clip 8
+  still 5
 done
 
 # 5. Pro paywall: what the In-App Purchase unlocks, "Get Pro", "Restore purchase".
 setpref df_store_paywall bool true
 restart
-clip 10
+still 8
 
-ls "$OUT/clips"/*.mp4 | sed 's/^/file /' | sed "s|file $OUT/clips/|file clips/|" > "$OUT/list.txt"
-(cd "$OUT" && ffmpeg -hide_banner -loglevel error -f concat -safe 0 -i list.txt -c:v libx264 -pix_fmt yuv420p -movflags +faststart app-flow.mp4)
+for i in $(seq 1 "$n"); do echo "file clips/$i.mp4"; done > "$OUT/list.txt"
+(cd "$OUT" && ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i list.txt -c copy -movflags +faststart app-flow.mp4)
 ls -la "$OUT/app-flow.mp4"
