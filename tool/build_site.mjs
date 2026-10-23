@@ -52,7 +52,7 @@ for (const loc of locales) {
   const title = read(loc, 'title.txt');
   const short = read(loc, 'short_description.txt');
   const url = BASE + dir(loc);
-  const root = loc === 'en-US' ? './' : '../';
+  const root = BASE; // absolute: relative paths break when the URL has no trailing slash
   const play = `${PLAY}&hl=${lang(loc)}`;
   const ld = {
     '@context': 'https://schema.org', '@type': 'SoftwareApplication',
