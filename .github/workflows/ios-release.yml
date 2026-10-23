@@ -1,12 +1,15 @@
 name: iOS release (TestFlight)
 
 # Manual only. Builds a signed IPA on a free macOS runner (public repo) and
-# uploads it to App Store Connect. Signing uses Apple's cloud-managed
-# distribution certificate through the App Store Connect API key, so no
-# certificate or profile is stored anywhere.
+# uploads it to App Store Connect. Signing uses one permanent Apple
+# Distribution certificate (IOS_DIST_CERT_ID) stored as a .p12 secret; the
+# provisioning profile is made per run through the App Store Connect API key.
+# Never revoke that certificate while a build signed with it is in review.
 #
 # Repository secrets:
-#   ASC_KEY_P8        contents of AuthKey_<id>.p8 (App Manager key)
+#   ASC_KEY_P8             contents of AuthKey_<id>.p8 (App Manager key)
+#   IOS_DIST_P12_BASE64    base64 of the distribution certificate + key (.p12)
+#   IOS_DIST_P12_PASSWORD  password of that .p12
 #   ADMOB_APP_ID_IOS, ADMOB_IOS_BANNER_UNIT_ID, ADMOB_IOS_INTERSTITIAL_UNIT_ID,
 #   ADMOB_IOS_REWARDED_UNIT_ID, ADMOB_IOS_APP_OPEN_UNIT_ID   (optional: Google
 #   test units are used for any that are empty)
@@ -18,6 +21,7 @@ env:
   ASC_KEY_ID: T7HY367GT9
   ASC_ISSUER_ID: 73c12ef5-d57e-4400-8a21-32e0a41b9f3d
   TEAM_ID: 53X3279WA3
+  IOS_DIST_CERT_ID: Z563QGV77B
 
 jobs:
   release:
@@ -74,9 +78,11 @@ jobs:
         run: |
           xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner             -configuration Release -destination 'generic/platform=iOS'             -archivePath "$RUNNER_TEMP/Runner.xcarchive" archive             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
-      - name: Sign with API-created certificate and upload to TestFlight
+      - name: Sign with the distribution certificate and upload to TestFlight
         env:
           ARCHIVE: ${{ runner.temp }}/Runner.xcarchive
+          IOS_DIST_P12_BASE64: ${{ secrets.IOS_DIST_P12_BASE64 }}
+          IOS_DIST_P12_PASSWORD: ${{ secrets.IOS_DIST_P12_PASSWORD }}
         run: |
           export ASC_KEY_FILE="$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8"
           export FASTLANE_SKIP_UPDATE_CHECK=1
