@@ -1,6 +1,6 @@
 :root{
   --bg:#0b0c10;--bg2:#12141a;--fg:#f3efe8;--muted:#a7a29a;--line:#ffffff14;
-  --amber:#ff9a3c;--ember:#ff6a2b;--candle:#ffb347;--day:#cfe3ff;
+  --orange:#ff9900;--blue:#0087ff;--amber:#ff9900;--ember:#ff7a00;--candle:#ffb340;--day:#cfe3ff;
   --kelvin:linear-gradient(90deg,#cfe3ff 0%,#fff1dc 28%,#ffd08a 52%,#ff9a3c 76%,#ff6a2b 100%);
   --radius:22px;--shadow:0 30px 80px -30px #000c,0 0 0 1px var(--line);
 }
@@ -94,3 +94,14 @@ footer nav{display:flex;flex-wrap:wrap;gap:8px 20px}
   .nav .btn-sm{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* brand: the app's own two-colour slanted wordmark */
+.wm{font-family:"Audiowide",system-ui,sans-serif;display:inline-block;transform:skewX(-12.6deg);letter-spacing:.01em;white-space:nowrap;line-height:1}
+.wm b{font-weight:400;color:var(--orange)}.wm i{font-style:normal;color:var(--blue)}
+.brand .wm{font-size:1.25rem}
+.hero .wm{font-size:clamp(1.6rem,3.4vw,2.3rem);margin:18px 0 0;filter:drop-shadow(0 6px 24px #0087ff33)}
+.btn-play{background:linear-gradient(135deg,#ffb340,var(--orange));color:#1b0f05;box-shadow:0 14px 40px -12px #ff990099}
+.eyebrow{border-color:#0087ff44}
+.menu a:hover,.menu a[aria-current]{background:#0087ff1f;color:var(--blue)}
+.card .dot{font-family:"Audiowide",system-ui,sans-serif;font-weight:400}
+.hero::before{background:radial-gradient(40% 50% at 78% 30%,#ff990050,transparent 70%),radial-gradient(35% 45% at 18% 15%,#0087ff38,transparent 70%)}

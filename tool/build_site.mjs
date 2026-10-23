@@ -116,7 +116,7 @@ ${alternates}
 <link rel="apple-touch-icon" href="${BASE}img/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600;700&display=swap">
 <link rel="preload" as="image" href="${shots[0]}">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <style>${css}</style>
@@ -124,7 +124,7 @@ ${alternates}
 <body>
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="${url}"><img src="${BASE}img/icon.png" alt="" width="32" height="32">DoctorFilter</a>
+    <a class="brand" href="${url}"><img src="${BASE}img/icon.png" alt="" width="32" height="32"><span class="wm"><b>doctor</b><i>Filter</i></span></a>
     <span class="sp"></span>
     <details class="lang"><summary>${esc(native(loc))} ▾</summary><nav class="menu" aria-label="Languages">${menu}</nav></details>
     <a class="btn btn-play btn-sm" href="${play}" rel="noopener">${playIcon}Google Play</a>
@@ -135,6 +135,7 @@ ${alternates}
     <div class="wrap">
       <div>
         <span class="eyebrow"><i></i>6500 K → 1850 K</span>
+        <div><span class="wm"><b>doctor</b><i>Filter</i></span></div>
         <h1>${heading(title)}</h1>
         <p class="lead">${esc(short)}</p>
         <a class="btn btn-play" href="${play}" rel="noopener">${playIcon}Google Play</a>
