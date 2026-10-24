@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Captures the raw App Store screens in every language on one simulator
 # (iPhone Pro Max or iPad Pro 13-inch). Needs a simulator build made with
-# --dart-define=STORE_SCREENSHOTS=true. Language and screen come from launch
-# arguments (NSArgumentDomain), so no reboot or tap is needed between shots.
+# --dart-define=STORE_SCREENSHOTS=true. The language comes from launch
+# arguments and the screen from the environment (SIMCTL_CHILD_*), so no reboot
+# or tap is needed between shots.
 # usage: bash tool/ios_store_capture.sh iphone|ipad "en tr de ..."
 # Output: raw/<ios|ipad>/<lang>/<screen>.png
 set -euo pipefail
@@ -38,10 +39,8 @@ for lang in $LANGS; do
   for pair in $SCREENS; do
     name=${pair%%:*}; screen=${pair#*:}
     xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
-    xcrun simctl launch "$UDID" "$BUNDLE" \
-      -AppleLanguages "($lang)" -AppleLocale "$locale" \
-      -flutter.df_onboarding_done '<true/>' \
-      -flutter.df_store_screen "$screen" >/dev/null
+    SIMCTL_CHILD_DF_STORE_SKIP_ONBOARDING=1 SIMCTL_CHILD_DF_STORE_SCREEN="$screen" \
+      xcrun simctl launch "$UDID" "$BUNDLE" -AppleLanguages "($lang)" -AppleLocale "$locale" >/dev/null
     sleep 12
     xcrun simctl io "$UDID" screenshot --type=png "$OUT/$lang/$name.png" >/dev/null
   done

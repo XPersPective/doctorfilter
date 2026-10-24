@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doctorfilter/domain/entities/ad_policy.dart';
 import 'package:doctorfilter/domain/entities/circadian_mode.dart';
@@ -187,12 +189,21 @@ class PreferencesDataSource {
     ]);
   }
 
-  bool isOnboardingDone() => _prefs.getBool(_keyOnboardingDone) ?? false;
+  // Store-screenshot builds can also be driven by the environment
+  // (simctl launch passes SIMCTL_CHILD_* through), where preferences
+  // cannot be written between launches without a reboot.
+  static const _storeBuild = bool.fromEnvironment('STORE_SCREENSHOTS');
+  static String? _storeEnv(String key) => _storeBuild ? Platform.environment[key] : null;
+
+  bool isOnboardingDone() =>
+      _storeEnv('DF_STORE_SKIP_ONBOARDING') == '1' || (_prefs.getBool(_keyOnboardingDone) ?? false);
   Future<void> setOnboardingDone() => _prefs.setBool(_keyOnboardingDone, true);
 
   /// Screen name the store-screenshot scripts ask for, or null.
   String? storeScreen() =>
-      _prefs.getString(_keyStoreScreen) ?? (_prefs.getBool('df_store_paywall') == true ? 'paywall' : null);
+      _storeEnv('DF_STORE_SCREEN') ??
+      _prefs.getString(_keyStoreScreen) ??
+      (_prefs.getBool('df_store_paywall') == true ? 'paywall' : null);
 
   String? getLocale() => _prefs.getString(_keyLocale);
   Future<void> setLocale(String languageCode) => _prefs.setString(_keyLocale, languageCode);
