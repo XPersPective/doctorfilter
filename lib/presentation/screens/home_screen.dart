@@ -78,6 +78,18 @@ class HomeScreen extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) _open(context, storeTarget);
       });
+    } else if (storeScreen == 'tour') {
+      // One launch per language: home, then each store screen for 8 s, on a
+      // fixed clock the capture script follows (shots at 8, 16, 24, 32, 40 s).
+      _storeScreenOpened = true;
+      const tour = <Widget>[EducationScreen(), PresetsScreen(), SchedulerScreen(), SettingsScreen()];
+      for (var i = 0; i < tour.length; i++) {
+        Future.delayed(Duration(seconds: 12 + 8 * i), () {
+          if (!context.mounted) return;
+          if (i > 0) Navigator.of(context).pop();
+          _open(context, tour[i]);
+        });
+      }
     }
 
     // Created at launch rather than when the scheduler is first opened: loading
