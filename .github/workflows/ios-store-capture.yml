@@ -1,0 +1,41 @@
+name: iOS store capture
+
+# Manual only. Captures the raw App Store screens in every App Store language
+# on an iPhone Pro Max and an iPad Pro 13-inch simulator (two parallel jobs).
+# Uploads nothing; the raw screens are artifacts for tool/store/render_all.py.
+
+on:
+  workflow_dispatch:
+    inputs:
+      langs:
+        description: Space-separated app languages (empty = every App Store language)
+        required: false
+        default: ''
+
+jobs:
+  capture:
+    runs-on: macos-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [iphone, ipad]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build ios --simulator --debug --dart-define=STORE_SCREENSHOTS=true
+      - name: Capture
+        run: |
+          LANGS="${{ inputs.langs }}"
+          [ -n "$LANGS" ] || LANGS=$(python3 -c "import sys; sys.path.insert(0,'tool/store'); from captions import IOS_LOC; print(' '.join(sorted({r for r,_ in IOS_LOC.values()})))")
+          bash tool/ios_store_capture.sh ${{ matrix.kind }} "$LANGS"
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: raw-${{ matrix.kind }}
+          path: raw
+          retention-days: 7
