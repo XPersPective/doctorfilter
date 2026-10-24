@@ -5,7 +5,7 @@ Needs the STORE_SCREENSHOTS debug build installed:
 Screens are opened by name through the df_store_screen preference (written
 with run-as), so no taps and no screen-size coordinates are involved.
 
-usage: python capture_all.py [serial] [lang,lang...]   (default serial emulator-5554)
+usage: python capture_all.py [serial] [lang,lang...|all] [screen,screen...]
 Output: raw/android/<lang>/<screen>.png
 """
 import os, subprocess, sys, time
@@ -14,11 +14,13 @@ SERIAL = sys.argv[1] if len(sys.argv) > 1 else 'emulator-5554'
 ADB = [os.path.expandvars(r'%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe'), '-s', SERIAL]
 PKG = 'com.crazypenguin.doctorfilter'
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'raw', 'android')
-LANGS = sys.argv[2].split(',') if len(sys.argv) > 2 else (
+LANGS = sys.argv[2].split(',') if len(sys.argv) > 2 and sys.argv[2] != 'all' else (
     'en tr de es fr it pt ru uk pl nl ja ko zh zh-TW ar he fa hi bn id ms vi th fil ur af az be bg ca cs da el et eu fi gl gu '
     'hr hu hy is ka kk kn ky lo lt lv mk ml mn mr my ne pa ro si sk sl sq sr sv sw ta te zu').split()
 # Raw screen name -> df_store_screen value ('' = home).
 SCREENS = {'1_home': '', '2_presets': 'presets', '4_schedule': 'schedule', '5_learn': 'learn', '6_settings': 'settings'}
+if len(sys.argv) > 3:  # optional: only these raw screens, e.g. 5_learn
+    SCREENS = {k: v for k, v in SCREENS.items() if k in sys.argv[3].split(',')}
 
 
 def sh(*a, check=False):

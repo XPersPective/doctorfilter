@@ -9,6 +9,7 @@ set -euo pipefail
 
 KIND=$1
 LANGS=$2
+ONLY=${3:-}   # optional: space-separated raw screens, e.g. "5_learn"
 BUNDLE=com.crazypenguin.doctorfilter
 APP=build/ios/iphonesimulator/Runner.app
 OUT=raw/$([ "$KIND" = ipad ] && echo ipad || echo ios)
@@ -44,6 +45,7 @@ setpref df_onboarding_done bool true
 
 for pair in 1_home:home 5_learn:learn 2_presets:presets 4_schedule:schedule 6_settings:settings; do
   name=${pair%%:*}; screen=${pair#*:}
+  if [ -n "$ONLY" ] && ! echo " $ONLY " | grep -q " $name "; then continue; fi
   setpref df_store_screen string "$screen"
   xcrun simctl shutdown "$UDID"
   xcrun simctl boot "$UDID"

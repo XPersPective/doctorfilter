@@ -11,6 +11,10 @@ on:
         description: Space-separated app languages (empty = every App Store language)
         required: false
         default: ''
+      screens:
+        description: Space-separated raw screens (empty = all), e.g. 5_learn
+        required: false
+        default: ''
 
 jobs:
   capture:
@@ -32,7 +36,7 @@ jobs:
         run: |
           LANGS="${{ inputs.langs }}"
           [ -n "$LANGS" ] || LANGS=$(python3 -c "import sys; sys.path.insert(0,'tool/store'); from captions import IOS_LOC; print(' '.join(sorted({r for r,_ in IOS_LOC.values()})))")
-          bash tool/ios_store_capture.sh ${{ matrix.kind }} "$LANGS"
+          bash tool/ios_store_capture.sh ${{ matrix.kind }} "$LANGS" "${{ inputs.screens }}"
       - uses: actions/upload-artifact@v6
         if: always()
         with:
