@@ -66,7 +66,7 @@ def snooze_others():
             sh('cmd', 'notification', 'snooze', '--for', '3600000', key)
 
 
-def launch(wait=14):
+def launch(wait=25):
     sh('am', 'start', '-n', PKG + '/.MainActivity')
     time.sleep(wait)
 

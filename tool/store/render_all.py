@@ -32,6 +32,7 @@ ORDER = {
 ORDER['ipad'] = ORDER['iphone']
 SIZE = {'android': (1080, 1920), 'iphone': (1320, 2868), 'ipad': (2064, 2752)}
 RAW = {'android': 'android', 'iphone': 'ios', 'ipad': 'ipad'}
+ONLY = []  # raw screens to re-render; set by --only
 
 
 def b64(path):
@@ -176,24 +177,28 @@ def do_locale(meta, loc, platform, lang_map):
     if platform == 'android':
         out = os.path.join(meta, loc, 'images', 'phoneScreenshots')
         os.makedirs(out, exist_ok=True)
-        for f in os.listdir(out):
-            os.remove(os.path.join(out, f))
+        if not ONLY:
+            for f in os.listdir(out):
+                os.remove(os.path.join(out, f))
         name = lambda i: os.path.join(out, f'{i + 1:02d}.png')
     else:
         out = os.path.join(meta, loc)
         os.makedirs(out, exist_ok=True)
-        for f in os.listdir(out):
-            if f.endswith(f'_{platform}.png'):
-                os.remove(os.path.join(out, f))
+        if not ONLY:
+            for f in os.listdir(out):
+                if f.endswith(f'_{platform}.png'):
+                    os.remove(os.path.join(out, f))
         name = lambda i: os.path.join(out, f'{i + 1:02d}_{platform}.png')
     for i, (screen, ci) in enumerate(ORDER[platform]):
+        if ONLY and screen not in ONLY:
+            continue
         src = raw_path(platform, raw_lang, screen)
         if not os.path.exists(src):
             continue
         rw, rh = png_size(src)
         layout = science_html if screen == '5_learn' else shot_html
         render(layout(caps[ci], caps[8], b64(src), cap_key, rtl, w, h, rh / rw), name(i), w, h)
-    if platform == 'android':
+    if platform == 'android' and not ONLY:
         render(fg_html(caps[7], caps[8], cap_key, rtl), os.path.join(meta, loc, 'images', 'featureGraphic.png'), 1024, 500)
     return loc
 
@@ -201,7 +206,8 @@ def do_locale(meta, loc, platform, lang_map):
 if __name__ == '__main__':
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     platform = sys.argv[sys.argv.index('--platform') + 1] if '--platform' in sys.argv else 'android'
-    args = [a for a in args if a != platform]
+    ONLY = sys.argv[sys.argv.index('--only') + 1].split(',') if '--only' in sys.argv else []
+    args = [a for a in args if a != platform and ('--only' not in sys.argv or a != sys.argv[sys.argv.index('--only') + 1])]
     meta = args[0]
     lang_map = LOC
     if platform != 'android':
