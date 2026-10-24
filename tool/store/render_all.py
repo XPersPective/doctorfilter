@@ -89,6 +89,45 @@ while(h.offsetHeight>max&&f>{40*s}){{f-=2;h.style.fontSize=f+'px';}}
 </script></body></html>"""
 
 
+def science_html(cap, badge, img, lang, rtl, w, h, aspect):
+    """The Learn screen as a premium detail shot: its top (spectrum and colour
+    temperature) magnified in a glowing card, over a large Kelvin scale. A full
+    phone of small print reads as a wall of text."""
+    s = w / 1080
+    card_w = w * 0.86
+    card_h = card_w * aspect * 0.47
+    top_text = 120 * s
+    ticks = [('1850 K', '#ff6a2b'), ('2700 K', '#ff9a3c'), ('4300 K', '#ffd08a'), ('5500 K', '#fff1dc'), ('6500 K', '#cfe3ff')]
+    tick_html = ''.join(f'<div class="t"><i style="background:{c};box-shadow:0 0 {28*s}px {c}"></i><span>{k}</span></div>' for k, c in ticks)
+    return _head(lang, rtl, w, h) + f"""<style>
+.top{{position:absolute;top:{top_text}px;left:{70*s}px;right:{70*s}px}}
+.top .wm{{font-size:{46*s}px;margin-bottom:{34*s}px;filter:drop-shadow(0 {6*s}px {22*s}px rgba(0,135,255,.25))}}
+h1{{margin:0;font-size:{74*s}px;line-height:1.16;font-weight:700;letter-spacing:-.01em;text-wrap:balance}}
+.row{{display:flex;align-items:center;justify-content:center;gap:{18*s}px;margin-top:{30*s}px}}
+.row .kelvin{{width:{150*s}px}}
+.badge{{display:inline-block;padding:{9*s}px {24*s}px;border-radius:999px;font-size:{30*s}px;font-weight:600;color:#ffd9a8;
+background:rgba(255,153,0,.10);border:{2*s}px solid rgba(255,153,0,.40)}}
+.card{{position:absolute;left:50%;top:{520*s}px;width:{card_w}px;height:{card_h}px;transform:translateX(-50%);overflow:hidden;
+border-radius:{44*s}px;box-shadow:0 {40*s}px {110*s}px rgba(0,0,0,.65),0 0 0 {2*s}px rgba(255,255,255,.08),0 0 {160*s}px rgba(0,135,255,.18),0 0 {220*s}px rgba(255,153,0,.14)}}
+.card img{{display:block;width:100%}}
+.card::after{{content:"";position:absolute;inset:auto 0 0 0;height:{160*s}px;background:linear-gradient(transparent,#0f0f14)}}
+.scale{{position:absolute;left:{80*s}px;right:{80*s}px;top:{520*s + card_h + 90*s}px;direction:ltr}}
+.scale .bar{{height:{22*s}px;border-radius:99px;background:linear-gradient(90deg,#ff6a2b,#ff9a3c 25%,#ffd08a 55%,#fff1dc 78%,#cfe3ff);
+box-shadow:0 0 {50*s}px rgba(255,153,0,.45),0 0 {90*s}px rgba(0,135,255,.20)}}
+.ticks{{display:flex;justify-content:space-between;margin-top:{26*s}px}}
+.t{{display:flex;flex-direction:column;align-items:center;gap:{14*s}px;font-size:{30*s}px;font-weight:700;color:#f6efe6;font-variant-numeric:tabular-nums}}
+.t i{{width:{30*s}px;height:{30*s}px;border-radius:50%}}
+</style></head><body>
+<div class="top"><div class="wm"><b>doctor</b><i>Filter</i></div><h1>{html.escape(cap)}</h1>
+<div class="row"><div class="kelvin"></div><span class="badge">{html.escape(badge)}</span></div></div>
+<div class="card"><img src="data:image/png;base64,{img}"></div>
+<div class="scale"><div class="bar"></div><div class="ticks">{tick_html}</div></div>
+<script>
+const h=document.querySelector('h1');let f=parseFloat(getComputedStyle(h).fontSize);const max={180*s};
+while(h.offsetHeight>max&&f>{40*s}){{f-=2;h.style.fontSize=f+'px';}}
+</script></body></html>"""
+
+
 def fg_html(slogan, badge, lang, rtl):
     return _head(lang, rtl, 1024, 500) + f"""<style>
 body{{text-align:start}}
@@ -152,7 +191,8 @@ def do_locale(meta, loc, platform, lang_map):
         if not os.path.exists(src):
             continue
         rw, rh = png_size(src)
-        render(shot_html(caps[ci], caps[8], b64(src), cap_key, rtl, w, h, rh / rw), name(i), w, h)
+        layout = science_html if screen == '5_learn' else shot_html
+        render(layout(caps[ci], caps[8], b64(src), cap_key, rtl, w, h, rh / rw), name(i), w, h)
     if platform == 'android':
         render(fg_html(caps[7], caps[8], cap_key, rtl), os.path.join(meta, loc, 'images', 'featureGraphic.png'), 1024, 500)
     return loc
