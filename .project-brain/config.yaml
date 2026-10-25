@@ -10,8 +10,8 @@ git:
   push_policy: "every-task"
 
 commands:
-  test: ""
-  lint: ""
+  test: "flutter test"
+  lint: "flutter analyze"
   build: ""
 
 tasks:

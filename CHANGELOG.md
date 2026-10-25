@@ -3,7 +3,13 @@
 All notable changes to DoctorFilter are recorded here.
 This project follows [semantic versioning](https://semver.org).
 
-## [2.0.0] — unreleased
+## [2.0.1] — 2026-10-25
+
+### Changed
+
+- **Learn ("Light and your screen") screen redesigned** with a glowing visible-spectrum card, a callout at the 480 nm melanopsin peak, a live Kelvin scale bar tinted by the colour engine, brand-accented article cards and a dedicated Sources card.
+
+## [2.0.0] — 2026-10-02
 
 A rebuild of the 1.x release. Existing settings and purchases carry over.
 
