@@ -4,7 +4,38 @@
 
 DoctorFilter (`com.crazypenguin.doctorfilter`) — Android, iOS ve Windows hedefleri olan Flutter uygulaması. Açık kaynak (GPL-3.0), GitHub `XPersPective/doctorfilter`.
 
-## Durum özeti (2026-10-10)
+## Durum özeti (2026-10-25)
+
+### Yayın durumu
+| Platform | Sürüm (build) | Git etiketi / commit | Durum |
+|---|---|---|---|
+| Android (Google Play) | 2.0.1 (5006) | `v2.0.1` → `d60b365` | Üretimde (`production completed`), 2026-10-25 |
+| iOS (App Store) | 2.0.1 (5006) | `v2.0.1` → `d60b365` | Pro Lifetime IAP ile birlikte `WAITING_FOR_REVIEW`, 2026-10-25 02:44 UTC |
+| Önceki | 2.0.0 (5003 Android / 5005 iOS) | `v2.0.0` | Android'de yayındaydı; iOS 2.0.0 hiç onaylanmadı (2.0.1'e yükseltildi) |
+
+### 2.0.1'de ne var
+- Öğren/“Işık ve ekranınız” ekranı premium tasarım (`lib/presentation/screens/education_screen.dart`): parlayan spektrum kartı + etiketli 480 nm melanopsin tepesi, motorla renklenen Kelvin çubuğu, marka kenarlı makale kartları, kaynaklar kartı. Metin/çeviri değişmedi.
+- Mağaza görseli kancası: `STORE_SCREENSHOTS` derlemesinde `df_store_screen` tercihi ekran açar (`home_screen.dart`, `preferences_datasource.dart`); normal derlemede etkisiz.
+
+### iOS yayın geçmişi ve kalıcı çözümler
+- ITMS-90035 (Invalid Signature): CI her çalıştırmada dağıtım sertifikasını silerdi. Artık kalıcı Apple Distribution `Z563QGV77B` (bitiş 2027-10-23), GitHub secret `IOS_DIST_P12_BASE64/PASSWORD`; silinmez (`fastlane/Fastfile` `ci_release`).
+- Guideline 2.1 bilgi talebi: cevap + uygulama akış videosu (App Review eki) verildi, notlar App Review Notes alanında. Gizlilik etiketi (App Privacy) yayınlandı: Device ID, Coarse Location, Advertising Data — takip için, kimliğe bağlı değil.
+- İçerik hakları: üçüncü taraf içerik yok. IAP `doctorfilter_pro_lifetime` (id 6821343224): $1.00, 175 ülke, inceleme görseli var; ilk IAP sürümle aynı taslakta gönderilmeli (API yapamıyor, web arayüzü).
+- ASC app id 6821332436, sürüm kaydı 768ebbbb-aca6-4dca-91c5-0ba3daf29566.
+
+### Mağaza içeriği
+- Görseller (2026-10-24/25): premium marka şablonu, her dil kendi uygulama ekranıyla. Play 73 dil × 5 + öne çıkan görsel; App Store 46 dil × (5 iPhone 6.9" + 5 iPad 13"). Araçlar: `tool/store/capture_all.py` (Android emülatör), `tool/ios_store_capture.sh` + `.github/workflows/ios-store-capture.yml` (iOS CI), `tool/store/render_all.py` (`--platform`, `--only`). Ham kayıtlar `tool/store/raw/` (gitignore).
+- Mağaza METİNLERİ bu turda değişmedi (Play metinleri 2026-09-30/10-01, App Store 2026-10-10). Yeni SEO metni üretilmedi (→ PB-005).
+- Tanıtım videosu YOK: Google hesabının YouTube kanalı kapatılmış; yeni kanal açılmayacak.
+- Site: https://xperspective.github.io/doctorfilter/ — 73 dil, hreflang, sitemap, JSON-LD, her dilde Play+App Store butonu; `tool/build_site.mjs` + `.github/workflows/pages.yml`. Search Console doğrulandı, sitemap gönderildi; IndexNow gönderildi.
+
+### Reklam / Firebase
+- Firebase YOK (bağımlılık yok). AdMob: Android kimlikleri `app-ids.env`'den `fastlane android build_release` ile; iOS kimlikleri GitHub secret `ADMOB_APP_ID_IOS`, `ADMOB_IOS_*_UNIT_ID` ile `ios-release.yml` içinde basılıyor.
+
+### Devir notları (sonraki ajan için)
+- Yardımcı betikler: `D:\AppPublishing\_work` (`asc.mjs`, `upload.mjs`, `check.mjs`, `attach_build.mjs`, `play.mjs`, `play_images.mjs`). Play görsel yüklemesinde fastlane supply Google 500 verebilir → `play_images.mjs` (sıralı, tekrar denemeli).
+- Tek emülatör: `Medium_Phone_API_36.0`; emülatör + Gradle release aynı anda çalıştırılmaz (16 GB RAM, derleme sessizce ölür). Kayıttan önce dikey kilitle, `wm size reset`.
+- Sıradaki: Apple kararını izle (onay → otomatik yayın; ret → nedeni oku). Açık işler → PB-005, PB-004.
 
 - iOS sistem parlaklığı, Renk Filtreleri sihirbazı, Kısayollar ve iOS 18 Control akışları için gerçek cihaz/Control doğrulaması açık (→ PB-004).
 
