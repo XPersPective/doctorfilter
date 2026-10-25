@@ -23,11 +23,11 @@ DoctorFilter (`com.crazypenguin.doctorfilter`) — Android, iOS ve Windows hedef
 - İçerik hakları: üçüncü taraf içerik yok. IAP `doctorfilter_pro_lifetime` (id 6821343224): $1.00, 175 ülke, inceleme görseli var; ilk IAP sürümle aynı taslakta gönderilmeli (API yapamıyor, web arayüzü).
 - ASC app id 6821332436, sürüm kaydı 768ebbbb-aca6-4dca-91c5-0ba3daf29566.
 
-### Mağaza içeriği
-- Görseller (2026-10-24/25): premium marka şablonu, her dil kendi uygulama ekranıyla. Play 73 dil × 5 + öne çıkan görsel; App Store 46 dil × (5 iPhone 6.9" + 5 iPad 13"). Araçlar: `tool/store/capture_all.py` (Android emülatör), `tool/ios_store_capture.sh` + `.github/workflows/ios-store-capture.yml` (iOS CI), `tool/store/render_all.py` (`--platform`, `--only`). Ham kayıtlar `tool/store/raw/` (gitignore).
-- Mağaza METİNLERİ bu turda değişmedi (Play metinleri 2026-09-30/10-01, App Store 2026-10-10). Yeni SEO metni üretilmedi (→ PB-005).
+### Mağaza içeriği ve SEO
+- Görseller (2026-10-24/25): premium marka şablonu, her dil kendi uygulama ekranıyla. Play 73 dil × 5 telefon ekran görüntüsü + öne çıkan görsel (`featureGraphic`); App Store 46 dil × (5 iPhone 6.9" + 5 iPad 13"). Araçlar: `tool/store/capture_all.py` (Android emülatör), `tool/ios_store_capture.sh` + `.github/workflows/ios-store-capture.yml` (iOS CI), `tool/store/render_all.py` (`--platform`, `--only`). Ham kayıtlar `tool/store/raw/` (gitignore).
+- Mağaza SEO metinleri: Play 73 dil (`title`, `short_description`, `full_description` — 2026-09-30/10-01'de üretilip yüklendi, canlıda aktif) ve App Store 46 dil (`name`, `subtitle`, `keywords`, `promotional_text`, `description` — 2026-10-10'da üretilip yüklendi, 2.0.1 kaydında aktif). Yalnızca Play 2.0.1 (`5006`) sürüm notu (`releaseNotes` / Yenilikler) promote sırasında `skip_upload_changelogs: true` ile boş geçildi (→ PB-005).
 - Tanıtım videosu YOK: Google hesabının YouTube kanalı kapatılmış; yeni kanal açılmayacak.
-- Site: https://xperspective.github.io/doctorfilter/ — 73 dil, hreflang, sitemap, JSON-LD, her dilde Play+App Store butonu; `tool/build_site.mjs` + `.github/workflows/pages.yml`. Search Console doğrulandı, sitemap gönderildi; IndexNow gönderildi.
+- SEO Web Sitesi: https://xperspective.github.io/doctorfilter/ — 73 dil, `hreflang`, `sitemap.xml`, JSON-LD (`SoftwareApplication`), her dilde Play+App Store butonu ve yeni Learn görselleri; `tool/build_site.mjs` + `.github/workflows/pages.yml`. Google Search Console doğrulandı, sitemap ve IndexNow gönderildi.
 
 ### Reklam / Firebase
 - Firebase YOK (bağımlılık yok). AdMob: Android kimlikleri `app-ids.env`'den `fastlane android build_release` ile; iOS kimlikleri GitHub secret `ADMOB_APP_ID_IOS`, `ADMOB_IOS_*_UNIT_ID` ile `ios-release.yml` içinde basılıyor.
