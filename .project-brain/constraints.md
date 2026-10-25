@@ -25,6 +25,7 @@ Flutter 3.47 / Dart 3.13, flutter_riverpod StateNotifier, clean architecture (co
 ### C-020: Sır asla repoya girmez
 
 Kaynak projeye imza anahtarı, şifre veya gerçek kimlik dosyası eklenmez. `.env`, `.env.local`, `android/key.properties`, `*.jks`, `*.keystore`, `*.p12`, `google-services.json`, `GoogleService-Info.plist` ve servis hesabı JSON dosyaları repoya alınmaz; `.gitignore` zayıflatılmaz. Gerçek AdMob/ürün kimlikleri koda yazılmaz: `lib/core/config/env_config.dart` (dart-define + Google test fallback) ve `android/app/build.gradle.kts` manifest placeholder (`ADMOB_APP_ID_ANDROID`).
+
 ### C-021: Sağlık iddiası yasağı
 
 Yasak: mavi ışık retinaya zarar/AMD, göz yorgunluğu/kuruluğu tedavisi, kilo, herhangi tedavi/tanı/önleme vaadi. Söylenebilecek: akşam melanopik dozu düşürme, karartma konforu, 20-20-20. Gerekçe ve sınır ADR-001'de.
@@ -38,3 +39,7 @@ Proje sahibinin kişisel bilgisi hiçbir dosyaya ve commit metadata'sına yazıl
 ### C-030: Tek doğruluk kaynağı bu dizin
 
 `.project-brain/` dışında plan/takip dosyası tutulmaz. Commit mesajları `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>` ile biter; push `master`.
+
+### C-031: Harici CLI ajan havuzu kullanılmaz
+
+Basit işler için oturumun kendi yerel alt ajanları (`invoke_subagent`) kullanılabilir; ancak harici CLI ajan havuzu (`PB agents` / `PB delegate`) kesinlikle kullanılmaz.
