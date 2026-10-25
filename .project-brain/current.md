@@ -24,13 +24,15 @@ DoctorFilter (`com.crazypenguin.doctorfilter`) — Android, iOS ve Windows hedef
 - ASC app id 6821332436, sürüm kaydı 768ebbbb-aca6-4dca-91c5-0ba3daf29566.
 
 ### Mağaza içeriği ve SEO
-- Görseller (2026-10-24/25): premium marka şablonu, her dil kendi uygulama ekranıyla. Play 73 dil × 5 telefon ekran görüntüsü + öne çıkan görsel (`featureGraphic`); App Store 46 dil × (5 iPhone 6.9" + 5 iPad 13"). Araçlar: `tool/store/capture_all.py` (Android emülatör), `tool/ios_store_capture.sh` + `.github/workflows/ios-store-capture.yml` (iOS CI), `tool/store/render_all.py` (`--platform`, `--only`). Ham kayıtlar `tool/store/raw/` (gitignore).
-- Mağaza SEO metinleri: Play 73 dil (`title`, `short_description`, `full_description` — 2026-09-30/10-01'de üretilip yüklendi, canlıda aktif) ve App Store 46 dil (`name`, `subtitle`, `keywords`, `promotional_text`, `description` — 2026-10-10'da üretilip yüklendi, 2.0.1 kaydında aktif). Play 2.0.1 (`5006`) sürüm notları (`changelogs/5006.txt`, 73 dil `releaseNotes`) 2026-10-25'te production kanalına yüklendi ve doğrulandı (`notes:73`).
-- Tanıtım videosu YOK: Google hesabının YouTube kanalı kapatılmış; yeni kanal açılmayacak.
+- Görseller (2026-10-24/25): premium marka şablonu, her dil kendi uygulama ekranıyla. Play 73 dil × 5 telefon ekran görüntüsü + öne çıkan görsel (`featureGraphic`); App Store 46 dil × (5 iPhone 6.9" + 5 iPad 13" = 460 görsel `COMPLETE`). Araçlar: `tool/store/capture_all.py` (Android emülatör), `tool/ios_store_capture.sh` + `.github/workflows/ios-store-capture.yml` (iOS CI), `tool/store/render_all.py` (`--platform`, `--only`). Ham kayıtlar `tool/store/raw/` (gitignore).
+- Mağaza SEO metinleri: Play 73 dil (`title`, `short_description`, `full_description`, `changelogs/5006.txt` `notes:73` — canlıda aktif) ve App Store 46 dil (`name`, `subtitle` 46/46, `keywords` 46/46, `promotional_text` 46/46, `description` 46/46, `support_url`, `marketing_url`, `privacy_url` — `sync_asc_meta.mjs` ile tüm 46 dil eksiksiz senkronize edildi ve canlıda aktif).
+- Videolar: App Review için uygulama akış videosu (`DoctorFilter-app-flow.mp4`, `COMPLETE`) ASC inceleme ekine yüklendi. Herkese açık mağaza tanıtım videosu YOK (Google hesabının YouTube kanalı kapatılmış, yeni kanal açılmayacak; App Store Preview videosu da kullanılmıyor).
 - SEO Web Sitesi: https://xperspective.github.io/doctorfilter/ — 73 dil, `hreflang`, `sitemap.xml`, JSON-LD (`SoftwareApplication`), her dilde Play+App Store butonu ve yeni Learn görselleri; `tool/build_site.mjs` + `.github/workflows/pages.yml`. Google Search Console doğrulandı, sitemap ve IndexNow gönderildi.
 
-### Reklam / Firebase
-- Firebase YOK (bağımlılık yok). AdMob: Android kimlikleri `app-ids.env`'den `fastlane android build_release` ile; iOS kimlikleri GitHub secret `ADMOB_APP_ID_IOS`, `ADMOB_IOS_*_UNIT_ID` ile `ios-release.yml` içinde basılıyor.
+### Reklam / Firebase / Satın Alma
+- Firebase YOK (gizlilik politikası gereği analitik/sunucu bağımlılığı yok).
+- AdMob (`google_mobile_ads` + UMP + iOS ATT): Android kimlikleri `D:\AppPublishing\apps\doctorfilter\app-ids.env`'den `fastlane android build_release` ile; iOS kimlikleri GitHub Actions secret'ları (`ADMOB_APP_ID_IOS`, `ADMOB_IOS_BANNER_UNIT_ID`, `ADMOB_IOS_INTERSTITIAL_UNIT_ID`, `ADMOB_IOS_REWARDED_UNIT_ID`, `ADMOB_IOS_APP_OPEN_UNIT_ID` — depoda tanımlı) ile `ios-release.yml` içinde derlemeye basılıyor.
+- Satın Alma (`in_app_purchase`, `doctorfilter_pro_lifetime`): Play'de `ACTIVE` ($0.99, `legacyCompatible: true`, `en-US` ve `tr-TR` başlık/açıklama tanımlı); App Store'da `6821343224` ($1.00, 175 ülke, inceleme görseli yüklü, `2.0.1` taslağıyla birlikte `WAITING_FOR_REVIEW`).
 
 ### Devir notları (sonraki ajan için)
 - Yardımcı betikler: `D:\AppPublishing\_work` (`asc.mjs`, `upload.mjs`, `check.mjs`, `attach_build.mjs`, `play.mjs`, `play_images.mjs`). Play görsel yüklemesinde fastlane supply Google 500 verebilir → `play_images.mjs` (sıralı, tekrar denemeli).
