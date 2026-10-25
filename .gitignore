@@ -225,3 +225,6 @@ migrate_working_dir/
 
 # Project Brain reconstructable cache
 .project-brain/.cache/
+
+# Raw store captures (regenerable, large)
+tool/store/raw/
