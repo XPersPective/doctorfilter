@@ -59,6 +59,8 @@ Flutter 3.47 / Dart 3.13, flutter_riverpod (StateNotifier), clean architecture: 
 - `android/**` — Android manifesti, Kotlin servisleri ve platform yapılandırması.
 - `ios/Runner/**` — iOS uygulama hedefi; `ios/DoctorFilterControl/**` — henüz Xcode hedefine eklenmemiş Control kaynağı.
 - `windows/**` — Windows runner ve Store satın alma köprüsü.
+- `fastlane/**` — Fastlane yayın yapılandırması ve dokümantasyonu.
+- `Gemfile.lock` — Fastlane Ruby bağımlılık kilidi.
 - `PRIVACY.md` — uygulama gizlilik politikası.
 - `test/**` — Flutter birim/widget testleri.
 
