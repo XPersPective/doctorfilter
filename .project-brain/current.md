@@ -4,13 +4,13 @@
 
 DoctorFilter (`com.crazypenguin.doctorfilter`) — Android, iOS ve Windows hedefleri olan Flutter uygulaması. Açık kaynak (GPL-3.0), GitHub `XPersPective/doctorfilter`.
 
-## Durum özeti (2026-10-25)
+## Durum özeti (2026-11-22)
 
 ### Yayın durumu
 | Platform | Sürüm (build) | Git etiketi / commit | Durum |
 |---|---|---|---|
 | Android (Google Play) | 2.0.1 (5006) | `v2.0.1` → `d60b365` | Üretimde (`production completed`), 2026-10-25 |
-| iOS (App Store) | 2.0.1 (5006) | `v2.0.1` → `d60b365` | Pro Lifetime IAP ile birlikte `WAITING_FOR_REVIEW`, 2026-10-25 02:44 UTC |
+| iOS (App Store) | 2.0.1 (5006) | `v2.0.1` → `d60b365` | Yayında (`READY_FOR_DISTRIBUTION`), Pro Lifetime `APPROVED`, 175/175 ülke `AVAILABLE` |
 | Önceki | 2.0.0 (5003 Android / 5005 iOS) | `v2.0.0` | Android'de yayındaydı; iOS 2.0.0 hiç onaylanmadı (2.0.1'e yükseltildi) |
 
 ### 2.0.1'de ne var
@@ -22,6 +22,8 @@ DoctorFilter (`com.crazypenguin.doctorfilter`) — Android, iOS ve Windows hedef
 - Guideline 2.1 bilgi talebi: cevap + uygulama akış videosu (App Review eki) verildi, notlar App Review Notes alanında. Gizlilik etiketi (App Privacy) yayınlandı: Device ID, Coarse Location, Advertising Data — takip için, kimliğe bağlı değil.
 - İçerik hakları: üçüncü taraf içerik yok. IAP `doctorfilter_pro_lifetime` (id 6821343224): $1.00, 175 ülke, inceleme görseli var; ilk IAP sürümle aynı taslakta gönderilmeli (API yapamıyor, web arayüzü).
 - ASC app id 6821332436, sürüm kaydı 768ebbbb-aca6-4dca-91c5-0ba3daf29566.
+- 2026-11-22: Onaylı 2.0.1 (5006) için mağaza kullanılabilirlik kaydı eksikti ve US/TR/GB/DE mağaza bağlantıları HTTP 404 dönüyordu. App Store Connect kullanılabilirliği 175 bölgede etkinleştirildi. API 175 bölgede AVAILABLE ve dört mağaza sayfası HTTP 200 olarak doğrulandı.
+- 2026-11-22: Google Play üretim 5006 imzalı APK içinde doğru AdMob Android uygulama ve dört reklam birimi kimliği doğrulandı. `https://xperspective.github.io/app-ads.txt` doğru Google DIRECT yayıncı kaydını sunuyor. Play Lifetime ürünü ACTIVE.
 
 ### Mağaza içeriği ve SEO
 - Görseller (2026-10-24/25): premium marka şablonu, her dil kendi uygulama ekranıyla. Play 73 dil × 5 telefon ekran görüntüsü + öne çıkan görsel (`featureGraphic`); App Store 46 dil × (5 iPhone 6.9" + 5 iPad 13" = 460 görsel `COMPLETE`). Araçlar: `tool/store/capture_all.py` (Android emülatör), `tool/ios_store_capture.sh` + `.github/workflows/ios-store-capture.yml` (iOS CI), `tool/store/render_all.py` (`--platform`, `--only`). Ham kayıtlar `tool/store/raw/` (gitignore).
@@ -32,7 +34,7 @@ DoctorFilter (`com.crazypenguin.doctorfilter`) — Android, iOS ve Windows hedef
 ### Reklam / Firebase / Satın Alma
 - Firebase YOK (gizlilik politikası gereği analitik/sunucu bağımlılığı yok).
 - AdMob (`google_mobile_ads` + UMP + iOS ATT): Android kimlikleri `D:\AppPublishing\apps\doctorfilter\app-ids.env`'den `fastlane android build_release` ile; iOS kimlikleri GitHub Actions secret'ları (`ADMOB_APP_ID_IOS`, `ADMOB_IOS_BANNER_UNIT_ID`, `ADMOB_IOS_INTERSTITIAL_UNIT_ID`, `ADMOB_IOS_REWARDED_UNIT_ID`, `ADMOB_IOS_APP_OPEN_UNIT_ID` — depoda tanımlı) ile `ios-release.yml` içinde derlemeye basılıyor.
-- Satın Alma (`in_app_purchase`, `doctorfilter_pro_lifetime`): Play'de `ACTIVE` ($0.99, `legacyCompatible: true`, `en-US` ve `tr-TR` başlık/açıklama tanımlı); App Store'da `6821343224` ($1.00, 175 ülke, inceleme görseli yüklü, `2.0.1` taslağıyla birlikte `WAITING_FOR_REVIEW`).
+- Satın Alma (`in_app_purchase`, `doctorfilter_pro_lifetime`): Play'de `ACTIVE` ($0.99, `legacyCompatible: true`, `en-US` ve `tr-TR` başlık/açıklama tanımlı); App Store'da `6821343224` ($1.00, 175 ülke, inceleme görseli yüklü, `APPROVED`).
 
 ### Devir notları (sonraki ajan için)
 - Yardımcı betikler: `D:\AppPublishing\_work` (`asc.mjs`, `upload.mjs`, `check.mjs`, `attach_build.mjs`, `play.mjs`, `play_images.mjs`). Play görsel yüklemesinde fastlane supply Google 500 verebilir → `play_images.mjs` (sıralı, tekrar denemeli).

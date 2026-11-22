@@ -1,0 +1,14 @@
+{
+  "protocol": 1,
+  "next": "Review passed on current digest; run `accept` and commit",
+  "failing": "",
+  "dirty": ".project-brain/current.md",
+  "strategy": "review",
+  "attempt": "4df6048700302396",
+  "repeats": 0,
+  "contract": "b4e815e3e9299192",
+  "usage": {
+    "checks": 2,
+    "seconds": 37.032
+  }
+}
