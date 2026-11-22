@@ -21,13 +21,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 /// decides that from the user's region, which is why the form is *requested*
 /// rather than *shown* unconditionally.
 abstract final class AdConsent {
-  static bool _completed = false;
-
-  /// Whether ads may now be requested.
-  ///
-  /// False until consent has been resolved, so an ad widget that builds early
-  /// does not fire a request Google would reject.
-  static bool get canRequestAds => _completed;
+  static const _updateTimeout = Duration(seconds: 12);
+  static const _dialogTimeout = Duration(minutes: 2);
+  static const _sdkTimeout = Duration(seconds: 15);
 
   /// Whether the user's region requires a way back into the consent form.
   ///
@@ -43,73 +39,64 @@ abstract final class AdConsent {
         }
       });
 
-  static final Completer<void> _sdkReady = Completer<void>();
+  static final _sdkReady = ValueNotifier(false);
 
-  /// Completes once consent is settled and the SDK is initialised.
-  ///
-  /// Every ad load waits on this. A banner requested while the consent form
-  /// was still up simply never answered — neither loaded nor failed — so the
-  /// app looked ad-free to free users. Never completes for Pro users, whose
-  /// SDK is never started.
-  static Future<void> get sdkReady => _sdkReady.future;
-
-  static void markSdkReady() {
-    if (!_sdkReady.isCompleted) _sdkReady.complete();
+  /// A bounded wait for callers that build before foreground initialization.
+  static Future<bool> waitForSdk() async {
+    if (_sdkReady.value) return true;
+    final ready = Completer<bool>();
+    void listener() => ready.complete(true);
+    _sdkReady.addListener(listener);
+    try {
+      return await ready.future.timeout(_sdkTimeout, onTimeout: () => false);
+    } finally {
+      _sdkReady.removeListener(listener);
+    }
   }
 
-  /// Resolves consent. Safe to call more than once; only the first does work.
-  ///
-  /// Never throws. A consent failure should cost the app its ad revenue for the
-  /// session, not its launch.
-  static Future<void> gather() async {
-    if (_completed) return;
-    if (!_isSupported) {
-      _completed = true;
-      return;
-    }
+  static Future<bool> initialize({required bool Function() isEligible}) async {
+    if (_sdkReady.value) return true;
 
     try {
-      await _requestUmpConsent();
-      await _requestTrackingAuthorization();
+      if (!await _requestUmpConsent() || !isEligible()) return false;
+      await _requestTrackingAuthorization().timeout(_dialogTimeout);
+      if (!isEligible()) return false;
+      await MobileAds.instance.initialize().timeout(_sdkTimeout);
+      _sdkReady.value = true;
+      return true;
     } catch (error) {
       if (kDebugMode) {
-        debugPrint('[Ads] Consent could not be gathered: $error');
+        debugPrint('[Ads] Consent or SDK initialization failed: $error');
       }
-    } finally {
-      // Either way the app carries on. Without consent Google serves
-      // non-personalised ads rather than none.
-      _completed = true;
+      return false;
     }
   }
 
-  static bool get _isSupported => Platform.isAndroid || Platform.isIOS;
-
-  static Future<void> _requestUmpConsent() async {
-    final completer = _Completer();
-
-    ConsentInformation.instance.requestConsentInfoUpdate(
+  static Future<bool> _requestUmpConsent() async {
+    final updated = Completer<bool>();
+    final consent = ConsentInformation.instance;
+    consent.requestConsentInfoUpdate(
       ConsentRequestParameters(consentDebugSettings: _debugSettings),
-      () async {
-        final available = await ConsentInformation.instance
-            .isConsentFormAvailable();
-        if (available) {
-          await _loadAndShowFormIfRequired();
-        }
-        privacyOptionsRequired =
-            await ConsentInformation.instance
-                .getPrivacyOptionsRequirementStatus() ==
-            PrivacyOptionsRequirementStatus.required;
-        completer.done();
+      () {
+        if (!updated.isCompleted) updated.complete(true);
       },
       (error) {
-        if (kDebugMode) {
-          debugPrint('[Ads] UMP update failed: ${error.message}');
-        }
-        completer.done();
+        if (kDebugMode) debugPrint('[Ads] UMP update failed: ${error.message}');
+        if (!updated.isCompleted) updated.complete(false);
       },
     );
 
-    await completer.future;
+    if (await updated.future.timeout(_updateTimeout, onTimeout: () => false)) {
+      await _loadAndShowFormIfRequired().timeout(_dialogTimeout);
+      privacyOptionsRequired =
+          await consent.getPrivacyOptionsRequirementStatus().timeout(
+            _updateTimeout,
+          ) ==
+          PrivacyOptionsRequirementStatus.required;
+    }
+
+    // A failed refresh can still have a valid choice from a prior launch.
+    return consent.canRequestAds().timeout(_updateTimeout);
   }
 
   /// Debug builds only: `--dart-define=UMP_DEBUG_EEA=true` makes UMP treat the

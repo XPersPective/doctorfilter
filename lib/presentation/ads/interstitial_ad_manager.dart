@@ -28,7 +28,7 @@ class InterstitialAdManager {
   }
 
   Future<void> _load() async {
-    await AdConsent.sdkReady;
+    if (!await AdConsent.waitForSdk()) return;
     final done = Completer<void>();
     await InterstitialAd.load(
       adUnitId: EnvConfig.adMobInterstitialUnitId,

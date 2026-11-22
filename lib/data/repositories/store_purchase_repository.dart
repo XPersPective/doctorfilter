@@ -15,7 +15,7 @@ import 'package:doctorfilter/domain/repositories/i_purchase_repository.dart';
 /// Pay. Two taps and a fingerprint.
 class StorePurchaseRepository implements IPurchaseRepository {
   StorePurchaseRepository({InAppPurchase? store})
-      : _store = store ?? InAppPurchase.instance {
+    : _store = store ?? InAppPurchase.instance {
     _subscription = _store.purchaseStream.listen(
       _onPurchaseUpdates,
       onError: (Object _) {
@@ -107,7 +107,9 @@ class StorePurchaseRepository implements IPurchaseRepository {
     final outcome = await settled;
 
     return Result.success(
-      outcome == PurchaseOutcome.pending ? PurchaseOutcome.nothingToRestore : outcome,
+      outcome == PurchaseOutcome.pending
+          ? PurchaseOutcome.nothingToRestore
+          : outcome,
     );
   }
 
@@ -122,7 +124,7 @@ class StorePurchaseRepository implements IPurchaseRepository {
 
   Future<void> _onPurchaseUpdates(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
-      final isOurs = ProProduct.allIds.contains(purchase.productID);
+      if (!ProProduct.allIds.contains(purchase.productID)) continue;
 
       switch (purchase.status) {
         case PurchaseStatus.pending:
@@ -130,10 +132,8 @@ class StorePurchaseRepository implements IPurchaseRepository {
 
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
-          if (isOurs) {
-            _granted = true;
-            _entitlement.add(ProStatus.lifetime());
-          }
+          _granted = true;
+          _entitlement.add(ProStatus.lifetime());
           _outcomes.add(
             purchase.status == PurchaseStatus.restored
                 ? PurchaseOutcome.restored

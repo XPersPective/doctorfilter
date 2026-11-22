@@ -1,0 +1,8 @@
+{
+  "contract": "237fa14c63567161",
+  "epoch": "4a175c3d99e63355",
+  "independent": false,
+  "intent": "28814bc8e89f422a",
+  "note": "Recover live monetization while preserving Google UMP, paid entitlement, temporary passes, and existing frequency gates. Verify signed candidates separately from production.",
+  "protocol": 1
+}

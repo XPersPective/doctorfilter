@@ -1,0 +1,96 @@
+name: Android signed candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact commit to build
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Verify the selected source commit
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ && "$(git rev-parse HEAD)" == "$EXPECTED_SHA" ]]
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+          cache: false
+      - name: Build and verify the signed Android App Bundle
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          SIGNING_PROPERTIES: ${{ secrets.ANDROID_UPLOAD_SIGNING_PROPERTIES }}
+          ADMOB_APP_ID_ANDROID: ${{ secrets.ADMOB_APP_ID_ANDROID }}
+          BANNER: ${{ secrets.ADMOB_ANDROID_BANNER_UNIT_ID }}
+          INTERSTITIAL: ${{ secrets.ADMOB_ANDROID_INTERSTITIAL_UNIT_ID }}
+          REWARDED: ${{ secrets.ADMOB_ANDROID_REWARDED_UNIT_ID }}
+          APP_OPEN: ${{ secrets.ADMOB_ANDROID_APP_OPEN_UNIT_ID }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ -n "$KEYSTORE" && -n "$SIGNING_PROPERTIES" ]]
+          [[ "$ADMOB_APP_ID_ANDROID" =~ ^ca-app-pub-[0-9]{16}~[0-9]{10}$ ]]
+          [[ "$ADMOB_APP_ID_ANDROID" != *3940256099942544* ]]
+          publisher="${ADMOB_APP_ID_ANDROID%~*}"
+          for unit in "$BANNER" "$INTERSTITIAL" "$REWARDED" "$APP_OPEN"; do
+            [[ "$unit" =~ ^${publisher}/[0-9]{10}$ ]]
+          done
+          signing="$RUNNER_TEMP/doctorfilter-android-signing"
+          install -d -m 700 "$signing"
+          trap 'rm -f "$signing/upload.jks" "$signing/key.properties"' EXIT
+          printf '%s' "$KEYSTORE" | base64 -d > "$signing/upload.jks"
+          printf '%s\n' "$SIGNING_PROPERTIES" > "$signing/key.properties"
+          grep -qx 'storeFile=upload.jks' "$signing/key.properties"
+          export DOCTORFILTER_SIGNING="$signing/key.properties"
+
+          flutter pub get --enforce-lockfile
+          flutter build appbundle --release \
+            "--dart-define=ADMOB_ANDROID_BANNER_UNIT_ID=$BANNER" \
+            "--dart-define=ADMOB_ANDROID_INTERSTITIAL_UNIT_ID=$INTERSTITIAL" \
+            "--dart-define=ADMOB_ANDROID_REWARDED_UNIT_ID=$REWARDED" \
+            "--dart-define=ADMOB_ANDROID_APP_OPEN_UNIT_ID=$APP_OPEN"
+
+          bundle=build/app/outputs/bundle/release/app-release.aab
+          LANG=C jarsigner -verify "$bundle" > "$RUNNER_TEMP/bundle-verify.log"
+          grep -Fq 'jar verified.' "$RUNNER_TEMP/bundle-verify.log"
+          python3 - "$bundle" <<'PY'
+          import os
+          import sys
+          from zipfile import ZipFile
+
+          with ZipFile(sys.argv[1]) as bundle:
+              manifest = bundle.read('base/manifest/AndroidManifest.xml')
+              app = bundle.read('base/lib/arm64-v8a/libapp.so')
+          if b'com.crazypenguin.doctorfilter' not in manifest:
+              raise SystemExit('Unexpected Android package')
+          if os.environ['ADMOB_APP_ID_ANDROID'].encode() not in manifest:
+              raise SystemExit('Production AdMob app ID missing from manifest')
+          if b'3940256099942544' in manifest:
+              raise SystemExit('Google test AdMob app ID in release manifest')
+          if any(os.environ[key].encode() not in app for key in ('BANNER', 'INTERSTITIAL', 'REWARDED', 'APP_OPEN')):
+              raise SystemExit('Expected production AdMob unit missing from compiled app')
+          PY
+          printf 'Signed AAB verified. SHA-256: %s\n' "$(sha256sum "$bundle" | cut -d' ' -f1)" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: doctorfilter-android-candidate
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 1

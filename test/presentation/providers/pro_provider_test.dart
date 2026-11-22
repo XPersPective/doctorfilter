@@ -27,13 +27,13 @@ class _FakePurchaseRepository implements IPurchaseRepository {
 
   @override
   Future<Result<ProOffer>> loadOffer() async => const Result.success(
-        ProOffer(
-          id: ProProduct.lifetimeId,
-          title: 'Pro',
-          description: '',
-          formattedPrice: '₺149,99',
-        ),
-      );
+    ProOffer(
+      id: ProProduct.lifetimeId,
+      title: 'Pro',
+      description: '',
+      formattedPrice: '₺149,99',
+    ),
+  );
 
   @override
   Future<Result<PurchaseOutcome>> buyLifetime() async =>
@@ -60,12 +60,16 @@ void main() {
   }) async {
     SharedPreferences.setMockInitialValues(prefs);
     store = _FakePurchaseRepository(isAvailable: storeAvailable);
-    return ProviderContainer(overrides: [
-      sharedPreferencesProvider.overrideWithValue(
-        await SharedPreferences.getInstance(),
-      ),
-      purchaseRepositoryProvider.overrideWithValue(store),
-    ]);
+    final result = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(
+          await SharedPreferences.getInstance(),
+        ),
+        purchaseRepositoryProvider.overrideWithValue(store),
+      ],
+    );
+    addTearDown(result.dispose);
+    return result;
   }
 
   Future<void> settle() async {
@@ -115,16 +119,39 @@ void main() {
 
   test('a rewarded pass grants Pro temporarily', () async {
     final ref = await container();
-    await ref.read(proStatusProvider.notifier)
+    await ref
+        .read(proStatusProvider.notifier)
         .grantTemporaryPass(const Duration(hours: 24));
 
     expect(ref.read(isProProvider), isTrue);
     expect(ref.read(proStatusProvider).isLifetime, isFalse);
   });
 
+  test(
+    'expiry notifies active Pro listeners without restarting the app',
+    () async {
+      final ref = await container();
+      final expired = Completer<void>();
+      final subscription = ref.listen(isProProvider, (previous, current) {
+        if (previous == true && !current && !expired.isCompleted) {
+          expired.complete();
+        }
+      });
+      addTearDown(subscription.close);
+
+      await ref
+          .read(proStatusProvider.notifier)
+          .grantTemporaryPass(const Duration(milliseconds: 100));
+      await expired.future.timeout(const Duration(seconds: 2));
+
+      expect(ref.read(isProProvider), isFalse);
+    },
+  );
+
   test('a pass never downgrades a lifetime purchase', () async {
     final ref = await container(prefs: {'flutter.df_pro_lifetime': true});
-    await ref.read(proStatusProvider.notifier)
+    await ref
+        .read(proStatusProvider.notifier)
         .grantTemporaryPass(const Duration(hours: 1));
 
     expect(ref.read(proStatusProvider).isLifetime, isTrue);

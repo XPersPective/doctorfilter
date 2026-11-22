@@ -16,6 +16,7 @@ abstract final class AppOpenAdManager {
   /// seconds later lands on a user who has already reached for a slider, so a
   /// slow load is dropped rather than shown late. Returns whether it appeared.
   static Future<bool> loadAndShow({
+    required bool Function() isEligible,
     Duration timeout = const Duration(seconds: 4),
   }) async {
     if (!Platform.isAndroid && !Platform.isIOS) return false;
@@ -44,6 +45,10 @@ abstract final class AppOpenAdManager {
     final ad = await loaded.future.timeout(timeout, onTimeout: () => null);
     if (!loaded.isCompleted) loaded.complete(null);
     if (ad == null) return false;
+    if (!isEligible()) {
+      await ad.dispose();
+      return false;
+    }
 
     ad.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) => ad.dispose(),

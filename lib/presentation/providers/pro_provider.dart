@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:doctorfilter/domain/entities/pro_status.dart';
 import 'package:doctorfilter/domain/repositories/i_purchase_repository.dart';
+
 import 'core_providers.dart';
 
 /// The single place the app asks "is this user Pro?".
@@ -16,6 +17,7 @@ class ProStatusNotifier extends StateNotifier<ProStatus> {
     // Read from disk first so a returning Pro user never sees a flash of ads
     // while the store is being contacted.
     state = _ref.read(preferencesDataSourceProvider).getProStatus();
+    _scheduleExpiry();
 
     final store = _ref.read(purchaseRepositoryProvider);
     _storeUpdates = store.entitlementUpdates.listen(_onStoreEntitlement);
@@ -24,6 +26,7 @@ class ProStatusNotifier extends StateNotifier<ProStatus> {
 
   final Ref _ref;
   StreamSubscription<ProStatus>? _storeUpdates;
+  Timer? _expiryTimer;
 
   /// Asks the store what this account owns, without showing the user anything.
   ///
@@ -50,6 +53,7 @@ class ProStatusNotifier extends StateNotifier<ProStatus> {
   Future<void> grantLifetime() async {
     if (state.isLifetime) return;
     state = ProStatus.lifetime();
+    _scheduleExpiry();
     await _ref.read(preferencesDataSourceProvider).setProStatus(state);
   }
 
@@ -57,30 +61,42 @@ class ProStatusNotifier extends StateNotifier<ProStatus> {
   Future<void> grantTemporaryPass(Duration duration) async {
     if (state.isLifetime) return;
     state = ProStatus.pass(DateTime.now().add(duration));
+    _scheduleExpiry();
     await _ref.read(preferencesDataSourceProvider).setProStatus(state);
   }
 
   /// Drops entitlement — a refund, or a restore that found nothing.
   Future<void> revoke() async {
     state = ProStatus.free();
+    _scheduleExpiry();
     await _ref.read(preferencesDataSourceProvider).setProStatus(state);
   }
 
-  /// Re-reads stored entitlement, expiring a lapsed pass.
+  /// Recheck the pass after foregrounding or when the expiry timer fires.
   void refresh() {
-    final stored = _ref.read(preferencesDataSourceProvider).getProStatus();
-    if (stored != state) state = stored;
+    if (state.passExpiry != null && !state.isActive) state = ProStatus.free();
+    _scheduleExpiry();
+  }
+
+  void _scheduleExpiry() {
+    _expiryTimer?.cancel();
+    final expiry = state.passExpiry;
+    if (expiry != null) {
+      _expiryTimer = Timer(expiry.difference(DateTime.now()), refresh);
+    }
   }
 
   @override
   void dispose() {
+    _expiryTimer?.cancel();
     _storeUpdates?.cancel();
     super.dispose();
   }
 }
 
-final proStatusProvider =
-    StateNotifierProvider<ProStatusNotifier, ProStatus>((ref) {
+final proStatusProvider = StateNotifierProvider<ProStatusNotifier, ProStatus>((
+  ref,
+) {
   return ProStatusNotifier(ref);
 });
 

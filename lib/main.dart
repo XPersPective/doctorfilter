@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doctorfilter/core/config/env_config.dart';
 import 'package:doctorfilter/core/localization/app_localizations.dart';
@@ -46,15 +46,34 @@ class DoctorFilterApp extends ConsumerStatefulWidget {
   ConsumerState<DoctorFilterApp> createState() => _DoctorFilterAppState();
 }
 
-class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp> {
+class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp>
+    with WidgetsBindingObserver {
   late bool _showOnboarding;
+  bool _firstFrameReady = false;
+  bool _startingAds = false;
+  Timer? _adRetry;
+
+  bool get _mayStartAds =>
+      mounted &&
+      _firstFrameReady &&
+      (Platform.isAndroid || Platform.isIOS) &&
+      !const bool.fromEnvironment('STORE_SCREENSHOTS') &&
+      WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed &&
+      !ref.read(isProProvider);
 
   @override
   void initState() {
     super.initState();
-    _showOnboarding =
-        !ref.read(preferencesDataSourceProvider).isOnboardingDone();
-    _initialiseAds();
+    _showOnboarding = !ref
+        .read(preferencesDataSourceProvider)
+        .isOnboardingDone();
+    WidgetsBinding.instance.addObserver(this);
+    ref.listenManual(isProProvider, (_, _) => _syncAds());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _firstFrameReady = true;
+      _syncAds(coldStart: true);
+    });
   }
 
   Future<void> _finishOnboarding() async {
@@ -62,30 +81,49 @@ class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp> {
     if (mounted) setState(() => _showOnboarding = false);
   }
 
-  /// Starts the ad stack, in the one order that is allowed.
-  ///
-  /// Consent first, always: requesting an ad before UMP has resolved breaches
-  /// AdMob policy in the EEA and gets the app cut off from serving entirely.
-  /// And for a Pro user the SDK is never initialised at all — not initialised
-  /// and then told to stay quiet, but never started.
-  Future<void> _initialiseAds() async {
-    if (!Platform.isAndroid && !Platform.isIOS) return;
-    // Store-screenshot builds only: no consent form or tracking prompt over
-    // the screens being captured, and no test-ad label in the images.
-    if (const bool.fromEnvironment('STORE_SCREENSHOTS')) return;
-    if (ref.read(isProProvider)) return;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.read(proStatusProvider.notifier).refresh();
+    }
+    _syncAds();
+  }
 
-    await AdConsent.gather();
-    if (!mounted) return;
-    await MobileAds.instance.initialize();
-    AdConsent.markSdkReady();
-    if (!mounted) return;
+  void _syncAds({bool coldStart = false}) {
+    _adRetry?.cancel();
+    _adRetry = null;
+    if (_mayStartAds && !_startingAds) {
+      unawaited(_initialiseAds(coldStart: coldStart));
+    }
+  }
 
-    // Cold starts only, and never over onboarding: the first thing a new user
-    // sees is the app. The policy keeps it out of the first days as well.
-    final policy = ref.read(adPolicyProvider.notifier);
-    if (_showOnboarding || !policy.mayShowAppOpen) return;
-    if (await AppOpenAdManager.loadAndShow()) policy.recordAppOpenShown();
+  Future<void> _initialiseAds({required bool coldStart}) async {
+    _startingAds = true;
+    try {
+      final ready = await AdConsent.initialize(isEligible: () => _mayStartAds);
+      if (!_mayStartAds) return;
+      if (!ready) {
+        _adRetry = Timer(const Duration(minutes: 1), _syncAds);
+        return;
+      }
+
+      // Recovery, resume and Pro expiry must not show a late app-open ad.
+      if (!coldStart || _showOnboarding) return;
+      final policy = ref.read(adPolicyProvider.notifier);
+      if (policy.mayShowAppOpen &&
+          await AppOpenAdManager.loadAndShow(isEligible: () => _mayStartAds)) {
+        if (mounted) policy.recordAppOpenShown();
+      }
+    } finally {
+      _startingAds = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    _adRetry?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

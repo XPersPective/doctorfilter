@@ -3,7 +3,7 @@ name: iOS release (TestFlight)
 # Manual only. Builds a signed IPA on a free macOS runner (public repo) and
 # uploads it to App Store Connect. Signing uses one permanent Apple
 # Distribution certificate (IOS_DIST_CERT_ID) stored as a .p12 secret; the
-# provisioning profile is made per run through the App Store Connect API key.
+# provisioning profile is resolved with the App Store Connect API key.
 # Never revoke that certificate while a build signed with it is in review.
 #
 # Repository secrets:
@@ -11,11 +11,22 @@ name: iOS release (TestFlight)
 #   IOS_DIST_P12_BASE64    base64 of the distribution certificate + key (.p12)
 #   IOS_DIST_P12_PASSWORD  password of that .p12
 #   ADMOB_APP_ID_IOS, ADMOB_IOS_BANNER_UNIT_ID, ADMOB_IOS_INTERSTITIAL_UNIT_ID,
-#   ADMOB_IOS_REWARDED_UNIT_ID, ADMOB_IOS_APP_OPEN_UNIT_ID   (optional: Google
-#   test units are used for any that are empty)
+#   ADMOB_IOS_REWARDED_UNIT_ID, ADMOB_IOS_APP_OPEN_UNIT_ID   (required production values)
 
 on:
   workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact candidate commit (optional for legacy dispatch)
+        type: string
+        required: false
+      upload:
+        description: Validate and upload the signed IPA to TestFlight
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
 
 env:
   ASC_KEY_ID: T7HY367GT9
@@ -29,6 +40,16 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Verify the selected source commit
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          if [[ -n "$EXPECTED_SHA" ]]; then
+            [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ && "$(git rev-parse HEAD)" == "$EXPECTED_SHA" ]]
+          fi
 
       - uses: subosito/flutter-action@v2
         with:
@@ -52,9 +73,9 @@ jobs:
         env:
           ADMOB_APP_ID_IOS: ${{ secrets.ADMOB_APP_ID_IOS }}
         run: |
-          if [ -n "$ADMOB_APP_ID_IOS" ]; then
-            /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier $ADMOB_APP_ID_IOS" ios/Runner/Info.plist
-          fi
+          [[ "$ADMOB_APP_ID_IOS" =~ ^ca-app-pub-[0-9]{16}~[0-9]{10}$ ]]
+          [[ "$ADMOB_APP_ID_IOS" != *3940256099942544* ]]
+          /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier $ADMOB_APP_ID_IOS" ios/Runner/Info.plist
 
       - name: Build (no signing yet)
         env:
@@ -62,14 +83,18 @@ jobs:
           I: ${{ secrets.ADMOB_IOS_INTERSTITIAL_UNIT_ID }}
           R: ${{ secrets.ADMOB_IOS_REWARDED_UNIT_ID }}
           O: ${{ secrets.ADMOB_IOS_APP_OPEN_UNIT_ID }}
+          APP_ID: ${{ secrets.ADMOB_APP_ID_IOS }}
         run: |
+          publisher="${APP_ID%~*}"
+          for unit in "$B" "$I" "$R" "$O"; do
+            [[ "$unit" =~ ^${publisher}/[0-9]{10}$ ]]
+          done
           flutter pub get
-          defs=()
-          [ -n "$B" ] && defs+=("--dart-define=ADMOB_IOS_BANNER_UNIT_ID=$B")
-          [ -n "$I" ] && defs+=("--dart-define=ADMOB_IOS_INTERSTITIAL_UNIT_ID=$I")
-          [ -n "$R" ] && defs+=("--dart-define=ADMOB_IOS_REWARDED_UNIT_ID=$R")
-          [ -n "$O" ] && defs+=("--dart-define=ADMOB_IOS_APP_OPEN_UNIT_ID=$O")
-          flutter build ios --release --no-codesign "${defs[@]}"
+          flutter build ios --release --no-codesign \
+            "--dart-define=ADMOB_IOS_BANNER_UNIT_ID=$B" \
+            "--dart-define=ADMOB_IOS_INTERSTITIAL_UNIT_ID=$I" \
+            "--dart-define=ADMOB_IOS_REWARDED_UNIT_ID=$R" \
+            "--dart-define=ADMOB_IOS_APP_OPEN_UNIT_ID=$O"
 
       - name: Archive (unsigned; signed at export)
         # Archiving with automatic signing asks for a *development* profile,
@@ -78,13 +103,22 @@ jobs:
         run: |
           xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner             -configuration Release -destination 'generic/platform=iOS'             -archivePath "$RUNNER_TEMP/Runner.xcarchive" archive             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
 
-      - name: Sign with the distribution certificate and upload to TestFlight
+      - name: Sign and verify the App Store IPA
         env:
           ARCHIVE: ${{ runner.temp }}/Runner.xcarchive
           IOS_DIST_P12_BASE64: ${{ secrets.IOS_DIST_P12_BASE64 }}
           IOS_DIST_P12_PASSWORD: ${{ secrets.IOS_DIST_P12_PASSWORD }}
+          UPLOAD: ${{ inputs.upload }}
         run: |
           export ASC_KEY_FILE="$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8"
           export FASTLANE_SKIP_UPDATE_CHECK=1
           cd fastlane
-          fastlane ios ci_release
+          fastlane ios ci_release "upload:$UPLOAD"
+
+      - name: Retain verified IPA for one day
+        uses: actions/upload-artifact@v4
+        with:
+          name: doctorfilter-ios-candidate
+          path: fastlane/build/export/*.ipa
+          if-no-files-found: error
+          retention-days: 1
