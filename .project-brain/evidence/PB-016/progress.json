@@ -1,0 +1,14 @@
+{
+  "protocol": 1,
+  "next": "Independently review the restore and ad gate, then bump to 2.0.3+5008 and dispatch signed GitHub Actions candidates. Keep pending Apple 2.0.2 review intact.",
+  "failing": "Native Android/iOS same-account reinstall, ad impression and accessibility proof pending.",
+  "dirty": "Isolated branch; source, regression tests and Brain handoff only in checkpoint.",
+  "strategy": "",
+  "attempt": "ddb438281d93ec06",
+  "repeats": 1,
+  "contract": "f0937d062216cf30",
+  "usage": {
+    "checks": 2,
+    "seconds": 167.468
+  }
+}

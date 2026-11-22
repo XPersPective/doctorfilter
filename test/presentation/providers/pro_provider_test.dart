@@ -17,6 +17,7 @@ class _FakePurchaseRepository implements IPurchaseRepository {
 
   int restoreCalls = 0;
   PurchaseOutcome restoreResult = PurchaseOutcome.nothingToRestore;
+  Completer<Result<PurchaseOutcome>>? restoreResponse;
 
   final _entitlement = StreamController<ProStatus>.broadcast();
 
@@ -42,6 +43,8 @@ class _FakePurchaseRepository implements IPurchaseRepository {
   @override
   Future<Result<PurchaseOutcome>> restorePurchases() async {
     restoreCalls++;
+    final response = restoreResponse;
+    if (response != null) return response.future;
     return Result.success(restoreResult);
   }
 
@@ -107,6 +110,30 @@ void main() {
     await settle();
 
     expect(store.restoreCalls, 1);
+  });
+
+  test('initial restore can resolve Lifetime before ad startup', () async {
+    final ref = await container();
+    final response = store.restoreResponse = Completer();
+    final initialRestore = ref.read(proStatusProvider.notifier).initialRestore;
+    final mayStartAds = initialRestore.then((_) => !ref.read(isProProvider));
+
+    store.emit(ProStatus.lifetime());
+    await settle();
+    response.complete(const Result.success(PurchaseOutcome.restored));
+
+    expect(await mayStartAds, isFalse);
+  });
+
+  test('a store error releases the startup advertising gate', () async {
+    final ref = await container();
+    final response = store.restoreResponse = Completer();
+    final initialRestore = ref.read(proStatusProvider.notifier).initialRestore;
+
+    response.completeError(StateError('store unavailable'));
+
+    await initialRestore;
+    expect(ref.read(isProProvider), isFalse);
   });
 
   test('no silent restore where there is no store to ask', () async {

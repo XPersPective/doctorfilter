@@ -7,6 +7,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 
 class _FakeStore implements InAppPurchase {
   final events = StreamController<List<PurchaseDetails>>.broadcast();
+  int restoreCalls = 0;
 
   @override
   Stream<List<PurchaseDetails>> get purchaseStream => events.stream;
@@ -15,7 +16,9 @@ class _FakeStore implements InAppPurchase {
   Future<bool> isAvailable() async => true;
 
   @override
-  Future<void> restorePurchases({String? applicationUserName}) async {}
+  Future<void> restorePurchases({String? applicationUserName}) async {
+    restoreCalls++;
+  }
 
   @override
   Object? noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -53,5 +56,25 @@ void main() {
 
     store.events.add([_restored(ProProduct.lifetimeId)]);
     expect((await restore).dataOrNull, PurchaseOutcome.restored);
+  });
+
+  test('an empty restore settles simultaneous callers without delay', () async {
+    final store = _FakeStore();
+    final repo = StorePurchaseRepository(store: store);
+    addTearDown(() async {
+      await repo.dispose();
+      await store.events.close();
+    });
+
+    final startup = repo.restorePurchases();
+    final manual = repo.restorePurchases();
+    await Future<void>.delayed(Duration.zero);
+    expect(store.restoreCalls, 1);
+    store.events.add([]);
+
+    for (final request in [startup, manual]) {
+      final result = await request.timeout(const Duration(seconds: 1));
+      expect(result.dataOrNull, PurchaseOutcome.nothingToRestore);
+    }
   });
 }

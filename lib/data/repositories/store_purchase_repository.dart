@@ -22,6 +22,7 @@ class StorePurchaseRepository implements IPurchaseRepository {
         // A broken stream must not leave the app thinking a purchase is still
         // in flight; fall back to whatever was already granted.
         _entitlement.add(_granted ? ProStatus.lifetime() : ProStatus.free());
+        _completeRestore(PurchaseOutcome.unavailable);
       },
     );
   }
@@ -31,6 +32,9 @@ class StorePurchaseRepository implements IPurchaseRepository {
 
   final _entitlement = StreamController<ProStatus>.broadcast();
   final _outcomes = StreamController<PurchaseOutcome>.broadcast();
+  Future<Result<PurchaseOutcome>>? _restoreInFlight;
+  Completer<PurchaseOutcome>? _restoreOutcome;
+  static const _restoreTimeout = Duration(seconds: 12);
 
   bool _granted = false;
 
@@ -97,32 +101,49 @@ class StorePurchaseRepository implements IPurchaseRepository {
   }
 
   @override
-  Future<Result<PurchaseOutcome>> restorePurchases() async {
-    if (!await _store.isAvailable()) {
-      return const Result.failure(PlatformFailure('store_unavailable'));
-    }
-
-    final settled = _nextOutcome(timeout: const Duration(seconds: 12));
-    await _store.restorePurchases();
-    final outcome = await settled;
-
-    return Result.success(
-      outcome == PurchaseOutcome.pending
-          ? PurchaseOutcome.nothingToRestore
-          : outcome,
-    );
+  Future<Result<PurchaseOutcome>> restorePurchases() {
+    return _restoreInFlight ??= _restorePurchases().whenComplete(() {
+      _restoreInFlight = null;
+    });
   }
 
-  Future<PurchaseOutcome> _nextOutcome({
-    Duration timeout = const Duration(minutes: 5),
-  }) {
+  Future<Result<PurchaseOutcome>> _restorePurchases() async {
+    try {
+      if (!await _store.isAvailable().timeout(_restoreTimeout)) {
+        return const Result.failure(PlatformFailure('store_unavailable'));
+      }
+      final response = Completer<PurchaseOutcome>();
+      _restoreOutcome = response;
+      await _store.restorePurchases().timeout(_restoreTimeout);
+      final outcome = await response.future.timeout(
+        _restoreTimeout,
+        onTimeout: () => PurchaseOutcome.nothingToRestore,
+      );
+      return Result.success(outcome);
+    } catch (_) {
+      return const Result.failure(PlatformFailure('store_unavailable'));
+    } finally {
+      _restoreOutcome = null;
+    }
+  }
+
+  void _completeRestore(PurchaseOutcome outcome) {
+    final response = _restoreOutcome;
+    if (response != null && !response.isCompleted) response.complete(outcome);
+  }
+
+  Future<PurchaseOutcome> _nextOutcome() {
     return _outcomes.stream.first.timeout(
-      timeout,
+      const Duration(minutes: 5),
       onTimeout: () => PurchaseOutcome.pending,
     );
   }
 
   Future<void> _onPurchaseUpdates(List<PurchaseDetails> purchases) async {
+    // Play Billing and StoreKit return an empty batch when restore finds no
+    // purchases. Let free users continue without waiting for the timeout.
+    if (purchases.isEmpty) _completeRestore(PurchaseOutcome.nothingToRestore);
+
     for (final purchase in purchases) {
       if (!ProProduct.allIds.contains(purchase.productID)) continue;
 
@@ -134,6 +155,7 @@ class StorePurchaseRepository implements IPurchaseRepository {
         case PurchaseStatus.restored:
           _granted = true;
           _entitlement.add(ProStatus.lifetime());
+          _completeRestore(PurchaseOutcome.restored);
           _outcomes.add(
             purchase.status == PurchaseStatus.restored
                 ? PurchaseOutcome.restored
