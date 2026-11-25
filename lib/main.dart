@@ -100,6 +100,11 @@ class _DoctorFilterAppState extends ConsumerState<DoctorFilterApp>
   Future<void> _initialiseAds({required bool coldStart}) async {
     _startingAds = true;
     try {
+      await ref
+          .read(proStatusProvider.notifier)
+          .initialRestore
+          .timeout(const Duration(seconds: 15), onTimeout: () {});
+      if (!_mayStartAds) return;
       final ready = await AdConsent.initialize(isEligible: () => _mayStartAds);
       if (!_mayStartAds) return;
       if (!ready) {

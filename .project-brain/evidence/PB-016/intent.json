@@ -1,0 +1,8 @@
+{
+  "contract": "f0937d062216cf30",
+  "epoch": "ce89ea658e6deb58",
+  "independent": false,
+  "intent": "28814bc8e89f422a",
+  "note": "Bound the mobile-only ad startup wait in its consumer. Other platform restore and normal app startup do not wait on it.",
+  "protocol": 1
+}

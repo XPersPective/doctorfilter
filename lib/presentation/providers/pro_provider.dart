@@ -21,10 +21,11 @@ class ProStatusNotifier extends StateNotifier<ProStatus> {
 
     final store = _ref.read(purchaseRepositoryProvider);
     _storeUpdates = store.entitlementUpdates.listen(_onStoreEntitlement);
-    _restoreQuietly(store);
+    initialRestore = _restoreQuietly(store);
   }
 
   final Ref _ref;
+  late final Future<void> initialRestore;
   StreamSubscription<ProStatus>? _storeUpdates;
   Timer? _expiryTimer;
 
@@ -35,7 +36,12 @@ class ProStatusNotifier extends StateNotifier<ProStatus> {
   /// stands, and the user can still restore by hand from the paywall.
   Future<void> _restoreQuietly(IPurchaseRepository store) async {
     if (!store.isAvailable) return;
-    await store.restorePurchases();
+    try {
+      await store.restorePurchases();
+    } catch (_) {
+      // Keep cached ownership and let a future store update or manual restore
+      // supply ownership if the store is offline or stalls during launch.
+    }
   }
 
   void _onStoreEntitlement(ProStatus fromStore) {
